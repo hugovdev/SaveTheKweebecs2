@@ -4,10 +4,14 @@ import com.infernalsuite.aswm.api.SlimePlugin
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.map.Map
 import me.hugo.savethekweebecs.arena.map.MapLocation
-import me.hugo.savethekweebecs.ext.*
-import me.hugo.savethekweebecs.player.PlayerManager
-import net.kyori.adventure.text.Component
-import org.bukkit.*
+import me.hugo.savethekweebecs.ext.announceTranslation
+import me.hugo.savethekweebecs.ext.playerDataOrCreate
+import me.hugo.savethekweebecs.ext.reset
+import me.hugo.savethekweebecs.ext.sendTranslation
+import org.bukkit.Bukkit
+import org.bukkit.GameMode
+import org.bukkit.GameRule
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -17,7 +21,6 @@ class Arena(val map: Map, val displayName: String) : KoinComponent {
 
     private val main = SaveTheKweebecs.getInstance()
     private val slimePlugin: SlimePlugin by inject()
-    private val playerManager: PlayerManager by inject()
 
     private val gameUUID: UUID = UUID.randomUUID()
     private var world: World? = null
@@ -46,7 +49,7 @@ class Arena(val map: Map, val displayName: String) : KoinComponent {
             return
         }
 
-        if (playersPerTeam.values.flatten().size >= map.maxPlayers) {
+        if (teamPlayers().size >= map.maxPlayers) {
             player.sendTranslation("arena.join.full")
             return
         }
@@ -95,8 +98,12 @@ class Arena(val map: Map, val displayName: String) : KoinComponent {
         // TOOD: Reset saved NPCs
     }
 
+    fun teamPlayers(): List<UUID> {
+        return playersPerTeam.values.flatten()
+    }
+
     fun arenaPlayers(): List<UUID> {
-        return playersPerTeam.values.flatten().plus(spectators)
+        return teamPlayers().plus(spectators)
     }
 
     private fun addPlayerTo(player: Player, team: Team) {
