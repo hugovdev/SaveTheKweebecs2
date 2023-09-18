@@ -47,8 +47,8 @@ dependencies {
     implementation 'com.github.Revxrsal.Lamp:common:3.1.5'
     implementation 'com.github.Revxrsal.Lamp:bukkit:3.1.5'
 
-    // PlayerNPC API
-    implementation 'dev.sergiferry:playernpc:2023.6'
+    // PlayerNPC API (waiting for 2023.6)
+    // implementation 'dev.sergiferry:playernpc:2023.4'
 }
 
 // KSP - To use generated sources

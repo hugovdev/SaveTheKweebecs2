@@ -3,12 +3,32 @@ package me.hugo.savethekweebecs.arena.map
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import org.bukkit.Location
 import org.bukkit.World
+import kotlin.math.abs
+import kotlin.math.floor
 
 /**
  * Object that contains the exact location of certain
  * place in a map but doesn't contain a specific world.
  */
 class MapPoint(val x: Double, val y: Double, val z: Double, val yaw: Float, val pitch: Float) {
+
+    /**
+     * Creates a [MapPoint] from a [location]
+     *
+     * If [centerToBlock] it also centers the [location]
+     * given to the center of the block. Also moves the
+     * yaw to the closest full rotation and locks the
+     * pitch to 0.0 (looking forward).
+     */
+    constructor(location: Location, centerToBlock: Boolean = true) : this(
+        if (centerToBlock) floor(location.x) + 0.5 else location.x,
+        location.y,
+        if (centerToBlock) floor(location.z) + 0.5 else location.z,
+        if (centerToBlock) {
+            listOf(-180.0f, -90.0f, 0.0f, 90.0f, 180.0f).minBy { v -> abs(v - location.yaw) }
+        } else location.yaw,
+        if (centerToBlock) 0.0f else location.pitch
+    )
 
     companion object {
         fun deserialize(serializedPoint: String): MapPoint? {
@@ -42,5 +62,4 @@ class MapPoint(val x: Double, val y: Double, val z: Double, val yaw: Float, val 
     fun serialize(): String {
         return "$x , $y , $z , $yaw , $pitch"
     }
-
 }

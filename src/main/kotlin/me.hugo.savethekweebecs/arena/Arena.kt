@@ -2,12 +2,9 @@ package me.hugo.savethekweebecs.arena
 
 import com.infernalsuite.aswm.api.SlimePlugin
 import me.hugo.savethekweebecs.SaveTheKweebecs
-import me.hugo.savethekweebecs.arena.map.Map
+import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
-import me.hugo.savethekweebecs.ext.announceTranslation
-import me.hugo.savethekweebecs.ext.playerDataOrCreate
-import me.hugo.savethekweebecs.ext.reset
-import me.hugo.savethekweebecs.ext.sendTranslation
+import me.hugo.savethekweebecs.ext.*
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.GameRule
@@ -17,68 +14,89 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
 
-class Arena(val map: Map, val displayName: String) : KoinComponent {
+class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private val main = SaveTheKweebecs.getInstance()
-    private val slimePlugin: SlimePlugin by inject()
+    private val slimePlugin: SlimePlugin = main.slimePlugin
 
     private val gameUUID: UUID = UUID.randomUUID()
     private var world: World? = null
 
-    private var arenaState: ArenaState = ArenaState.WAITING
+    var arenaState: ArenaState = ArenaState.RESETTING
         set(state) {
             field = state
-            println("hi")
+            println("Changed game state of $displayName to $state!")
             // refresh icon
         }
 
-    private var arenaTime: Int = map.defaultCountdown
+    private var arenaTime: Int = arenaMap.defaultCountdown
 
-    private val playersPerTeam: MutableMap<Team, MutableList<UUID>> = mutableMapOf()
+    private val playersPerTeam: MutableMap<Team, MutableList<UUID>> =
+        Team.entries.associateWith { mutableListOf<UUID>() }.toMutableMap()
     private val spectators: MutableList<UUID> = mutableListOf()
 
     init {
-        main.logger.info("Creating game with map ${map.mapName} with display name $displayName...")
+        main.logger.info("Creating game with map ${arenaMap.mapName} with display name $displayName...")
         loadMap()
         main.logger.info("$displayName is now available!")
     }
 
     fun joinArena(player: Player) {
-        if (arenaState != ArenaState.WAITING && arenaState != ArenaState.IN_GAME) {
+        if (hasStarted()) {
             player.sendTranslation("arena.join.started")
             return
         }
 
-        if (teamPlayers().size >= map.maxPlayers) {
+        if (teamPlayers().size >= arenaMap.maxPlayers) {
             player.sendTranslation("arena.join.full")
             return
         }
 
-        val lobbyLocation = map.getLocation(MapLocation.LOBBY, world) ?: return
+        val lobbyLocation = arenaMap.getLocation(MapLocation.LOBBY, world) ?: return
 
         player.reset(GameMode.ADVENTURE)
         player.teleport(lobbyLocation)
 
-        player.playerDataOrCreate().currentArena = this
-        addPlayerTo(player, playersPerTeam.keys.minBy { playersPerTeam[it]?.size ?: 0 })
+        val playerData = player.playerDataOrCreate()
+
+        playerData.currentArena = this
+
+        val team = playersPerTeam.keys.minBy { playersPerTeam[it]?.size ?: 0 }
+        addPlayerTo(player, team)
+        playerData.currentTeam = team
 
         announceTranslation(
             "arena.join.global",
             mapOf(
                 Pair("playerName", player.name),
                 Pair("currentPlayers", arenaPlayers().size.toString()),
-                Pair("maxPlayers", map.maxPlayers.toString()),
+                Pair("maxPlayers", arenaMap.maxPlayers.toString()),
             )
         )
     }
 
+    fun leave(player: Player) {
+        playersPerTeam[player.playerDataOrCreate().currentTeam]?.remove(player.uniqueId)
+
+        if (!hasStarted()) {
+            announceTranslation(
+                "arena.leave.global",
+                mapOf(
+                    Pair("playerName", player.name),
+                    Pair("currentPlayers", arenaPlayers().size.toString()),
+                    Pair("maxPlayers", arenaMap.maxPlayers.toString()),
+                )
+            )
+        }
+    }
+
     private fun loadMap() {
-        if (!map.isValid) {
-            main.logger.info("Map ${map.mapName} is not valid!")
+        if (!arenaMap.isValid) {
+            main.logger.info("Map ${arenaMap.mapName} is not valid!")
             return
         }
 
-        val slimeWorld = map.slimeWorld!!.clone(gameUUID.toString())
+        val slimeWorld = arenaMap.slimeWorld!!.clone(gameUUID.toString())
         slimePlugin.loadWorld(slimeWorld)
 
         val newWorld = Bukkit.getWorld(gameUUID.toString()) ?: return
@@ -93,7 +111,7 @@ class Arena(val map: Map, val displayName: String) : KoinComponent {
 
     private fun resetGameValues() {
         arenaState = ArenaState.WAITING
-        arenaTime = map.defaultCountdown
+        arenaTime = arenaMap.defaultCountdown
 
         // TOOD: Reset saved NPCs
     }

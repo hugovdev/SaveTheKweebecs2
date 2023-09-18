@@ -1,6 +1,7 @@
 package me.hugo.savethekweebecs.ext
 
 import me.hugo.savethekweebecs.arena.Arena
+import me.hugo.savethekweebecs.arena.ArenaState
 import net.kyori.adventure.text.Component
 import org.bukkit.Sound
 
@@ -22,4 +23,8 @@ fun Arena.playSound(sound: Sound) {
             player.playSound(player.location, sound, 1.0f, 1.0f)
         }
     }
+}
+
+fun Arena.hasStarted(): Boolean {
+    return this.arenaState != ArenaState.WAITING && this.arenaState != ArenaState.STARTING
 }

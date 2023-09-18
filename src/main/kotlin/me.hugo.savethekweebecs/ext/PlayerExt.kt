@@ -25,4 +25,7 @@ fun Player.reset(gameMode: GameMode) {
     foodLevel = 20
     exp = 0.0f
     level = 0
+
+    inventory.clear()
+    inventory.setArmorContents(null)
 }
