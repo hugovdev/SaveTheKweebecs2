@@ -20,3 +20,8 @@ Save The Kweebecs comes back in 2023 with a new version!
 * <a href="https://github.com/SkinsRestorer/SkinsRestorerX">SkinsRestorer</a>
 * <a href="https://www.spigotmc.org/resources/citizens.13811/">Citizens</a>
 * <a href="https://github.com/InfernalSuite/AdvancedSlimePaper">AdvancedSlimePaper</a>
+
+
+## :+1: Libraries
+* <a href="https://github.com/Revxrsal/Lamp/">Lamp</a> (Command Framework)
+* <a href="https://insert-koin.io/">Koin</a> (Dependency Injection)
