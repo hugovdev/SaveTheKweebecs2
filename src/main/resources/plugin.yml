@@ -1,6 +1,5 @@
 name: SaveTheKweebecs
 version: '1.0'
 main: me.hugo.savethekweebecs.SaveTheKweebecs
-depend: [ SlimeWorldManager ]
-softdepend: [ PlayerNPC ]
+depend: [ SlimeWorldManager, Citizens ]
 api-version: '1.20'

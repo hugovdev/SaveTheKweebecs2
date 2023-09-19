@@ -2,6 +2,7 @@ package me.hugo.savethekweebecs.ext
 
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
+import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.skinsrestorer.api.PlayerWrapper
 import net.skinsrestorer.api.SkinsRestorerAPI
@@ -13,7 +14,7 @@ fun Arena.start() {
         arenaTime = arenaMap.defaultCountdown
         arenaState = ArenaState.WAITING
 
-        announceTranslation("arena.not_enough_people")
+        announceTranslation("arena.notEnoughPeople")
         return
     }
 
@@ -33,6 +34,19 @@ fun Arena.start() {
             SkinsRestorerAPI.getApi().applySkin(PlayerWrapper(teamPlayer), team.playerSkin)
         }
     }
+}
+
+fun Arena.end(winnerTeam: TeamManager.Team) {
+    arenaState = ArenaState.FINISHING
+
+    playersPerTeam.forEach { (_, players) ->
+        players.mapNotNull { it.player() }.forEach { teamPlayer ->
+            teamPlayer.reset(GameMode.ADVENTURE)
+            SkinsRestorerAPI.getApi().applySkin(PlayerWrapper(teamPlayer), teamPlayer.playerDataOrCreate().playerSkin)
+        }
+    }
+
+    announceTranslation("arena.win.${winnerTeam.id}")
 }
 
 fun Arena.announce(message: Component) {

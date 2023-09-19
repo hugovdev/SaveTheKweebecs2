@@ -1,9 +1,16 @@
 package me.hugo.savethekweebecs.listeners
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent
+import me.hugo.savethekweebecs.arena.GameManager
+import me.hugo.savethekweebecs.ext.announceTranslation
+import me.hugo.savethekweebecs.ext.end
 import me.hugo.savethekweebecs.ext.isInGame
 import me.hugo.savethekweebecs.ext.playerDataOrCreate
 import me.hugo.savethekweebecs.player.PlayerData
+import me.hugo.savethekweebecs.util.InstantFirework
+import net.citizensnpcs.api.event.NPCRightClickEvent
+import org.bukkit.Color
+import org.bukkit.FireworkEffect
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -18,9 +25,12 @@ import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
 class ArenaListener : KoinComponent, Listener {
+
+    private val gameManager: GameManager by inject()
 
     @EventHandler
     fun onBlockBreak(event: BlockBreakEvent) {
@@ -75,6 +85,38 @@ class ArenaListener : KoinComponent, Listener {
         }
 
         event.isCancelled = true
+    }
+
+    @EventHandler
+    fun onNPCClick(event: NPCRightClickEvent) {
+        val npc = event.npc
+
+        if (npc.data().has("arena")) {
+            val arena = gameManager.arenas[UUID.fromString(npc.data().get("arena"))] ?: return
+
+            if (!arena.isInGame()) return
+
+            val player = event.clicker
+            val attackerTeam = arena.arenaMap.attackerTeam
+            if (player.playerDataOrCreate().currentTeam != attackerTeam) return
+
+            npc.despawn()
+            arena.remainingNPCs[npc] = true
+
+            arena.announceTranslation(
+                "arena.${attackerTeam.id}.saved",
+                Pair("player", player.name),
+                Pair("currentNPCs", arena.remainingNPCs.count { it.value }.toString()),
+                Pair("NPCs", arena.remainingNPCs.size.toString())
+            )
+
+            InstantFirework(
+                FireworkEffect.builder().withColor(Color.GREEN, Color.ORANGE).flicker(true)
+                    .trail(true).withFade(Color.RED).build(), npc.storedLocation
+            )
+
+            if (arena.remainingNPCs.all { it.value }) arena.end(attackerTeam)
+        }
     }
 
     @EventHandler

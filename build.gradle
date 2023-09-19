@@ -27,7 +27,7 @@ repositories {
     maven { url = "https://repo.infernalsuite.com/repository/maven-snapshots/" }
     maven { url = "https://repo.rapture.pw/repository/maven-releases/" }
     maven { url = 'https://jitpack.io' }
-    maven { url = 'https://repo.ranull.com/maven/external' }
+    maven { url = "https://maven.citizensnpcs.co/repo/" }
 }
 
 dependencies {
@@ -47,8 +47,10 @@ dependencies {
     implementation 'com.github.Revxrsal.Lamp:common:3.1.5'
     implementation 'com.github.Revxrsal.Lamp:bukkit:3.1.5'
 
-    // PlayerNPC API
-    compileOnly files("dependencies/PlayerNPC.jar")
+    // Citizens API
+    compileOnly("net.citizensnpcs:citizens-main:2.0.32-SNAPSHOT") {
+        exclude group: '*', module: '*'
+    }
 }
 
 // KSP - To use generated sources

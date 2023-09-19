@@ -5,6 +5,7 @@ import me.hugo.savethekweebecs.ext.playerDataOrCreate
 import me.hugo.savethekweebecs.player.PlayerManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.KoinComponent
@@ -14,6 +15,12 @@ class JoinLeaveListener : KoinComponent, Listener {
 
     private val playerManager: PlayerManager by inject()
     private val gameManager: GameManager by inject()
+
+    @EventHandler
+    fun onPreLogin(event: AsyncPlayerPreLoginEvent) {
+        // Create player data and save their skin!
+        playerManager.getOrCreatePlayerData(event.uniqueId)
+    }
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {

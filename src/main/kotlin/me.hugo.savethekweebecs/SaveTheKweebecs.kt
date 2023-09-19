@@ -1,7 +1,6 @@
 package me.hugo.savethekweebecs
 
 import com.infernalsuite.aswm.api.SlimePlugin
-import dev.sergiferry.playernpc.api.NPCLib
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.commands.SaveTheKweebecsCommand
@@ -49,7 +48,6 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         }
 
         slimePlugin = Bukkit.getPluginManager().getPlugin("SlimeWorldManager") as SlimePlugin
-        NPCLib.getInstance().registerPlugin(main)
 
         saveDefaultConfig()
 
@@ -82,6 +80,8 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
 
         Bukkit.getPluginManager().registerEvents(JoinLeaveListener(), this)
         Bukkit.getPluginManager().registerEvents(ArenaListener(), this)
+
+        println("Starting Game Manager... Maps: ${gameManager.maps.size}")
     }
 
     override fun onDisable() {

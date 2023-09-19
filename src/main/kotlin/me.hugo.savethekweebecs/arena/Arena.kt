@@ -1,8 +1,6 @@
 package me.hugo.savethekweebecs.arena
 
 import com.infernalsuite.aswm.api.SlimePlugin
-import dev.sergiferry.playernpc.api.NPC
-import dev.sergiferry.playernpc.api.NPCLib
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
@@ -10,8 +8,13 @@ import me.hugo.savethekweebecs.arena.map.MapPoint
 import me.hugo.savethekweebecs.ext.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.team.TeamManager
-import me.hugo.savethekweebecs.util.InstantFirework
+import net.citizensnpcs.api.CitizensAPI
+import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.trait.HologramTrait
+import net.citizensnpcs.trait.LookClose
+import net.citizensnpcs.trait.SkinTrait
 import org.bukkit.*
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -45,7 +48,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private val spectators: MutableList<UUID> = mutableListOf()
 
-    private val remainingNPCs: MutableMap<NPC.Global, Boolean> = mutableMapOf()
+    val remainingNPCs: MutableMap<NPC, Boolean> = mutableMapOf()
 
     init {
         main.logger.info("Creating game with map ${arenaMap.mapName} with display name $displayName...")
@@ -141,51 +144,33 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         resetGameValues()
     }
 
-    private fun createKweebecNPC(mapPoint: MapPoint): NPC.Global {
-        val npc =
-            NPCLib.getInstance().generateGlobalNPC(main, UUID.randomUUID().toString(), mapPoint.toLocation(world!!))
+    private fun createKweebecNPC(mapPoint: MapPoint): NPC {
+        val attackerTeam = arenaMap.attackerTeam
+        val npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "")
 
-        npc.visibility = NPC.Global.Visibility.EVERYONE
-        npc.setSkin(
-            NPC.Skin.Custom.createCustomSkin(
-                main,
-                NPC.Skin.SignedTexture(arenaMap.attackerTeam.npcSkin.value, arenaMap.attackerTeam.npcSkin.signature)
-            )
+        npc.data().setPersistent(NPC.Metadata.SHOULD_SAVE, false)
+        npc.data().setPersistent(NPC.Metadata.NAMEPLATE_VISIBLE, false)
+        npc.data().setPersistent("arena", arenaUUID.toString())
+
+        val skinTrait = npc.getOrAddTrait(SkinTrait::class.java)
+        skinTrait.setSkinPersistent(
+            attackerTeam.id,
+            attackerTeam.npcSkin.signature,
+            attackerTeam.npcSkin.value
         )
 
-        npc.setTabListVisibility(NPC.TabListVisibility.SAME_WORLD)
-        npc.setTabListName("${ChatColor.RED}[NPC] " + languageManager.getLangString("arena.npc.tablist.${arenaMap.attackerTeam.id}"))
+        val lookClose = npc.getOrAddTrait(LookClose::class.java)
+        lookClose.lookClose(true)
 
-        npc.addCustomClickAction { _, player ->
-            if (!isInGame()) return@addCustomClickAction
-            if (player.playerDataOrCreate().currentTeam != arenaMap.attackerTeam) return@addCustomClickAction
+        val hologramTrait = npc.getOrAddTrait(HologramTrait::class.java)
+        hologramTrait.lineHeight = -0.28
 
-            npc.removePlayers(arenaPlayers().map { it.player() })
-            remainingNPCs[npc] = true
+        hologramTrait.addLine("${ChatColor.RED}" + languageManager.getLangString("arena.npc.name.${attackerTeam.id}"))
+        hologramTrait.addLine("${ChatColor.YELLOW}${ChatColor.BOLD}CLICK TO SAVE")
 
-            announceTranslation(
-                "arena.${arenaMap.attackerTeam.id}.saved",
-                Pair("player", player.name),
-                Pair("currentNPCs", remainingNPCs.count { it.value }.toString()),
-                Pair("NPCs", remainingNPCs.size.toString())
-            )
+        hologramTrait.setMargin(0, "bottom", 0.25)
 
-            InstantFirework(
-                FireworkEffect.builder().withColor(Color.GREEN, Color.ORANGE).flicker(true)
-                    .trail(true).withFade(Color.RED).build(), npc.location
-            )
-
-            if (remainingNPCs.all { it.value }) {
-                // Celebrate kweebecs victory!
-                arenaState = ArenaState.FINISHING
-            }
-        }
-
-        npc.setText(
-            "${ChatColor.RED}" + languageManager.getLangString("arena.npc.name.${arenaMap.attackerTeam.id}"),
-            "${ChatColor.YELLOW}${ChatColor.BOLD}CLICK TO SAVE"
-        )
-        npc.show()
+        npc.spawn(mapPoint.toLocation(world!!))
 
         return npc
     }
