@@ -1,0 +1,5 @@
+system.lang.reloaded: "<green>¡La configuración de lenguaje ha sido recargada!"
+arena.join.global: "<yellow>¡<green>{playerName}</green> se ha unido! ({currentPlayers}/{maxPlayers})"
+arena.leave.global: "<yellow>¡<red>{playerName}</red> se ha ido! ({currentPlayers}/{maxPlayers})"
+arena.join.full: "<red>[<b>!</b>] La arena <aqua>{arenaName}</aqua> está llena."
+arena.join.started: "<red>[<b>!</b>] La arena <aqua>{arenaName}</aqua> ya ha empezado."

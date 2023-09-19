@@ -1,17 +1,23 @@
 package me.hugo.savethekweebecs.commands
 
 import me.hugo.savethekweebecs.SaveTheKweebecs
+import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
-import me.hugo.savethekweebecs.arena.Team
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
 import me.hugo.savethekweebecs.arena.map.MapPoint
+import me.hugo.savethekweebecs.ext.playerDataOrCreate
+import me.hugo.savethekweebecs.ext.sendTranslation
+import me.hugo.savethekweebecs.lang.LanguageManager
+import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import revxrsal.commands.annotation.Command
+import revxrsal.commands.annotation.DefaultFor
 import revxrsal.commands.annotation.Description
 import revxrsal.commands.annotation.Subcommand
 import revxrsal.commands.bukkit.annotation.CommandPermission
@@ -25,17 +31,120 @@ class SaveTheKweebecsCommand : KoinComponent {
     private val configuringMap: MutableMap<UUID, ArenaMap> = mutableMapOf()
 
     private val main = SaveTheKweebecs.getInstance()
+
     private val gameManager: GameManager by inject()
+    private val languageManager: LanguageManager by inject()
+    private val teamManager: TeamManager by inject()
+
+    private val miniMessage = MiniMessage.miniMessage()
+
+    @DefaultFor("savethekweebecs", "stk", "savethekweebecs help", "stk help")
+    @Description("Help for the the main STK plugin.")
+    private fun help(sender: Player) {
+        sender.sendTranslation("system.help")
+    }
 
     @Subcommand("auto-join")
     @Description("Auto-joins a SaveTheKweebecs map!")
     private fun autoJoin(sender: Player) {
         // Picks the fullest available arena and joins!
-        gameManager.arenas.filter { it.teamPlayers().size < it.arenaMap.maxPlayers }
+        gameManager.arenas.values.filter { it.teamPlayers().size < it.arenaMap.maxPlayers }
             .maxByOrNull { it.teamPlayers().size }?.joinArena(sender)
     }
 
-    @Subcommand("admin create")
+    @Subcommand("list")
+    @Description("Lists arenas.")
+    private fun listArenas(sender: Player) {
+        sender.sendTranslation("arena.list.header")
+
+        gameManager.arenas.values.forEach {
+            sender.sendTranslation(
+                "arena.list.member",
+                Pair("displayName", it.displayName),
+                Pair("arenaState", miniMessage.serialize(Component.text(it.arenaState.name, it.arenaState.color))),
+                Pair("arenaUUID", it.arenaUUID.toString()),
+                Pair("mapName", it.arenaMap.mapName),
+                Pair("currentPlayers", it.teamPlayers().size.toString()),
+                Pair("maxPlayers", it.arenaMap.maxPlayers.toString())
+            )
+        }
+    }
+
+    @Subcommand("join")
+    @Description("Joins an arena.")
+    private fun listArenas(sender: Player, uuid: String) {
+        try {
+            val arena = gameManager.arenas[UUID.fromString(uuid)]
+            if (arena == null) {
+                sender.sendTranslation("arena.join.noExist")
+                return
+            }
+
+            arena.joinArena(sender)
+        } catch (exception: IllegalArgumentException) {
+            sender.sendTranslation("arena.join.noExist")
+        }
+    }
+
+    @Subcommand("leave")
+    @Description("Leave the arena you're in!")
+    private fun leaveArena(sender: Player) {
+        val currentArena = sender.playerDataOrCreate().currentArena
+
+        if (currentArena == null) {
+            sender.sendTranslation("arena.leave.notInArena")
+            return
+        }
+
+        currentArena.leave(sender)
+    }
+
+    @DefaultFor("savethekweebecs admin", "stk admin")
+    @Description("Help for the admin system.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun helpAdmin(sender: Player) {
+        sender.sendTranslation("system.admin.help")
+    }
+
+    @Subcommand("admin sethub")
+    @Description("Sets the location for the main hub!")
+    @CommandPermission("savethekweebecs.admin")
+    private fun setHub(sender: Player) {
+        main.config.set("hubLocation", MapPoint(sender.location).serialize())
+        main.saveConfig()
+
+        sender.sendMessage(
+            Component.text(
+                "Successfully set location for the main hub. Please restart the server.",
+                NamedTextColor.GREEN
+            )
+        )
+    }
+
+    @Subcommand("admin openarena")
+    @Description("Creates an arena using the chosen map.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun createArena(sender: Player, map: ArenaMap, displayName: String) {
+        val arena = Arena(map, displayName)
+
+        gameManager.arenas[arena.arenaUUID] = arena
+
+        sender.sendMessage(
+            Component.text(
+                "Successfully created arena in map \"${map.mapName}\" with display name \"$displayName\"!",
+                NamedTextColor.GREEN
+            )
+        )
+    }
+
+    @DefaultFor("savethekweebecs admin map", "stk admin map")
+    @Description("Help for the map system.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun helpMap(sender: Player) {
+        sender.sendTranslation("system.map.help")
+    }
+
+    @Subcommand("admin map create")
     @Description("Creates a SaveTheKweebecs map!")
     @CommandPermission("savethekweebecs.admin")
     private fun createMap(sender: Player, mapName: String) {
@@ -54,7 +163,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         )
     }
 
-    @Subcommand("admin setlocation")
+    @Subcommand("admin map setlocation")
     @Description("Sets the MapLocation to the player's location!")
     @CommandPermission("savethekweebecs.admin")
     private fun setLocation(sender: Player, location: MapLocation) {
@@ -70,10 +179,10 @@ class SaveTheKweebecsCommand : KoinComponent {
         }
     }
 
-    @Subcommand("admin addspawn")
+    @Subcommand("admin map addspawn")
     @Description("Adds the player's location to the spawnpoint list of this team!")
     @CommandPermission("savethekweebecs.admin")
-    private fun addSpawnpoint(sender: Player, team: Team) {
+    private fun addSpawnpoint(sender: Player, team: TeamManager.Team) {
         sender.getConfiguringMap()?.apply {
             spawnPoints.computeIfAbsent(team) { mutableListOf() }.add(MapPoint(sender.location))
 
@@ -86,7 +195,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         }
     }
 
-    @Subcommand("admin addkidnaped")
+    @Subcommand("admin map addkidnaped")
     @Description("Adds the player's location to the kidnaped spawnpoint list!")
     @CommandPermission("savethekweebecs.admin")
     private fun addKidnaped(sender: Player) {
@@ -103,7 +212,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         }
     }
 
-    @Subcommand("admin setminplayers")
+    @Subcommand("admin map setminplayers")
     @Description("Sets the min player count for the map!")
     @CommandPermission("savethekweebecs.admin")
     private fun setMinplayers(sender: Player, minimumPlayers: Int) {
@@ -119,7 +228,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         }
     }
 
-    @Subcommand("admin setmaxplayers")
+    @Subcommand("admin map setmaxplayers")
     @Description("Sets the max player count for the map!")
     @CommandPermission("savethekweebecs.admin")
     private fun setMaxplayers(sender: Player, maximumPlayers: Int) {
@@ -135,7 +244,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         }
     }
 
-    @Subcommand("admin setcountdown")
+    @Subcommand("admin map setcountdown")
     @Description("Sets the countdown for the map!")
     @CommandPermission("savethekweebecs.admin")
     private fun setCountdown(sender: Player, countdown: Int) {
@@ -151,7 +260,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         }
     }
 
-    @Subcommand("admin save")
+    @Subcommand("admin map save")
     @Description("Saves the map into the config!")
     @CommandPermission("savethekweebecs.admin")
     private fun saveMap(sender: Player) {
@@ -167,14 +276,18 @@ class SaveTheKweebecsCommand : KoinComponent {
             config.set("$configPath.mapName", mapName)
             config.set("$configPath.slimeWorld", mapName.replace(" ", "_").lowercase())
 
+            config.set("$configPath.defenderTeam", defenderTeam.id)
+            config.set("$configPath.attackerTeam", attackerTeam.id)
+
             config.set("$configPath.kidnapedPoints", kidnapedPoints?.map { it.serialize() })
 
             MapLocation.entries.forEach { location ->
                 config.set("$configPath.${location.name.lowercase()}", mapLocations[location]?.serialize())
             }
 
-            Team.entries.forEach { team ->
-                config.set("$configPath.${team.name.lowercase()}", spawnPoints[team]?.map { it.serialize() })
+
+            teamManager.teams.values.forEach { team ->
+                config.set("$configPath.${team.id.lowercase()}", spawnPoints[team]?.map { it.serialize() })
             }
 
             main.saveConfig()
@@ -186,6 +299,28 @@ class SaveTheKweebecsCommand : KoinComponent {
                 )
             )
         }
+    }
+
+    @DefaultFor("savethekweebecs admin lang", "stk admin lang")
+    @Description("Help for the language system.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun helpLang(sender: Player) {
+        sender.sendTranslation("system.lang.help")
+    }
+
+    @Subcommand("admin lang reload")
+    @Description("Reloads the language system.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun reloadLang(sender: Player) {
+        languageManager.reloadLanguages()
+        sender.sendTranslation("system.lang.reloaded")
+    }
+
+    @Subcommand("admin lang testmessage")
+    @Description("Test messages in the language system.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun testMessage(sender: Player, messageKey: String) {
+        sender.sendTranslation(messageKey)
     }
 
     private fun Player.getConfiguringMap(): ArenaMap? {

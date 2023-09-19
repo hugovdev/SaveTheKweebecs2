@@ -8,7 +8,7 @@ import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
-import me.hugo.savethekweebecs.arena.Team
+import me.hugo.savethekweebecs.team.TeamManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -20,6 +20,7 @@ import org.koin.core.component.inject
 class ArenaMap(val configName: String, private val load: Boolean = true) : KoinComponent {
 
     private val gameManager: GameManager by inject()
+    private val teamManager: TeamManager by inject()
 
     companion object {
         val DEFAULT_PROPERTIES = SlimePropertyMap().apply {
@@ -35,7 +36,11 @@ class ArenaMap(val configName: String, private val load: Boolean = true) : KoinC
     var mapName: String = configName.lowercase()
 
     val mapLocations: MutableMap<MapLocation, MapPoint> = mutableMapOf()
-    val spawnPoints: MutableMap<Team, MutableList<MapPoint>> = mutableMapOf()
+    val spawnPoints: MutableMap<TeamManager.Team, MutableList<MapPoint>> = mutableMapOf()
+
+    var defenderTeam: TeamManager.Team = teamManager.teams["trork"]!!
+    var attackerTeam: TeamManager.Team = teamManager.teams["kweebec"]!!
+
     var kidnapedPoints: MutableList<MapPoint>? = null
 
     var minPlayers: Int = 6
@@ -58,6 +63,9 @@ class ArenaMap(val configName: String, private val load: Boolean = true) : KoinC
                 minPlayers = config.getInt("$configPath.minPlayers", 6)
                 maxPlayers = config.getInt("$configPath.maxPlayers", 12)
 
+                teamManager.teams[config.getString("$configPath.defenderTeam")]?.let { defenderTeam = it }
+                teamManager.teams[config.getString("$configPath.attackerTeam")]?.let { attackerTeam = it }
+
                 defaultCountdown = config.getInt("$configPath.defaultCountdown", 60)
 
                 config.getString("$configPath.mapName")?.let { mapName = it }
@@ -73,15 +81,16 @@ class ArenaMap(val configName: String, private val load: Boolean = true) : KoinC
                 }
 
                 // Read the spawn points for each team in the config file!
-                Team.entries.forEach { team ->
-                    spawnPoints[team] = config.getStringList("$configPath.${team.name.lowercase()}")
+                teamManager.teams.values.forEach { team ->
+                    spawnPoints[team] = config.getStringList("$configPath.${team.id.lowercase()}")
                         .mapNotNull { MapPoint.deserialize(it) }.toMutableList()
                 }
 
                 main.logger.info("Map $configName has been loaded correctly and is now valid!")
                 isValid = true
 
-                gameManager.arenas.add(Arena(this, mapName))
+                val arena = Arena(this, mapName)
+                gameManager.arenas[arena.arenaUUID] = arena
             }
         }
     }

@@ -1,5 +1,7 @@
 package me.hugo.savethekweebecs.listeners
 
+import me.hugo.savethekweebecs.arena.GameManager
+import me.hugo.savethekweebecs.ext.playerDataOrCreate
 import me.hugo.savethekweebecs.player.PlayerManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -11,18 +13,22 @@ import org.koin.core.component.inject
 class JoinLeaveListener : KoinComponent, Listener {
 
     private val playerManager: PlayerManager by inject()
+    private val gameManager: GameManager by inject()
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
+        event.joinMessage(null)
         val player = event.player
 
-        val playerData = playerManager.getOrCreatePlayerData(player)
+        gameManager.sendToHub(player)
     }
 
     @EventHandler
-    fun onPlayerJoin(event: PlayerQuitEvent) {
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        event.quitMessage(null)
         val player = event.player
 
-        playerManager.removePlayerData(player.uniqueId)?.currentArena?.leave(player)
+        player.playerDataOrCreate().currentArena?.leave(player)
+        playerManager.removePlayerData(player.uniqueId)
     }
 }

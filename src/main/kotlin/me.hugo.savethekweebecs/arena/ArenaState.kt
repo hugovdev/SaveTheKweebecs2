@@ -1,7 +1,12 @@
 package me.hugo.savethekweebecs.arena
 
-enum class ArenaState {
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 
-    WAITING, STARTING, IN_GAME, FINISHING, RESETTING
+enum class ArenaState(val color: TextColor) {
+
+    WAITING(NamedTextColor.GREEN), STARTING(NamedTextColor.GOLD), IN_GAME(NamedTextColor.RED), FINISHING(NamedTextColor.RED), RESETTING(
+        NamedTextColor.AQUA
+    )
 
 }
