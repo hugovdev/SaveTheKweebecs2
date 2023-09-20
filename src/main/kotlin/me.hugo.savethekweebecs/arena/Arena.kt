@@ -1,23 +1,35 @@
 package me.hugo.savethekweebecs.arena
 
 import com.infernalsuite.aswm.api.SlimePlugin
+import com.infernalsuite.aswm.api.world.SlimeWorld
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
 import me.hugo.savethekweebecs.arena.map.MapPoint
 import me.hugo.savethekweebecs.ext.*
 import me.hugo.savethekweebecs.lang.LanguageManager
+import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.trait.CurrentLocation
 import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
-import org.bukkit.*
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import org.bukkit.Bukkit
+import org.bukkit.GameMode
+import org.bukkit.GameRule
+import org.bukkit.World
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 
 
@@ -28,18 +40,33 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private val gameManager: GameManager by inject()
     private val languageManager: LanguageManager by inject()
+    private val scoreboardManager: ScoreboardTemplateManager by inject()
 
     val arenaUUID: UUID = UUID.randomUUID()
+
+    private val slimeWorld: SlimeWorld? = arenaMap.slimeWorld!!.clone(arenaUUID.toString())
+
     var world: World? = null
 
     var arenaState: ArenaState = ArenaState.RESETTING
         set(state) {
             field = state
+            arenaPlayers().mapNotNull { it.player() }.forEach {
+                setCurrentBoard(it)
+            }
+
             println("Changed game state of $displayName to $state!")
             // refresh icon
         }
 
     var arenaTime: Int = arenaMap.defaultCountdown
+        set(time) {
+            field = time
+            arenaPlayers().mapNotNull { it.player() }.forEach {
+                scoreboardManager.loadedTemplates[arenaState.name.lowercase()]
+                    ?.updateLinesForTag(it, "next_event", if (arenaState == ArenaState.IN_GAME) "time" else "count")
+            }
+        }
 
     val playersPerTeam: MutableMap<TeamManager.Team, MutableList<UUID>> = mutableMapOf(
         Pair(arenaMap.defenderTeam, mutableListOf()),
@@ -52,18 +79,18 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     init {
         main.logger.info("Creating game with map ${arenaMap.mapName} with display name $displayName...")
-        loadMap()
+        loadMap(true)
         main.logger.info("$displayName is now available!")
     }
 
     fun joinArena(player: Player) {
         if (hasStarted()) {
-            player.sendTranslation("arena.join.started", Pair("arenaName", displayName))
+            player.sendTranslation("arena.join.started", Placeholder.unparsed("arena_name", displayName))
             return
         }
 
         if (teamPlayers().size >= arenaMap.maxPlayers) {
-            player.sendTranslation("arena.join.full", Pair("arenaName", displayName))
+            player.sendTranslation("arena.join.full", Placeholder.unparsed("arena_name", displayName))
             return
         }
 
@@ -83,16 +110,30 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
         val team = playersPerTeam.keys.minBy { playersPerTeam[it]?.size ?: 0 }
         addPlayerTo(player, team)
-        playerData.currentTeam = team
 
         announceTranslation(
             "arena.join.global",
-            Pair("playerName", player.name),
-            Pair("currentPlayers", arenaPlayers().size.toString()),
-            Pair("maxPlayers", arenaMap.maxPlayers.toString()),
+            Placeholder.unparsed("player_name", player.name),
+            Placeholder.unparsed("current_players", arenaPlayers().size.toString()),
+            Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString()),
         )
 
         if (teamPlayers().size >= arenaMap.minPlayers) arenaState = ArenaState.STARTING
+
+        setCurrentBoard(player)
+    }
+
+    private fun setCurrentBoard(player: Player) {
+        scoreboardManager.loadedTemplates[arenaState.name.lowercase()]?.printBoard(
+            player,
+            Placeholder.unparsed("players", teamPlayers().size.toString()),
+            Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString()),
+            Placeholder.unparsed("map_name", arenaMap.mapName),
+            Placeholder.unparsed("display_name", displayName),
+            Placeholder.unparsed("count", arenaTime.toString()),
+            Placeholder.unparsed("time", String.format("%02d:%02d", arenaTime / 60, arenaTime % 60)),
+            Formatter.date("date", LocalDateTime.now(ZoneId.systemDefault()))
+        )
     }
 
     fun leave(player: Player) {
@@ -103,9 +144,9 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
             announceTranslation(
                 "arena.leave.global",
-                Pair("playerName", player.name),
-                Pair("currentPlayers", arenaPlayers().size.toString()),
-                Pair("maxPlayers", arenaMap.maxPlayers.toString()),
+                Placeholder.unparsed("player_name", player.name),
+                Placeholder.unparsed("current_players", arenaPlayers().size.toString()),
+                Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString()),
             )
         } else {
             player.damage(player.health)
@@ -113,18 +154,17 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         }
 
         playerData.currentArena = null
-        playerData.currentTeam = null
-
         gameManager.sendToHub(player)
     }
 
-    private fun loadMap() {
+    fun loadMap(firstTime: Boolean = true) {
         if (!arenaMap.isValid) {
             main.logger.info("Map ${arenaMap.mapName} is not valid!")
             return
         }
 
-        val slimeWorld = arenaMap.slimeWorld!!.clone(arenaUUID.toString())
+        if (!firstTime) Bukkit.unloadWorld(world!!, false)
+
         slimePlugin.loadWorld(slimeWorld)
 
         val newWorld = Bukkit.getWorld(arenaUUID.toString()) ?: return
@@ -137,8 +177,10 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
         world = newWorld
 
-        arenaMap.kidnapedPoints?.forEach {
-            remainingNPCs[createKweebecNPC(it)] = false
+        if (firstTime) arenaMap.kidnapedPoints?.forEach { remainingNPCs[createKweebecNPC(it)] = false }
+        else remainingNPCs.keys.forEach {
+            remainingNPCs[it] = false
+            it.spawn(it.storedLocation.toLocation(world!!))
         }
 
         resetGameValues()
@@ -155,20 +197,34 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         val skinTrait = npc.getOrAddTrait(SkinTrait::class.java)
         skinTrait.setSkinPersistent(
             attackerTeam.id,
-            attackerTeam.npcSkin.signature,
-            attackerTeam.npcSkin.value
+            attackerTeam.npcTemplate.signature,
+            attackerTeam.npcTemplate.value
         )
+
+        npc.getOrAddTrait(CurrentLocation::class.java)
 
         val lookClose = npc.getOrAddTrait(LookClose::class.java)
         lookClose.lookClose(true)
 
         val hologramTrait = npc.getOrAddTrait(HologramTrait::class.java)
         hologramTrait.lineHeight = -0.28
+        hologramTrait.setUseDisplayEntities(true)
 
-        hologramTrait.addLine("${ChatColor.RED}" + languageManager.getLangString("arena.npc.name.${attackerTeam.id}"))
-        hologramTrait.addLine("${ChatColor.YELLOW}${ChatColor.BOLD}CLICK TO SAVE")
+        hologramTrait.addLine(
+            LegacyComponentSerializer.legacySection().serialize(
+                MiniMessage.miniMessage()
+                    .deserialize(languageManager.getLangString("arena.npc.name.${attackerTeam.id}"))
+            )
+        )
 
-        hologramTrait.setMargin(0, "bottom", 0.25)
+        hologramTrait.addLine(
+            LegacyComponentSerializer.legacySection().serialize(
+                MiniMessage.miniMessage()
+                    .deserialize(languageManager.getLangString("arena.npc.action.${attackerTeam.id}"))
+            )
+        )
+
+        hologramTrait.setMargin(0, "bottom", -0.15)
 
         npc.spawn(mapPoint.toLocation(world!!))
 
@@ -179,7 +235,8 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         arenaState = ArenaState.WAITING
         arenaTime = arenaMap.defaultCountdown
 
-        // TOOD: Reset saved NPCs
+        playersPerTeam.values.forEach { it.clear() }
+        spectators.clear()
     }
 
     fun teamPlayers(): List<UUID> {
@@ -196,6 +253,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private fun addPlayerTo(uuid: UUID, team: TeamManager.Team) {
         playersPerTeam.computeIfAbsent(team) { mutableListOf() }.add(uuid)
+        uuid.player()?.playerData()?.currentTeam = team
     }
 
     private fun removePlayerFrom(player: Player, team: TeamManager.Team) {
@@ -204,6 +262,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private fun removePlayerFrom(uuid: UUID, team: TeamManager.Team) {
         playersPerTeam[team]?.remove(uuid)
+        uuid.player()?.playerData()?.currentTeam = null
     }
 
 }

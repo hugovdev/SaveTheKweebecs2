@@ -9,6 +9,7 @@ import me.hugo.savethekweebecs.ext.playerDataOrCreate
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.util.InstantFirework
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.Color
 import org.bukkit.FireworkEffect
 import org.bukkit.Material
@@ -105,9 +106,9 @@ class ArenaListener : KoinComponent, Listener {
 
             arena.announceTranslation(
                 "arena.${attackerTeam.id}.saved",
-                Pair("player", player.name),
-                Pair("currentNPCs", arena.remainingNPCs.count { it.value }.toString()),
-                Pair("NPCs", arena.remainingNPCs.size.toString())
+                Placeholder.unparsed("player", player.name),
+                Placeholder.unparsed("current_npcs", arena.remainingNPCs.count { it.value }.toString()),
+                Placeholder.unparsed("npcs", arena.remainingNPCs.size.toString())
             )
 
             InstantFirework(

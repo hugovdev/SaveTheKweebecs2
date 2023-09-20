@@ -27,6 +27,8 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
     private val teamManager: TeamManager by inject()
     private val languageManager: LanguageManager by inject()
 
+    private val joinLeaveListener: JoinLeaveListener by inject()
+
     private lateinit var commandHandler: BukkitCommandHandler
     lateinit var slimePlugin: SlimePlugin
 
@@ -78,7 +80,7 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         commandHandler.register(SaveTheKweebecsCommand())
         commandHandler.registerBrigadier()
 
-        Bukkit.getPluginManager().registerEvents(JoinLeaveListener(), this)
+        Bukkit.getPluginManager().registerEvents(joinLeaveListener, this)
         Bukkit.getPluginManager().registerEvents(ArenaListener(), this)
 
         println("Starting Game Manager... Maps: ${gameManager.maps.size}")

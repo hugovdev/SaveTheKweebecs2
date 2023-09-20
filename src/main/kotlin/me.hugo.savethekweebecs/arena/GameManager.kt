@@ -9,6 +9,7 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import org.bukkit.scoreboard.DisplaySlot
 import org.koin.core.annotation.Single
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -32,7 +33,18 @@ class GameManager {
     }
 
     fun sendToHub(player: Player) {
+        removeScoreboardEntries(player)
+
         hubLocation?.let { player.teleport(it) }
         player.reset(GameMode.ADVENTURE)
+    }
+
+    private fun removeScoreboardEntries(player: Player) {
+        val scoreboard = player.scoreboard
+
+        scoreboard.getTeam("own")?.let { team -> team.removeEntries(team.entries) }
+        scoreboard.getTeam("enemy")?.let { team -> team.removeEntries(team.entries) }
+
+        scoreboard.clearSlot(DisplaySlot.BELOW_NAME)
     }
 }

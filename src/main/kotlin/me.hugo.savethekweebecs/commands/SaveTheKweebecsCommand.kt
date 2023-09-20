@@ -13,6 +13,7 @@ import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -60,12 +61,13 @@ class SaveTheKweebecsCommand : KoinComponent {
         gameManager.arenas.values.forEach {
             sender.sendTranslation(
                 "arena.list.member",
-                Pair("displayName", it.displayName),
-                Pair("arenaState", miniMessage.serialize(Component.text(it.arenaState.name, it.arenaState.color))),
-                Pair("arenaUUID", it.arenaUUID.toString()),
-                Pair("mapName", it.arenaMap.mapName),
-                Pair("currentPlayers", it.teamPlayers().size.toString()),
-                Pair("maxPlayers", it.arenaMap.maxPlayers.toString())
+                Placeholder.unparsed("display_name", it.displayName),
+                Placeholder.unparsed("display_name", it.displayName),
+                Placeholder.component("arena_state", Component.text(it.arenaState.name, it.arenaState.color)),
+                Placeholder.unparsed("arena_uuid", it.arenaUUID.toString()),
+                Placeholder.unparsed("map_name", it.arenaMap.mapName),
+                Placeholder.unparsed("current_players", it.teamPlayers().size.toString()),
+                Placeholder.unparsed("max_players", it.arenaMap.maxPlayers.toString())
             )
         }
     }

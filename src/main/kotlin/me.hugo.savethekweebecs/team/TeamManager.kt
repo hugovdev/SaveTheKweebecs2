@@ -32,5 +32,7 @@ class TeamManager {
             } ?: mapOf()
     }
 
-    data class Team(val id: String, val playerSkin: IProperty, val npcSkin: IProperty)
+    data class Team(val id: String, val playerSkin: IProperty, val npcTemplate: IProperty) {
+
+    }
 }

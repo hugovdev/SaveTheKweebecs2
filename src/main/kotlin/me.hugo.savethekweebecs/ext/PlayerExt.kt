@@ -3,7 +3,9 @@ package me.hugo.savethekweebecs.ext
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.player.PlayerManager
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
@@ -17,17 +19,22 @@ private val miniMessage: MiniMessage = MiniMessage.miniMessage()
 
 fun UUID.player(): Player? = Bukkit.getPlayer(this)
 
-fun Player.sendTranslation(key: String, vararg parameters: Pair<String, String>) {
+fun Player.sendTranslation(key: String, vararg tagResolver: TagResolver) {
     if (languageManager.isList(key)) {
-        languageManager.getLangStringList(key)?.forEach { sendFormattedMessage(it, *parameters) }
-    } else sendFormattedMessage(languageManager.getLangString(key), *parameters)
+        languageManager.getLangStringList(key).forEach { sendMessage(getDeserialized(it, *tagResolver)) }
+    } else sendMessage(getDeserialized(key, *tagResolver))
 }
 
-fun Player.sendFormattedMessage(message: String, vararg parameters: Pair<String, String>) {
-    var finalMessage = message
-    parameters.forEach { (parameterName, result) -> finalMessage = finalMessage.replace("{$parameterName}", result) }
+fun Player.getTranslatedLine(key: String): String {
+    return languageManager.getLangString(key)
+}
 
-    sendMessage(miniMessage.deserialize(finalMessage))
+fun Player.getTranslationLines(key: String): List<String> {
+    return languageManager.getLangStringList(key)
+}
+
+fun Player.getDeserialized(key: String, vararg tagResolver: TagResolver): Component {
+    return miniMessage.deserialize(languageManager.getLangString(key), *tagResolver)
 }
 
 fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)

@@ -30,8 +30,8 @@ class LanguageManager {
         return langCfg?.getString(key) ?: key
     }
 
-    fun getLangStringList(key: String): List<String>? {
-        return langCfg?.getStringList(key)
+    fun getLangStringList(key: String): List<String> {
+        return langCfg?.getStringList(key) ?: listOf()
     }
 
     fun setupLanguageFiles() {
