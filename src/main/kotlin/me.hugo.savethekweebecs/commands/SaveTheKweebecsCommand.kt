@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import revxrsal.commands.annotation.Command
@@ -146,6 +147,50 @@ class SaveTheKweebecsCommand : KoinComponent {
         )
     }
 
+    @DefaultFor("savethekweebecs admin kit", "stk admin kit")
+    @Description("Help for the kit system.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun helpKit(sender: Player) {
+        sender.sendTranslation("system.kit.help")
+    }
+
+    @Subcommand("admin kit get")
+    @Description("Gives the kit for the team!")
+    @CommandPermission("savethekweebecs.admin")
+    private fun getKit(sender: Player, team: TeamManager.Team) {
+        val items = team.items
+
+        if (items.isEmpty()) {
+            sender.sendTranslation("system.kit.noKit", Placeholder.unparsed("team", team.id))
+            return
+        }
+
+        team.giveItems(sender, true)
+    }
+
+    @Subcommand("admin kit save")
+    @Description("Saves the kit for the team!")
+    @CommandPermission("savethekweebecs.admin")
+    private fun saveKit(sender: Player, team: TeamManager.Team) {
+        val playerItems = mutableMapOf<Int, ItemStack>()
+
+        (0..sender.inventory.size).forEach { slot ->
+            val item = sender.inventory.getItem(slot) ?: return@forEach
+            if (!item.type.isAir) playerItems[slot] = item
+        }
+
+        team.items = playerItems
+        playerItems.forEach { main.config.set("teams.${team.id}.items.${it.key}", it.value) }
+        main.saveConfig()
+
+        sender.sendMessage(
+            Component.text(
+                "Successfully saved kit for ${team.id}.",
+                NamedTextColor.GREEN
+            )
+        )
+    }
+
     @DefaultFor("savethekweebecs admin map", "stk admin map")
     @Description("Help for the map system.")
     @CommandPermission("savethekweebecs.admin")
@@ -193,7 +238,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @CommandPermission("savethekweebecs.admin")
     private fun addSpawnpoint(sender: Player, team: TeamManager.Team) {
         sender.getConfiguringMap()?.apply {
-            spawnPoints.computeIfAbsent(team) { mutableListOf() }.add(MapPoint(sender.location))
+            spawnPoints.computeIfAbsent(team.id) { mutableListOf() }.add(MapPoint(sender.location))
 
             sender.sendMessage(
                 Component.text(
@@ -316,7 +361,7 @@ class SaveTheKweebecsCommand : KoinComponent {
 
 
             teamManager.teams.values.forEach { team ->
-                config.set("$configPath.${team.id.lowercase()}", spawnPoints[team]?.map { it.serialize() })
+                config.set("$configPath.${team.id.lowercase()}", spawnPoints[team.id]?.map { it.serialize() })
             }
 
             main.saveConfig()

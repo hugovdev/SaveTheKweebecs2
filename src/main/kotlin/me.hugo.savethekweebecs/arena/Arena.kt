@@ -29,6 +29,8 @@ import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 
 class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
@@ -70,6 +72,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
     )
 
     private val spectators: MutableList<UUID> = mutableListOf()
+    val deadPlayers: ConcurrentMap<Player, Int> = ConcurrentHashMap()
 
     val remainingNPCs: MutableMap<NPC, Boolean> = mutableMapOf()
 
@@ -143,6 +146,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         } else {
             player.damage(player.health)
             playerData.currentTeam?.let { removePlayerFrom(player, it) }
+            deadPlayers.remove(player)
         }
 
         playerData.currentArena = null
@@ -230,6 +234,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
     private fun emptyPlayerPools() {
         playersPerTeam.values.forEach { it.clear() }
         spectators.clear()
+        deadPlayers.clear()
     }
 
     fun teamPlayers(): List<UUID> {

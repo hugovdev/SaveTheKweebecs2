@@ -11,7 +11,7 @@ enum class ArenaEvent(val eventRun: (arena: Arena) -> Unit) {
     PATCH_UP({ arena ->
         arena.playersPerTeam[arena.arenaMap.defenderTeam]?.mapNotNull { it.player() }?.forEach { player ->
             player.inventory.addItem(
-                ItemStack(Material.BAMBOO_PLANKS, 6)
+                ItemStack(Material.BAMBOO_PLANKS, 2)
                     .name(player.translate("arena.event.patch_up.blocksName"))
                     .putLore(player.translateList("arena.event.patch_up.blocksLore"))
                     .flag(ItemFlag.HIDE_ATTRIBUTES)

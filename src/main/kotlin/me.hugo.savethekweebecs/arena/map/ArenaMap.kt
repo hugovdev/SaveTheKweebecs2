@@ -18,7 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class ArenaMap(val configName: String, private val load: Boolean = true) : KoinComponent {
+class ArenaMap(val configName: String, load: Boolean = true) : KoinComponent {
 
     private val gameManager: GameManager by inject()
     private val teamManager: TeamManager by inject()
@@ -37,7 +37,7 @@ class ArenaMap(val configName: String, private val load: Boolean = true) : KoinC
     var mapName: String = configName.lowercase()
 
     val mapLocations: MutableMap<MapLocation, MapPoint> = mutableMapOf()
-    val spawnPoints: MutableMap<TeamManager.Team, MutableList<MapPoint>> = mutableMapOf()
+    val spawnPoints: MutableMap<String, MutableList<MapPoint>> = mutableMapOf()
 
     var defenderTeam: TeamManager.Team = teamManager.teams["trork"]!!
     var attackerTeam: TeamManager.Team = teamManager.teams["kweebec"]!!
@@ -88,7 +88,7 @@ class ArenaMap(val configName: String, private val load: Boolean = true) : KoinC
 
                 // Read the spawn points for each team in the config file!
                 teamManager.teams.values.forEach { team ->
-                    spawnPoints[team] = config.getStringList("$configPath.${team.id.lowercase()}")
+                    spawnPoints[team.id] = config.getStringList("$configPath.${team.id.lowercase()}")
                         .mapNotNull { MapPoint.deserialize(it) }.toMutableList()
                 }
 

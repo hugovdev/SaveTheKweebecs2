@@ -3,11 +3,11 @@ package me.hugo.savethekweebecs.player
 import fr.mrmicky.fastboard.adventure.FastBoard
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
-import me.hugo.savethekweebecs.ext.player
-import me.hugo.savethekweebecs.ext.translate
-import me.hugo.savethekweebecs.ext.updateBoardTags
+import me.hugo.savethekweebecs.ext.*
+import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.skinsrestorer.api.SkinsRestorerAPI
 import net.skinsrestorer.api.property.IProperty
 import org.bukkit.Bukkit
@@ -24,15 +24,37 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
 
     var currentArena: Arena? = null
     var currentTeam: TeamManager.Team? = null
-    var lastAttacker: PlayerAttack? = null
+    var lastAttack: PlayerAttack? = null
 
     var playerSkin: IProperty? = null
     var fastBoard: FastBoard? = null
+
+    var locale: String = LanguageManager.DEFAULT_LANGUAGE
+        set(newLanguage) {
+            if (newLanguage == locale) return
+            field = newLanguage
+
+            val player = uuid.player() ?: return
+
+            player.sendTranslation("system.lang.changed", Placeholder.unparsed("language", newLanguage))
+
+            val arena = player.arena()
+
+            if (arena != null) {
+                scoreboardManager.loadedTemplates[arena.arenaState.name.lowercase()]!!.printBoard(player)
+            } else setLobbyBoard(player)
+        }
 
     var kills: Int = 0
         set(value) {
             field = value
             uuid.player()?.updateBoardTags("kills")
+        }
+
+    var deaths: Int = 0
+        set(value) {
+            field = value
+            uuid.player()?.updateBoardTags("deaths")
         }
 
     var coins: Int = 0

@@ -4,12 +4,12 @@ import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.ext.playerData
 import me.hugo.savethekweebecs.ext.playerDataOrCreate
 import me.hugo.savethekweebecs.player.PlayerManager
-import me.hugo.savethekweebecs.util.DynamicValue
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerLocaleChangeEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
@@ -21,7 +21,7 @@ class JoinLeaveListener : KoinComponent, Listener {
     private val playerManager: PlayerManager by inject()
     private val gameManager: GameManager by inject()
 
-    val onlinePlayers: DynamicValue<Int> = DynamicValue(Bukkit.getOnlinePlayers().size)
+    var onlinePlayers: Int = Bukkit.getOnlinePlayers().size
 
     @EventHandler
     fun onPreLogin(event: AsyncPlayerPreLoginEvent) {
@@ -36,7 +36,12 @@ class JoinLeaveListener : KoinComponent, Listener {
 
         player.playerData()?.initBoard()
         gameManager.sendToHub(player)
-        onlinePlayers.value++
+        onlinePlayers++
+    }
+
+    @EventHandler
+    fun onLocaleChange(event: PlayerLocaleChangeEvent) {
+        event.player.playerData()?.locale = event.locale().language
     }
 
     @EventHandler
@@ -46,6 +51,6 @@ class JoinLeaveListener : KoinComponent, Listener {
 
         player.playerDataOrCreate().currentArena?.leave(player)
         playerManager.removePlayerData(player.uniqueId)
-        onlinePlayers.value--
+        onlinePlayers--
     }
 }

@@ -33,18 +33,22 @@ fun Arena.start() {
     arenaState = ArenaState.IN_GAME
 
     playersPerTeam.forEach { (team, players) ->
-        val spawnPointIndex = 0
+        var spawnPointIndex = 0
+        val spawnPoints = arenaMap.spawnPoints[team.id]
 
         players.mapNotNull { it.player() }.forEach { teamPlayer ->
             teamPlayer.reset(GameMode.SURVIVAL)
-            arenaMap.spawnPoints[team]?.get(spawnPointIndex)?.let {
-                teamPlayer.teleport(it.toLocation(world!!))
-            }
+
+            println("${spawnPoints?.size} spawns! [${team.id}] - $spawnPointIndex")
+            teamPlayer.teleport(spawnPoints!![spawnPointIndex].toLocation(world!!))
 
             teamPlayer.sendTranslation("arena.start.${team.id}")
             SkinsRestorerAPI.getApi().applySkin(PlayerWrapper(teamPlayer), team.playerSkin)
 
+            team.giveItems(teamPlayer)
             loadTeamColors(teamPlayer)
+
+            spawnPointIndex = if (spawnPointIndex == spawnPoints.size - 1) 0 else spawnPointIndex + 1
         }
     }
 }

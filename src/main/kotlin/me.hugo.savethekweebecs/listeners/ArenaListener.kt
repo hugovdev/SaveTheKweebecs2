@@ -1,15 +1,16 @@
 package me.hugo.savethekweebecs.listeners
 
+import com.destroystokyo.paper.MaterialSetTag
+import com.destroystokyo.paper.MaterialTags
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent
+import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.ext.*
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.util.InstantFirework
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import org.bukkit.Color
-import org.bukkit.FireworkEffect
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
@@ -30,18 +31,9 @@ class ArenaListener : KoinComponent, Listener {
 
     private val gameManager: GameManager by inject()
 
-    @EventHandler
-    fun onBlockBreak(event: BlockBreakEvent) {
-        val player = event.player
-        val playerData = player.playerDataOrCreate()
-
-        val currentArena = playerData.currentArena
-
-        if (currentArena?.isInGame() == true) {
-            if (playerData.currentTeam == currentArena.arenaMap.attackerTeam && event.block.type == Material.IRON_BARS) return
-        }
-
-        event.isCancelled = true
+    private companion object {
+        private val BREAKABLE_ATTACKER_BLOCKS = MaterialSetTag(NamespacedKey("stk", "kweebec_breakable"))
+            .add(MaterialTags.FENCES).add(Material.BAMBOO_PLANKS, Material.IRON_BARS).lock()
     }
 
     @EventHandler
@@ -60,8 +52,9 @@ class ArenaListener : KoinComponent, Listener {
         if (player !is Player) return
 
         val playerData = player.playerDataOrCreate()
+        val arena: Arena? = player.arena()
 
-        if (playerData.currentArena?.isInGame() == true) {
+        if (arena?.isInGame() == true && player.gameMode != GameMode.SPECTATOR) {
             if (event is EntityDamageByEntityEvent) {
                 val attacker = event.damager
 
@@ -77,12 +70,46 @@ class ArenaListener : KoinComponent, Listener {
                     return
                 }
 
-                playerSource?.let { playerData.lastAttacker = PlayerData.PlayerAttack(it.uniqueId) }
+                playerSource?.let { playerData.lastAttack = PlayerData.PlayerAttack(it.uniqueId) }
             }
 
             if (player.health - event.finalDamage <= 0) {
                 event.isCancelled = true
-                // TODO: Handle death and respawn here.
+
+                val deathLocation = player.location
+
+                playerData.deaths++
+                player.gameMode = GameMode.SPECTATOR
+                arena.deadPlayers[player] = 5
+
+                deathLocation.world.playEffect(deathLocation, Effect.STEP_SOUND, Material.REDSTONE_BLOCK)
+                deathLocation.world.playEffect(
+                    deathLocation.clone().add(0.0, 1.0, 0.0),
+                    Effect.STEP_SOUND,
+                    Material.REDSTONE_BLOCK
+                )
+
+                val lastAttack = playerData.lastAttack
+                val attacker = lastAttack?.attacker?.player()
+
+                // If there is no last attack, it was too long ago or the attacker has disconnected, player died
+                // by themselves!
+                if (lastAttack == null || lastAttack.time < System.currentTimeMillis() - (10000) || attacker == null) {
+                    arena.announceTranslation("arena.death.self", Placeholder.unparsed("player", player.name))
+                } else {
+                    val attackerData = attacker.playerDataOrCreate()
+
+                    attackerData.kills++
+                    attackerData.coins += 10
+
+                    attacker.playSound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP)
+
+                    arena.announceTranslation(
+                        "arena.death.player",
+                        Placeholder.unparsed("player", player.name),
+                        Placeholder.unparsed("killer", attacker.name)
+                    )
+                }
             }
 
             return
@@ -126,6 +153,34 @@ class ArenaListener : KoinComponent, Listener {
 
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {
+        val player = event.player
+        val playerData = player.playerDataOrCreate()
+
+        val currentArena = playerData.currentArena
+
+        if (currentArena?.isInGame() == true) {
+            if (playerData.currentTeam == currentArena.arenaMap.defenderTeam && event.block.type == Material.BAMBOO_PLANKS) return
+        }
+
+        event.isCancelled = true
+    }
+
+    @EventHandler
+    fun onBlockBreak(event: BlockBreakEvent) {
+        val player = event.player
+        val playerData = player.playerDataOrCreate()
+
+        val currentArena = playerData.currentArena
+
+        if (currentArena?.isInGame() == true) {
+            if (playerData.currentTeam == currentArena.arenaMap.attackerTeam &&
+                BREAKABLE_ATTACKER_BLOCKS.isTagged(event.block)
+            ) {
+                event.isDropItems = false
+                return
+            }
+        }
+
         event.isCancelled = true
     }
 

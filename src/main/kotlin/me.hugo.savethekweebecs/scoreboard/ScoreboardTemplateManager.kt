@@ -3,6 +3,7 @@ package me.hugo.savethekweebecs.scoreboard
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.ext.arena
 import me.hugo.savethekweebecs.ext.getUnformattedLine
+import me.hugo.savethekweebecs.ext.playerDataOrCreate
 import me.hugo.savethekweebecs.lang.LanguageManager
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -29,7 +30,9 @@ class ScoreboardTemplateManager : KoinComponent {
             val friendlyName = state.name.lowercase()
             val key = "scoreboard.$friendlyName.lines"
 
-            if (languageManager.isList(key)) { loadedTemplates[friendlyName] = ScoreboardTemplate(key) }
+            if (languageManager.isList(key)) {
+                loadedTemplates[friendlyName] = ScoreboardTemplate(key)
+            }
         }
 
         loadedTemplates["lobby"] = ScoreboardTemplate("scoreboard.lobby.lines")
@@ -51,9 +54,9 @@ class ScoreboardTemplateManager : KoinComponent {
             it.getUnformattedLine("arena.event.${it.arena()?.currentEvent?.name?.lowercase() ?: "unknown"}.name")
         }
 
-        registerTag("coins") { "0" }
+        registerTag("coins") { it.playerDataOrCreate().coins.toString() }
 
-        registerTag("kills") { "0" }
+        registerTag("kills") { it.playerDataOrCreate().kills.toString() }
 
         registerTag("time") {
             val totalSeconds = it.arena()?.arenaTime ?: 0

@@ -38,7 +38,14 @@ class GameManager {
 
         hubLocation?.let { player.teleport(it) }
         player.reset(GameMode.ADVENTURE)
-        player.playerData()?.setLobbyBoard(player)
+
+        val playerData = player.playerData() ?: return
+
+        playerData.setLobbyBoard(player)
+
+        playerData.kills = 0
+        playerData.deaths = 0
+        playerData.coins =0
     }
 
     private fun removeScoreboardEntries(player: Player) {

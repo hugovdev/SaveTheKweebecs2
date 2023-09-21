@@ -9,44 +9,71 @@ import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class ScoreboardTemplate(val key: String) : KoinComponent {
+class ScoreboardTemplate(private val key: String) : KoinComponent {
 
     private val scoreboardManager: ScoreboardTemplateManager by inject()
     private val languageManager: LanguageManager by inject()
-    private val boardLines: List<String> = languageManager.getLangStringList(key)
 
-    private val tagLocations: MutableMap<String, List<Int>> = mutableMapOf()
+    // lang -> [lines]
+    private val boardLines: MutableMap<String, List<String>> = mutableMapOf()
+
+    // langKey -> [tag -> lines that contain the tag]
+    private val tagLocations: MutableMap<String, MutableMap<String, List<Int>>> = mutableMapOf()
     private val usedResolvers: MutableMap<String, (player: Player) -> String> = mutableMapOf()
 
     init {
-        scoreboardManager.tagResolvers.forEach { (tag, resolver) ->
-            val locations = mutableListOf<Int>()
+        languageManager.availableLanguages.forEach { language ->
+            val lines = languageManager.getLangStringList(key, language)
+            boardLines[language] = lines
 
-            boardLines.forEachIndexed { index, line ->
-                if (line.contains("<$tag>")) locations.add(index)
-            }
+            scoreboardManager.tagResolvers.forEach { (tag, resolver) ->
+                val locations = mutableListOf<Int>()
 
-            if (locations.isNotEmpty()) {
-                tagLocations[tag] = locations
-                usedResolvers[tag] = resolver
+                lines.forEachIndexed { index, line ->
+                    if (line.contains("<$tag>")) locations.add(index)
+                }
+
+                if (locations.isNotEmpty()) {
+                    tagLocations.computeIfAbsent(language) { mutableMapOf() }[tag] = locations
+                    usedResolvers[tag] = resolver
+                }
             }
         }
     }
 
     fun printBoard(player: Player) {
+        val playerData = player.playerData() ?: return
+
+        val language = if (languageManager.availableLanguages.contains(playerData.locale)) playerData.locale
+        else LanguageManager.DEFAULT_LANGUAGE
+
         val translatedResolvers = usedResolvers
             .map { tagData -> Placeholder.unparsed(tagData.key, tagData.value.invoke(player)) }.toTypedArray()
 
-        val lines = boardLines
+        val lines = boardLines[language]!!
             .map { if (it.isEmpty()) Component.empty() else player.toComponent(it, *translatedResolvers) }
 
-        player.playerData()?.fastBoard?.updateLines(lines)
+        playerData.fastBoard?.updateLines(lines)
     }
 
     fun updateLinesForTag(player: Player, vararg tags: String) {
+        val playerData = player.playerData() ?: return
+
         val locations = mutableListOf<Int>()
 
-        tags.forEach { tagLocations[it]?.let { newLocations -> locations.addAll(newLocations) } }
+        val language = if (languageManager.availableLanguages.contains(playerData.locale)) playerData.locale
+        else LanguageManager.DEFAULT_LANGUAGE
+
+        tags.forEach {
+            tagLocations[language]!![it]
+                ?.let { newLocations ->
+                    locations.addAll(
+                        newLocations
+                    )
+                }
+        }
+
+        val boardLines = boardLines[language]!!
 
         locations.toSet().forEach {
             player.playerData()?.fastBoard?.updateLine(

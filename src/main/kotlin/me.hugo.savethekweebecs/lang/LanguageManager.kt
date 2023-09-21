@@ -19,61 +19,72 @@ class LanguageManager {
 
     private val main: SaveTheKweebecs = SaveTheKweebecs.getInstance()
 
-    private var langFile: File? = null
-    private var langCfg: FileConfiguration? = null
+    private val languageFiles: MutableMap<String, File> = mutableMapOf()
+    private val loadedLanguages: MutableMap<String, FileConfiguration> = mutableMapOf()
+
+    val availableLanguages: MutableSet<String>
+        get() = loadedLanguages.keys
+
+    companion object {
+        const val DEFAULT_LANGUAGE = "en"
+    }
 
     fun isList(key: String): Boolean {
-        return langCfg?.isList(key) == true
+        return loadedLanguages[DEFAULT_LANGUAGE]?.isList(key) == true
     }
 
-    fun getLangString(key: String): String {
-        return langCfg?.getString(key) ?: key
+    fun getLangString(key: String, locale: String = DEFAULT_LANGUAGE): String {
+        return loadedLanguages[locale]?.getString(key) ?: loadedLanguages[DEFAULT_LANGUAGE]?.getString(key) ?: key
     }
 
-    fun getLangStringList(key: String): List<String> {
-        return langCfg?.getStringList(key) ?: listOf()
+    fun getLangStringList(key: String, locale: String = DEFAULT_LANGUAGE): List<String> {
+        return loadedLanguages[locale]?.getStringList(key) ?: loadedLanguages[DEFAULT_LANGUAGE]?.getStringList(key)
+        ?: listOf()
     }
 
     fun setupLanguageFiles() {
-        langFile = File(
-            main.dataFolder.toString() + File.separator + "lang" + File.separator,
-            ("messages_" + main.getConfig().getString("locale", "en")?.lowercase()) + ".yml"
-        )
+        val languages = main.getConfig().getStringList("locale")
 
-        if (langFile?.exists() == false) {
-            main.dataFolder.mkdirs()
-            langFile!!.getParentFile().mkdirs()
+        languages.forEach { currentLanguage ->
+            val languageFile = File(
+                main.dataFolder.toString() + File.separator + "lang" + File.separator,
+                "messages_${currentLanguage.lowercase()}.yml"
+            )
 
-            try {
-                langFile!!.createNewFile()
-            } catch (e: IOException) {
-                Bukkit.getPluginManager().disablePlugin(main)
-                return
-            }
+            languageFiles[currentLanguage] = languageFile
 
-            javaClass.getResourceAsStream(
-                ("/messages_" + main.getConfig().getString("locale", "en")?.lowercase()) + ".yml"
-            )?.let {
+            if (!languageFile.exists()) {
+                main.dataFolder.mkdirs()
+                languageFile.getParentFile().mkdirs()
+
                 try {
-                    Files.copy(
-                        it,
-                        langFile!!.getAbsoluteFile().toPath(),
-                        StandardCopyOption.REPLACE_EXISTING
-                    )
-                } catch (e: Exception) {
+                    languageFile.createNewFile()
+                } catch (e: IOException) {
                     Bukkit.getPluginManager().disablePlugin(main)
                     return
                 }
+
+                javaClass.getResourceAsStream("/messages_$currentLanguage.yml")?.let {
+                    try {
+                        Files.copy(
+                            it,
+                            languageFile.getAbsoluteFile().toPath(),
+                            StandardCopyOption.REPLACE_EXISTING
+                        )
+                    } catch (e: Exception) {
+                        Bukkit.getPluginManager().disablePlugin(main)
+                        return
+                    }
+                }
+            } else {
+                main.logger.info("Using existing messages file.")
             }
 
-        } else {
-            main.logger.info("Using existing messages file.")
+            loadedLanguages[currentLanguage] = YamlConfiguration.loadConfiguration(languageFiles[currentLanguage]!!)
         }
-
-        langCfg = YamlConfiguration.loadConfiguration(langFile!!)
     }
 
     fun reloadLanguages() {
-        langCfg = YamlConfiguration.loadConfiguration(langFile!!)
+        languageFiles.forEach { loadedLanguages[it.key] = YamlConfiguration.loadConfiguration(it.value) }
     }
 }

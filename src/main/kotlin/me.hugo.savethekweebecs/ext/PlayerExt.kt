@@ -10,6 +10,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.koin.java.KoinJavaComponent.inject
@@ -30,11 +31,11 @@ fun Player.sendTranslation(key: String, vararg tagResolver: TagResolver) {
 }
 
 fun Player.getUnformattedLine(key: String): String {
-    return languageManager.getLangString(key)
+    return languageManager.getLangString(key, playerData()?.locale ?: LanguageManager.DEFAULT_LANGUAGE)
 }
 
 fun Player.getUnformattedList(key: String): List<String> {
-    return languageManager.getLangStringList(key)
+    return languageManager.getLangStringList(key, playerData()?.locale ?: LanguageManager.DEFAULT_LANGUAGE)
 }
 
 fun Player.translate(key: String, vararg tagResolver: TagResolver): Component {
@@ -54,11 +55,16 @@ fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
 fun Player.arena(): Arena? = playerManager.getPlayerData(this)?.currentArena
 
 fun Player.updateBoardTags(vararg tags: String) {
-    arena()?.arenaState?.name?.lowercase()
-        ?.let { scoreboardManager.loadedTemplates[it]?.updateLinesForTag(this, *tags) }
+    val arena = arena()
+
+    if (arena != null) {
+        scoreboardManager.loadedTemplates[arena.arenaState.name.lowercase()]?.updateLinesForTag(this, *tags)
+    } else scoreboardManager.loadedTemplates["lobby"]?.updateLinesForTag(this, *tags)
 }
 
 fun Player.playerDataOrCreate(): PlayerData = playerManager.getOrCreatePlayerData(this)
+
+fun Player.playSound(sound: Sound) = playSound(location, sound, 1.0f, 1.0f)
 
 fun Player.reset(gameMode: GameMode) {
     setGameMode(gameMode)
