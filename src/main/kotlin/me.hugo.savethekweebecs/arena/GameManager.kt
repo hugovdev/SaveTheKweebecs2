@@ -3,6 +3,7 @@ package me.hugo.savethekweebecs.arena
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapPoint
+import me.hugo.savethekweebecs.ext.playerData
 import me.hugo.savethekweebecs.ext.reset
 import me.hugo.savethekweebecs.task.GameControllerTask
 import org.bukkit.Bukkit
@@ -37,6 +38,7 @@ class GameManager {
 
         hubLocation?.let { player.teleport(it) }
         player.reset(GameMode.ADVENTURE)
+        player.playerData()?.setLobbyBoard(player)
     }
 
     private fun removeScoreboardEntries(player: Player) {

@@ -2,10 +2,7 @@ package me.hugo.savethekweebecs.listeners
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent
 import me.hugo.savethekweebecs.arena.GameManager
-import me.hugo.savethekweebecs.ext.announceTranslation
-import me.hugo.savethekweebecs.ext.end
-import me.hugo.savethekweebecs.ext.isInGame
-import me.hugo.savethekweebecs.ext.playerDataOrCreate
+import me.hugo.savethekweebecs.ext.*
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.util.InstantFirework
 import net.citizensnpcs.api.event.NPCRightClickEvent
@@ -68,20 +65,26 @@ class ArenaListener : KoinComponent, Listener {
             if (event is EntityDamageByEntityEvent) {
                 val attacker = event.damager
 
-                val playerSource: UUID? = if (attacker is Player) attacker.uniqueId
+                val playerSource: Player? = if (attacker is Player) attacker
                 else if (attacker is Projectile) {
                     val shooter = attacker.shooter
-                    if (shooter is Player) shooter.uniqueId
+                    if (shooter is Player) shooter
                     else null
                 } else null
 
-                playerSource?.let { playerData.lastAttacker = PlayerData.PlayerAttack(it) }
+                if (playerSource?.playerData()?.currentTeam == playerData.currentTeam) {
+                    event.isCancelled = true
+                    return
+                }
+
+                playerSource?.let { playerData.lastAttacker = PlayerData.PlayerAttack(it.uniqueId) }
             }
 
             if (player.health - event.finalDamage <= 0) {
                 event.isCancelled = true
                 // TODO: Handle death and respawn here.
             }
+
             return
         }
 
@@ -107,8 +110,8 @@ class ArenaListener : KoinComponent, Listener {
             arena.announceTranslation(
                 "arena.${attackerTeam.id}.saved",
                 Placeholder.unparsed("player", player.name),
-                Placeholder.unparsed("current_npcs", arena.remainingNPCs.count { it.value }.toString()),
-                Placeholder.unparsed("npcs", arena.remainingNPCs.size.toString())
+                Placeholder.unparsed("npcs_saved", arena.remainingNPCs.count { it.value }.toString()),
+                Placeholder.unparsed("total_npcs", arena.remainingNPCs.size.toString())
             )
 
             InstantFirework(
@@ -117,6 +120,7 @@ class ArenaListener : KoinComponent, Listener {
             )
 
             if (arena.remainingNPCs.all { it.value }) arena.end(attackerTeam)
+            else arena.updateBoard("npcs_saved", "total_npcs")
         }
     }
 

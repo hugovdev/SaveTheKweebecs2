@@ -3,6 +3,7 @@ package me.hugo.savethekweebecs.arena
 import com.infernalsuite.aswm.api.SlimePlugin
 import com.infernalsuite.aswm.api.world.SlimeWorld
 import me.hugo.savethekweebecs.SaveTheKweebecs
+import me.hugo.savethekweebecs.arena.events.ArenaEvent
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
 import me.hugo.savethekweebecs.arena.map.MapPoint
@@ -17,7 +18,6 @@ import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.minimessage.tag.resolver.Formatter
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
@@ -28,8 +28,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 
 
@@ -51,22 +49,20 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
     var arenaState: ArenaState = ArenaState.RESETTING
         set(state) {
             field = state
-            arenaPlayers().mapNotNull { it.player() }.forEach {
-                setCurrentBoard(it)
-            }
+            arenaPlayers().mapNotNull { it.player() }.forEach { setCurrentBoard(it) }
 
             println("Changed game state of $displayName to $state!")
             // refresh icon
         }
 
     var arenaTime: Int = arenaMap.defaultCountdown
-        set(time) {
-            field = time
-            arenaPlayers().mapNotNull { it.player() }.forEach {
-                scoreboardManager.loadedTemplates[arenaState.name.lowercase()]
-                    ?.updateLinesForTag(it, "next_event", if (arenaState == ArenaState.IN_GAME) "time" else "count")
-            }
+    var eventIndex: Int = 0
+        set(value) {
+            field = value
+            currentEvent = arenaMap.events.getOrNull(eventIndex)?.first
         }
+
+    var currentEvent: ArenaEvent? = arenaMap.events[eventIndex].first
 
     val playersPerTeam: MutableMap<TeamManager.Team, MutableList<UUID>> = mutableMapOf(
         Pair(arenaMap.defenderTeam, mutableListOf()),
@@ -119,21 +115,17 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         )
 
         if (teamPlayers().size >= arenaMap.minPlayers) arenaState = ArenaState.STARTING
+        else updateBoard("players", "max_players")
 
         setCurrentBoard(player)
     }
 
     private fun setCurrentBoard(player: Player) {
-        scoreboardManager.loadedTemplates[arenaState.name.lowercase()]?.printBoard(
-            player,
-            Placeholder.unparsed("players", teamPlayers().size.toString()),
-            Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString()),
-            Placeholder.unparsed("map_name", arenaMap.mapName),
-            Placeholder.unparsed("display_name", displayName),
-            Placeholder.unparsed("count", arenaTime.toString()),
-            Placeholder.unparsed("time", String.format("%02d:%02d", arenaTime / 60, arenaTime % 60)),
-            Formatter.date("date", LocalDateTime.now(ZoneId.systemDefault()))
-        )
+        scoreboardManager.loadedTemplates[arenaState.name.lowercase()]?.printBoard(player)
+    }
+
+    fun updateBoard(vararg tags: String) {
+        arenaPlayers().mapNotNull { it.player() }.forEach { it.updateBoardTags(*tags) }
     }
 
     fun leave(player: Player) {
@@ -158,6 +150,8 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
     }
 
     fun loadMap(firstTime: Boolean = true) {
+        emptyPlayerPools()
+
         if (!arenaMap.isValid) {
             main.logger.info("Map ${arenaMap.mapName} is not valid!")
             return
@@ -183,7 +177,9 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             it.spawn(it.storedLocation.toLocation(world!!))
         }
 
-        resetGameValues()
+        arenaState = ArenaState.WAITING
+        arenaTime = arenaMap.defaultCountdown
+        eventIndex = 0
     }
 
     private fun createKweebecNPC(mapPoint: MapPoint): NPC {
@@ -231,10 +227,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         return npc
     }
 
-    private fun resetGameValues() {
-        arenaState = ArenaState.WAITING
-        arenaTime = arenaMap.defaultCountdown
-
+    private fun emptyPlayerPools() {
         playersPerTeam.values.forEach { it.clear() }
         spectators.clear()
     }

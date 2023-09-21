@@ -8,6 +8,7 @@ import com.infernalsuite.aswm.api.world.properties.SlimePropertyMap
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
+import me.hugo.savethekweebecs.arena.events.ArenaEvent
 import me.hugo.savethekweebecs.team.TeamManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -41,6 +42,8 @@ class ArenaMap(val configName: String, private val load: Boolean = true) : KoinC
     var defenderTeam: TeamManager.Team = teamManager.teams["trork"]!!
     var attackerTeam: TeamManager.Team = teamManager.teams["kweebec"]!!
 
+    var events: MutableList<Pair<ArenaEvent, Int>> = mutableListOf()
+
     var kidnapedPoints: MutableList<MapPoint>? = null
 
     var minPlayers: Int = 6
@@ -67,6 +70,9 @@ class ArenaMap(val configName: String, private val load: Boolean = true) : KoinC
                 teamManager.teams[config.getString("$configPath.attackerTeam")]?.let { attackerTeam = it }
 
                 defaultCountdown = config.getInt("$configPath.defaultCountdown", 60)
+
+                events = config.getStringList("$configPath.events").mapNotNull { ArenaEvent.deserialize(it) }
+                    .toMutableList()
 
                 config.getString("$configPath.mapName")?.let { mapName = it }
 

@@ -5,7 +5,7 @@ class DynamicValue<T>(value: T, val onChange: MutableList<() -> Unit> = mutableL
     var value: T = value
         set(newValue) {
             field = newValue
-            onChange.forEach { it.invoke() }
+            onChange.toMutableList().forEach { it.invoke() }
         }
 
 }

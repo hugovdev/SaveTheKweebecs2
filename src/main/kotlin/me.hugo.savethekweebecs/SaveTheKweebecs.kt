@@ -8,6 +8,7 @@ import me.hugo.savethekweebecs.di.SaveTheKweebecsModules
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.listeners.ArenaListener
 import me.hugo.savethekweebecs.listeners.JoinLeaveListener
+import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
@@ -26,6 +27,7 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
     private val gameManager: GameManager by inject()
     private val teamManager: TeamManager by inject()
     private val languageManager: LanguageManager by inject()
+    private val scoreboardManager: ScoreboardTemplateManager by inject()
 
     private val joinLeaveListener: JoinLeaveListener by inject()
 
@@ -54,6 +56,8 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         saveDefaultConfig()
 
         languageManager.setupLanguageFiles()
+        scoreboardManager.initialize()
+        println("Loaded ${scoreboardManager.loadedTemplates.size} scoreboard templates!")
 
         commandHandler = BukkitCommandHandler.create(this)
 

@@ -1,8 +1,10 @@
 package me.hugo.savethekweebecs.ext
 
+import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.player.PlayerManager
+import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
@@ -15,29 +17,46 @@ import java.util.*
 
 private val playerManager: PlayerManager by inject(PlayerManager::class.java)
 private val languageManager: LanguageManager by inject(LanguageManager::class.java)
+private val scoreboardManager: ScoreboardTemplateManager by inject(ScoreboardTemplateManager::class.java)
+
 private val miniMessage: MiniMessage = MiniMessage.miniMessage()
 
 fun UUID.player(): Player? = Bukkit.getPlayer(this)
 
 fun Player.sendTranslation(key: String, vararg tagResolver: TagResolver) {
     if (languageManager.isList(key)) {
-        languageManager.getLangStringList(key).forEach { sendMessage(getDeserialized(it, *tagResolver)) }
-    } else sendMessage(getDeserialized(key, *tagResolver))
+        getUnformattedList(key).forEach { sendMessage(toComponent(it, *tagResolver)) }
+    } else sendMessage(translate(key, *tagResolver))
 }
 
-fun Player.getTranslatedLine(key: String): String {
+fun Player.getUnformattedLine(key: String): String {
     return languageManager.getLangString(key)
 }
 
-fun Player.getTranslationLines(key: String): List<String> {
+fun Player.getUnformattedList(key: String): List<String> {
     return languageManager.getLangStringList(key)
 }
 
-fun Player.getDeserialized(key: String, vararg tagResolver: TagResolver): Component {
-    return miniMessage.deserialize(languageManager.getLangString(key), *tagResolver)
+fun Player.translate(key: String, vararg tagResolver: TagResolver): Component {
+    return toComponent(getUnformattedLine(key), *tagResolver)
+}
+
+fun Player.translateList(key: String, vararg tagResolver: TagResolver): List<Component> {
+    return getUnformattedList(key).map { toComponent(it, *tagResolver) }
+}
+
+fun Player.toComponent(miniString: String, vararg tagResolver: TagResolver): Component {
+    return miniMessage.deserialize(miniString, *tagResolver)
 }
 
 fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
+
+fun Player.arena(): Arena? = playerManager.getPlayerData(this)?.currentArena
+
+fun Player.updateBoardTags(vararg tags: String) {
+    arena()?.arenaState?.name?.lowercase()
+        ?.let { scoreboardManager.loadedTemplates[it]?.updateLinesForTag(this, *tags) }
+}
 
 fun Player.playerDataOrCreate(): PlayerData = playerManager.getOrCreatePlayerData(this)
 
@@ -47,6 +66,8 @@ fun Player.reset(gameMode: GameMode) {
     foodLevel = 20
     exp = 0.0f
     level = 0
+
+    closeInventory()
 
     inventory.clear()
     inventory.setArmorContents(null)

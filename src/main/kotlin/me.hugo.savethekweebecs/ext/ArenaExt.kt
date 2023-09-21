@@ -50,8 +50,8 @@ fun Arena.start() {
 }
 
 fun Arena.end(winnerTeam: TeamManager.Team) {
-    arenaState = ArenaState.FINISHING
     arenaTime = 10
+    arenaState = ArenaState.FINISHING
 
     playersPerTeam.forEach { (_, players) ->
         players.mapNotNull { it.player() }.forEach { teamPlayer ->
@@ -100,9 +100,9 @@ fun Arena.loadTeamColors(player: Player) {
         val isOwnTeam = team == player.playerData()?.currentTeam
 
         players.forEach {
-            it.player()?.name?.let { player_name ->
-                if (isOwnTeam) ownTeam.addEntry(player_name)
-                else enemyTeam.addEntry(player_name)
+            it.player()?.name?.let { playerName ->
+                if (isOwnTeam) ownTeam.addEntry(playerName)
+                else enemyTeam.addEntry(playerName)
             }
         }
     }

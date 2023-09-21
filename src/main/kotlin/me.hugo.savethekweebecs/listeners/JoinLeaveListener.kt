@@ -34,8 +34,8 @@ class JoinLeaveListener : KoinComponent, Listener {
         event.joinMessage(null)
         val player = event.player
 
-        gameManager.sendToHub(player)
         player.playerData()?.initBoard()
+        gameManager.sendToHub(player)
         onlinePlayers.value++
     }
 

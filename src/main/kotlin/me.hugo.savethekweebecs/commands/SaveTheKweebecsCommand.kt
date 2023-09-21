@@ -3,16 +3,16 @@ package me.hugo.savethekweebecs.commands
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
+import me.hugo.savethekweebecs.arena.events.ArenaEvent
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
 import me.hugo.savethekweebecs.arena.map.MapPoint
-import me.hugo.savethekweebecs.ext.playerDataOrCreate
-import me.hugo.savethekweebecs.ext.sendTranslation
+import me.hugo.savethekweebecs.ext.*
 import me.hugo.savethekweebecs.lang.LanguageManager
+import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
@@ -35,9 +35,8 @@ class SaveTheKweebecsCommand : KoinComponent {
 
     private val gameManager: GameManager by inject()
     private val languageManager: LanguageManager by inject()
+    private val scoreboardManager: ScoreboardTemplateManager by inject()
     private val teamManager: TeamManager by inject()
-
-    private val miniMessage = MiniMessage.miniMessage()
 
     @DefaultFor("savethekweebecs", "stk", "savethekweebecs help", "stk help")
     @Description("Help for the the main STK plugin.")
@@ -59,15 +58,16 @@ class SaveTheKweebecsCommand : KoinComponent {
         sender.sendTranslation("arena.list.header")
 
         gameManager.arenas.values.forEach {
-            sender.sendTranslation(
-                "arena.list.member",
-                Placeholder.unparsed("display_name", it.displayName),
-                Placeholder.unparsed("display_name", it.displayName),
-                Placeholder.component("arena_state", Component.text(it.arenaState.name, it.arenaState.color)),
-                Placeholder.unparsed("arena_uuid", it.arenaUUID.toString()),
-                Placeholder.unparsed("map_name", it.arenaMap.mapName),
-                Placeholder.unparsed("current_players", it.teamPlayers().size.toString()),
-                Placeholder.unparsed("max_players", it.arenaMap.maxPlayers.toString())
+            sender.sendMessage(
+                sender.toComponent(
+                    sender.getUnformattedLine("arena.list.member").replace("<arena_uuid>", it.arenaUUID.toString()),
+                    Placeholder.unparsed("display_name", it.displayName),
+                    Placeholder.unparsed("display_name", it.displayName),
+                    Placeholder.component("arena_state", Component.text(it.arenaState.name, it.arenaState.color)),
+                    Placeholder.unparsed("map_name", it.arenaMap.mapName),
+                    Placeholder.unparsed("current_players", it.teamPlayers().size.toString()),
+                    Placeholder.unparsed("max_players", it.arenaMap.maxPlayers.toString())
+                )
             )
         }
     }
@@ -121,6 +121,13 @@ class SaveTheKweebecsCommand : KoinComponent {
                 NamedTextColor.GREEN
             )
         )
+    }
+
+    @Subcommand("admin settimer")
+    @Description("Sets the arena timer!")
+    @CommandPermission("savethekweebecs.admin")
+    private fun setHub(sender: Player, seconds: Int) {
+        sender.arena()?.arenaTime = seconds
     }
 
     @Subcommand("admin openarena")
@@ -262,11 +269,30 @@ class SaveTheKweebecsCommand : KoinComponent {
         }
     }
 
+    @Subcommand("admin map addevent")
+    @Description("Adds an event to the map!")
+    @CommandPermission("savethekweebecs.admin")
+    private fun addEvent(sender: Player, event: ArenaEvent, seconds: Int) {
+        sender.getConfiguringMap()?.apply {
+            events.add(Pair(event, seconds))
+        }
+    }
+
     @Subcommand("admin map save")
     @Description("Saves the map into the config!")
     @CommandPermission("savethekweebecs.admin")
     private fun saveMap(sender: Player) {
         sender.getConfiguringMap()?.apply {
+            if (this.events.isEmpty()) {
+                sender.sendMessage(
+                    Component.text(
+                        "This arena has no events! Use /stk admin map addevent [event] [seconds]",
+                        NamedTextColor.RED
+                    )
+                )
+                return@apply
+            }
+
             val config = SaveTheKweebecs.getInstance().config
             val configPath = "maps.${configName}"
 
@@ -274,6 +300,7 @@ class SaveTheKweebecsCommand : KoinComponent {
             config.set("$configPath.maxPlayers", maxPlayers)
 
             config.set("$configPath.defaultCountdown", defaultCountdown)
+            config.set("$configPath.events", events.map { it.first.serialize(it.second) })
 
             config.set("$configPath.mapName", mapName)
             config.set("$configPath.slimeWorld", mapName.replace(" ", "_").lowercase())
@@ -315,6 +342,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @CommandPermission("savethekweebecs.admin")
     private fun reloadLang(sender: Player) {
         languageManager.reloadLanguages()
+        scoreboardManager.loadTemplates()
         sender.sendTranslation("system.lang.reloaded")
     }
 
