@@ -25,3 +25,4 @@ Save The Kweebecs comes back in 2023 with a new version!
 ## :+1: Libraries
 * <a href="https://github.com/Revxrsal/Lamp/">Lamp</a> (Command Framework)
 * <a href="https://insert-koin.io/">Koin</a> (Dependency Injection)
+* <a href="https://github.com/MrMicky-FR/FastBoard">FastBoard</a> (Nice Scoreboard API)
