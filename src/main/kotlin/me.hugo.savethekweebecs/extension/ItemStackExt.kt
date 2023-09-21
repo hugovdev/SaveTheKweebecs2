@@ -1,4 +1,4 @@
-package me.hugo.savethekweebecs.ext
+package me.hugo.savethekweebecs.extension
 
 import net.kyori.adventure.text.Component
 import org.bukkit.Color

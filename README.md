@@ -1,7 +1,9 @@
 # SaveTheKweebecs2
+
 Save The Kweebecs comes back in 2023 with a new version!
 
 ## :sunny: Planned Features
+
 * Match Stats Summary
 * Animated Scoreboards
 * Abilities
@@ -17,12 +19,13 @@ Save The Kweebecs comes back in 2023 with a new version!
 * Ability to join games that have already started
 
 ## :+1: Dependencies
+
 * <a href="https://github.com/SkinsRestorer/SkinsRestorerX">SkinsRestorer</a>
 * <a href="https://www.spigotmc.org/resources/citizens.13811/">Citizens</a>
 * <a href="https://github.com/InfernalSuite/AdvancedSlimePaper">AdvancedSlimePaper</a>
 
-
 ## :+1: Libraries
+
 * <a href="https://github.com/Revxrsal/Lamp/">Lamp</a> (Command Framework)
 * <a href="https://insert-koin.io/">Koin</a> (Dependency Injection)
 * <a href="https://github.com/MrMicky-FR/FastBoard">FastBoard</a> (Nice Scoreboard API)

@@ -5,7 +5,7 @@ import com.destroystokyo.paper.MaterialTags
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
-import me.hugo.savethekweebecs.ext.*
+import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.util.InstantFirework
 import net.citizensnpcs.api.event.NPCRightClickEvent

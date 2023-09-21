@@ -3,8 +3,8 @@ package me.hugo.savethekweebecs.arena
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapPoint
-import me.hugo.savethekweebecs.ext.playerData
-import me.hugo.savethekweebecs.ext.reset
+import me.hugo.savethekweebecs.extension.playerData
+import me.hugo.savethekweebecs.extension.reset
 import me.hugo.savethekweebecs.task.GameControllerTask
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -45,7 +45,7 @@ class GameManager {
 
         playerData.kills = 0
         playerData.deaths = 0
-        playerData.coins =0
+        playerData.coins = 0
     }
 
     private fun removeScoreboardEntries(player: Player) {

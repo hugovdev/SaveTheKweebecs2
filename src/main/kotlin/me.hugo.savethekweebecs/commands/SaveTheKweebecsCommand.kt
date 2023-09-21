@@ -7,7 +7,7 @@ import me.hugo.savethekweebecs.arena.events.ArenaEvent
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
 import me.hugo.savethekweebecs.arena.map.MapPoint
-import me.hugo.savethekweebecs.ext.*
+import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager

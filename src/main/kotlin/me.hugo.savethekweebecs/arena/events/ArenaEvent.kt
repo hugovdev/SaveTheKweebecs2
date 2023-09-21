@@ -1,7 +1,7 @@
 package me.hugo.savethekweebecs.arena.events
 
 import me.hugo.savethekweebecs.arena.Arena
-import me.hugo.savethekweebecs.ext.*
+import me.hugo.savethekweebecs.extension.*
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack

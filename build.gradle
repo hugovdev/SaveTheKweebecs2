@@ -33,6 +33,8 @@ repositories {
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
     compileOnly "com.infernalsuite.aswm:api:1.20-R0.1-SNAPSHOT"
+
+    // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.10"
 
     // Koin

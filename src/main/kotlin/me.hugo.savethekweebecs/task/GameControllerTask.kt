@@ -3,7 +3,7 @@ package me.hugo.savethekweebecs.task
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.arena.GameManager
-import me.hugo.savethekweebecs.ext.*
+import me.hugo.savethekweebecs.extension.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration

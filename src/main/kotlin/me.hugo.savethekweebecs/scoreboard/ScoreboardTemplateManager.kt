@@ -1,9 +1,9 @@
 package me.hugo.savethekweebecs.scoreboard
 
 import me.hugo.savethekweebecs.arena.ArenaState
-import me.hugo.savethekweebecs.ext.arena
-import me.hugo.savethekweebecs.ext.getUnformattedLine
-import me.hugo.savethekweebecs.ext.playerDataOrCreate
+import me.hugo.savethekweebecs.extension.arena
+import me.hugo.savethekweebecs.extension.getUnformattedLine
+import me.hugo.savethekweebecs.extension.playerDataOrCreate
 import me.hugo.savethekweebecs.lang.LanguageManager
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

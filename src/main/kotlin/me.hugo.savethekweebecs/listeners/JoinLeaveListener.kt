@@ -1,8 +1,8 @@
 package me.hugo.savethekweebecs.listeners
 
 import me.hugo.savethekweebecs.arena.GameManager
-import me.hugo.savethekweebecs.ext.playerData
-import me.hugo.savethekweebecs.ext.playerDataOrCreate
+import me.hugo.savethekweebecs.extension.playerData
+import me.hugo.savethekweebecs.extension.playerDataOrCreate
 import me.hugo.savethekweebecs.player.PlayerManager
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler

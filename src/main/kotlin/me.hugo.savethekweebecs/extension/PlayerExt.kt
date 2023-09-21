@@ -1,4 +1,4 @@
-package me.hugo.savethekweebecs.ext
+package me.hugo.savethekweebecs.extension
 
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.lang.LanguageManager

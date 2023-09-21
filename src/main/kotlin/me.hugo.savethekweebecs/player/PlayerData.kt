@@ -3,7 +3,7 @@ package me.hugo.savethekweebecs.player
 import fr.mrmicky.fastboard.adventure.FastBoard
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
-import me.hugo.savethekweebecs.ext.*
+import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager

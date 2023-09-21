@@ -4,7 +4,7 @@ import com.infernalsuite.aswm.api.SlimePlugin
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.commands.SaveTheKweebecsCommand
-import me.hugo.savethekweebecs.di.SaveTheKweebecsModules
+import me.hugo.savethekweebecs.dependencyinjection.SaveTheKweebecsModules
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.listeners.ArenaListener
 import me.hugo.savethekweebecs.listeners.JoinLeaveListener

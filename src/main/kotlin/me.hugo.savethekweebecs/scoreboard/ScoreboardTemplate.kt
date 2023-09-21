@@ -1,7 +1,7 @@
 package me.hugo.savethekweebecs.scoreboard
 
-import me.hugo.savethekweebecs.ext.playerData
-import me.hugo.savethekweebecs.ext.toComponent
+import me.hugo.savethekweebecs.extension.playerData
+import me.hugo.savethekweebecs.extension.toComponent
 import me.hugo.savethekweebecs.lang.LanguageManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
