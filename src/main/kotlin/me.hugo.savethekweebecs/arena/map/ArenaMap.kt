@@ -96,7 +96,7 @@ class ArenaMap(val configName: String, load: Boolean = true) : KoinComponent {
                 isValid = true
 
                 val arena = Arena(this, mapName)
-                gameManager.arenas[arena.arenaUUID] = arena
+                gameManager.registerArena(arena)
             }
         }
     }

@@ -1,6 +1,33 @@
 locale:
   - en
   - es
+item-sets:
+  lobby:
+    game-selector:
+      slot: 0
+      material: "ENDER_EYE"
+      name-translation: "lobby.item.gameSelector.name"
+      lore-translation: "lobby.item.gameSelector.lore"
+      command: "stk arenas"
+    banner-selector:
+      slot: 1
+      material: "WHITE_BANNER"
+      name-translation: "lobby.item.bannerSelector.name"
+      lore-translation: "lobby.item.bannerSelector.lore"
+      command: "stk banners"
+    back-to-lobby:
+      slot: 8
+      material: "RED_BED"
+      name-translation: "lobby.item.backLobby.name"
+      lore-translation: "lobby.item.backLobby.lore"
+      command: "lobby"
+  arena-lobby:
+    back-to-lobby:
+      slot: 8
+      material: "RED_BED"
+      name-translation: "arena.item.leave.name"
+      lore-translation: "arena.item.leave.lore"
+      command: "stk leave"
 teams:
   trork:
     skinTexture: "ewogICJ0aW1lc3RhbXAiIDogMTYzNTA4NjQ0NDI5OCwKICAicHJvZmlsZUlkIiA6ICJhYzYxZjQwZGJhNDE0YzkwOWU0NWJkMTgwMmY5MTYxYyIsCiAgInByb2ZpbGVOYW1lIiA6ICJBbmlmYW5pIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VhNGY3NzhjZDhjOGI4YmYzOTFlMzk0MzQwOWY4OGFmYjQxYWUzZDcwYTkzZWE3NGFjZDJmMTAxMjNiN2RlNDYiCiAgICB9CiAgfQp9"

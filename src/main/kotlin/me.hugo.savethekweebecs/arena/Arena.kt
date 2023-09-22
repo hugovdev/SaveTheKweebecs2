@@ -7,6 +7,7 @@ import me.hugo.savethekweebecs.arena.events.ArenaEvent
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapLocation
 import me.hugo.savethekweebecs.arena.map.MapPoint
+import me.hugo.savethekweebecs.clickableitems.ItemSetManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
@@ -26,6 +27,7 @@ import org.bukkit.GameRule
 import org.bukkit.World
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
@@ -41,6 +43,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
     private val gameManager: GameManager by inject()
     private val languageManager: LanguageManager by inject()
     private val scoreboardManager: ScoreboardTemplateManager by inject()
+    private val itemManager: ItemSetManager by inject()
 
     val arenaUUID: UUID = UUID.randomUUID()
 
@@ -53,8 +56,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             field = state
             arenaPlayers().mapNotNull { it.player() }.forEach { setCurrentBoard(it) }
 
-            println("Changed game state of $displayName to $state!")
-            // refresh icon
+            gameManager.refreshArenaIcon(this)
         }
 
     var arenaTime: Int = arenaMap.defaultCountdown
@@ -70,11 +72,12 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         Pair(arenaMap.defenderTeam, mutableListOf()),
         Pair(arenaMap.attackerTeam, mutableListOf())
     )
-
     private val spectators: MutableList<UUID> = mutableListOf()
     val deadPlayers: ConcurrentMap<Player, Int> = ConcurrentHashMap()
 
     val remainingNPCs: MutableMap<NPC, Boolean> = mutableMapOf()
+
+    var lastIcon: MutableMap<String, ItemStack> = mutableMapOf()
 
     init {
         main.logger.info("Creating game with map ${arenaMap.mapName} with display name $displayName...")
@@ -117,10 +120,14 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString()),
         )
 
-        if (teamPlayers().size >= arenaMap.minPlayers) arenaState = ArenaState.STARTING
+        itemManager.getSet(arenaState.itemSetKey)?.forEach { it.give(player) }
+
+        if (teamPlayers().size >= arenaMap.minPlayers && arenaState == ArenaState.WAITING)
+            arenaState = ArenaState.STARTING
         else updateBoard("players", "max_players")
 
         setCurrentBoard(player)
+        gameManager.refreshArenaIcon(this)
     }
 
     private fun setCurrentBoard(player: Player) {
@@ -151,6 +158,8 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
         playerData.currentArena = null
         gameManager.sendToHub(player)
+
+        gameManager.refreshArenaIcon(this)
     }
 
     fun loadMap(firstTime: Boolean = true) {
@@ -261,6 +270,25 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
     private fun removePlayerFrom(uuid: UUID, team: TeamManager.Team) {
         playersPerTeam[team]?.remove(uuid)
         uuid.player()?.playerData()?.currentTeam = null
+    }
+
+    fun getCurrentIcon(locale: String): ItemStack {
+        val resolvers = arrayOf(
+            Placeholder.unparsed("display_name", displayName),
+            Placeholder.component("arena_state", arenaState.getFriendlyName(locale)),
+            Placeholder.unparsed("map_name", arenaMap.mapName),
+            Placeholder.unparsed("team_size", (arenaMap.maxPlayers / 2).toString()),
+            Placeholder.unparsed("current_players", teamPlayers().size.toString()),
+            Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString())
+        )
+
+        val item = ItemStack(arenaState.material)
+            .name("menu.arenas.arenaIcon.name", locale, *resolvers)
+            .putLore("menu.arenas.arenaIcon.lore", locale, *resolvers)
+
+        lastIcon[locale] = item
+
+        return item
     }
 
 }

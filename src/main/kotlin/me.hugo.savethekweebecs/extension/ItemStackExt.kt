@@ -1,13 +1,20 @@
 package me.hugo.savethekweebecs.extension
 
+import me.hugo.savethekweebecs.lang.LanguageManager
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.koin.java.KoinJavaComponent.inject
 import java.util.function.Consumer
+
+private val languageManager: LanguageManager by inject(LanguageManager::class.java)
+private val miniMessage = MiniMessage.miniMessage()
 
 fun ItemStack.amount(amount: Int): ItemStack {
     setAmount(amount)
@@ -18,6 +25,18 @@ fun ItemStack.name(name: Component): ItemStack {
     val meta = itemMeta
     meta.displayName(name)
     itemMeta = meta
+    return this
+}
+
+fun ItemStack.name(key: String, locale: String, vararg tagResolver: TagResolver): ItemStack {
+    val meta = itemMeta
+    meta.displayName(miniMessage.deserialize(languageManager.getLangString(key, locale), *tagResolver))
+    itemMeta = meta
+    return this
+}
+
+fun ItemStack.putLore(key: String, locale: String, vararg tagResolver: TagResolver): ItemStack {
+    this.lore(languageManager.getLangStringList(key, locale).map { miniMessage.deserialize(it, *tagResolver) })
     return this
 }
 

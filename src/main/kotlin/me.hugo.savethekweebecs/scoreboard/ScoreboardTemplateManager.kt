@@ -5,7 +5,7 @@ import me.hugo.savethekweebecs.extension.arena
 import me.hugo.savethekweebecs.extension.getUnformattedLine
 import me.hugo.savethekweebecs.extension.playerDataOrCreate
 import me.hugo.savethekweebecs.lang.LanguageManager
-import org.bukkit.Bukkit
+import me.hugo.savethekweebecs.listeners.JoinLeaveListener
 import org.bukkit.entity.Player
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter
 class ScoreboardTemplateManager : KoinComponent {
 
     private val languageManager: LanguageManager by inject()
+    private val joinListeners: JoinLeaveListener by inject()
+
     val loadedTemplates: MutableMap<String, ScoreboardTemplate> = mutableMapOf()
     val tagResolvers: MutableMap<String, (player: Player) -> String> = mutableMapOf()
 
@@ -41,7 +43,7 @@ class ScoreboardTemplateManager : KoinComponent {
     private fun registerTags() {
         registerTag("date") { DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDateTime.now()) }
 
-        registerTag("all_players") { Bukkit.getOnlinePlayers().size.toString() }
+        registerTag("all_players") { joinListeners.onlinePlayers.toString() }
 
         registerTag("count") { (it.arena()?.arenaTime ?: 0).toString() }
 

@@ -1,4 +1,7 @@
 global.scoreboard.title: "<aqua><b>THANKMAS 2023"
+global.menu.close.name: "<italic:false><green>Cerrar"
+global.menu.back.name: "<italic:false><green>Volver"
+global.menu.previousPage.name: "<italic:false><green>Página anterior"
 
 scoreboard.lobby.lines:
   - "<gray>Lobby <date>"
@@ -11,6 +14,26 @@ scoreboard.lobby.lines:
   - "Jugadores: <green><all_players>"
   - ""
   - "<yellow>thankmas.skynode.pro"
+
+lobby.item.gameSelector.name: "<italic:false><green>Selector de Mapas</green> <gray>(Click Derecho)"
+lobby.item.gameSelector.lore:
+  - "<italic:false><gray>Abre el selector de mapas y elige"
+  - "<italic:false><gray>una arena en la que entrar."
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+lobby.item.bannerSelector.name: "<italic:false><green>Selector de Banner</green> <gray>(Click Derecho)"
+lobby.item.bannerSelector.lore:
+  - "<italic:false><gray>Abre el selector de banners y elige"
+  - "<italic:false><gray>uno para ponértelo."
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+lobby.item.backLobby.name: "<italic:false><green>Volver al Hub</green> <gray>(Click Derecho)"
+lobby.item.backLobby.lore:
+  - "<italic:false><gray>¡Vuelve al hub principal de Thankmas!"
+  - ""
+  - "<italic:false><yellow>¡Click para teletransportarte!"
 
 scoreboard.waiting.lines:
   - "<gray>Equipos <date>"
@@ -64,6 +87,27 @@ scoreboard.finishing.lines:
   - ""
   - "<yellow>thankmas.skynode.pro"
 
+arena.state.waiting: "<green>Esperando</green>"
+arena.state.starting: "<gold>Empezando</gold>"
+arena.state.in_game: "<red>Jugando</red>"
+arena.state.finishing: "<red>Terminando</red>"
+arena.state.resetting: "<gray>Reiniciando</gray>"
+
+menu.arenas.icon.name: "<italic:false><green>Selector de Mapas"
+menu.arenas.icon.lore:
+  - "<italic:false><gray>Elige un mapa que jugar arriba."
+
+menu.arenas.title: "Selector de Mapas"
+menu.arenas.arenaIcon.name: "<italic:false><green><display_name>"
+menu.arenas.arenaIcon.lore:
+  - "<italic:false><gray>Jugadores: <white><current_players>/<max_players>"
+  - "<italic:false><gray>Estado: <arena_state>"
+  - "<italic:false><gray>Tamaño de Equipos: <white><team_size>"
+  - ""
+  - "<italic:false><gray>Mapa: <white><map_name>"
+  - ""
+  - "<italic:false><yellow>¡Click para entrar!"
+
 arena.join.global: "<yellow>[<b>!</b>] ¡<green><player_name></green> se ha unido! (<aqua><current_players></aqua>/<aqua><max_players></aqua>)"
 arena.leave.global: "<yellow>[<b>!</b>] ¡<red><player_name></red> se ha ido! (<aqua><current_players></aqua>/<aqua><max_players></aqua>)"
 arena.join.full: "<red>[<b>!</b>] La arena <aqua><arena_name></aqua> está llena."
@@ -76,6 +120,13 @@ arena.starting.seconds: "<yellow>[<b>!</b>] ¡La partida comienza en <gold><coun
 arena.starting.second: "<yellow>[<b>!</b>] ¡La partida comienza en <gold><count></gold> segundo!"
 arena.finishing.seconds: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundos!"
 arena.finishing.second: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundo!"
+
+arena.item.leave.name: "<italic:false><red><b>Volver al Lobby</b></red> <gray>(Click Derecho)"
+arena.item.leave.lore:
+  - "<italic:false><gray>¡Vuelve al lobby principal"
+  - "<italic:false><gray>de Save The Kweebecs!"
+  - ""
+  - "<italic:false><yellow>¡Click para teletransportarte!"
 
 arena.death.self: "<yellow>¡<red><player></red> ha muerto!"
 arena.death.player: "<yellow>¡<red><player></red> fue asesinado por <red><killer></red>!"
@@ -126,7 +177,7 @@ arena.list.member: " <gray>- <aqua><display_name></aqua> |</gray> <arena_state><
 # HELP COMMANDS AND ADMIN SYSTEMS
 #
 #############################################
-system.lang.reloaded: "<green>Language file has been reloaded!"
+system.lang.reloaded: "<green>¡Se han recargado los archivos de lenguaje!"
 system.help:
   - ""
   - "<gold>Save The Kweebecs Help System"
@@ -134,6 +185,7 @@ system.help:
   - " "
   - "<aqua>/stk auto-join</aqua> <gray>- Joins the best available arena."
   - "<aqua>/stk list</aqua> <gray>- Lists arenas."
+  - "<aqua>/stk arenas</aqua> <gray>- Open the arena selector menu."
   - "<aqua>/stk join <gold>[uuid]</gold></aqua> <gray>- Joins arena with that UUID."
   - "<aqua>/stk leave</aqua> <gray>- Leave the arena you're in."
   - ""
@@ -151,7 +203,7 @@ system.admin.help:
 
 system.kit.help:
   - ""
-  - "<gold>Save The Kweebecs Language System"
+  - "<gold>Save The Kweebecs Kit System"
   - "<aqua>/stk admin kit get <gold>[team]</gold></aqua> <gray>- Get the kit for the team."
   - "<aqua>/stk admin kit save <gold>[team]</gold></aqua> <gray>- Save the kit for the team."
   - ""

@@ -3,6 +3,7 @@ package me.hugo.savethekweebecs
 import com.infernalsuite.aswm.api.SlimePlugin
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.arena.map.ArenaMap
+import me.hugo.savethekweebecs.clickableitems.ItemSetManager
 import me.hugo.savethekweebecs.commands.SaveTheKweebecsCommand
 import me.hugo.savethekweebecs.dependencyinjection.SaveTheKweebecsModules
 import me.hugo.savethekweebecs.lang.LanguageManager
@@ -10,6 +11,7 @@ import me.hugo.savethekweebecs.listeners.ArenaListener
 import me.hugo.savethekweebecs.listeners.JoinLeaveListener
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
+import me.hugo.savethekweebecs.util.menus.MenuRegistry
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinComponent
@@ -28,6 +30,9 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
     private val teamManager: TeamManager by inject()
     private val languageManager: LanguageManager by inject()
     private val scoreboardManager: ScoreboardTemplateManager by inject()
+
+    private val menuRegistry: MenuRegistry by inject()
+    private val itemManager: ItemSetManager by inject()
 
     private val joinLeaveListener: JoinLeaveListener by inject()
 
@@ -51,12 +56,15 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
             modules(SaveTheKweebecsModules().module)
         }
 
-        slimePlugin = Bukkit.getPluginManager().getPlugin("SlimeWorldManager") as SlimePlugin
+        val pluginManager = Bukkit.getPluginManager()
+        slimePlugin = pluginManager.getPlugin("SlimeWorldManager") as SlimePlugin
 
         saveDefaultConfig()
 
         languageManager.setupLanguageFiles()
         scoreboardManager.initialize()
+        itemManager.initialize()
+
         println("Loaded ${scoreboardManager.loadedTemplates.size} scoreboard templates!")
 
         commandHandler = BukkitCommandHandler.create(this)
@@ -84,8 +92,12 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         commandHandler.register(SaveTheKweebecsCommand())
         commandHandler.registerBrigadier()
 
-        Bukkit.getPluginManager().registerEvents(joinLeaveListener, this)
-        Bukkit.getPluginManager().registerEvents(ArenaListener(), this)
+        pluginManager
+
+        pluginManager.registerEvents(menuRegistry, this)
+        pluginManager.registerEvents(joinLeaveListener, this)
+        pluginManager.registerEvents(itemManager, this)
+        pluginManager.registerEvents(ArenaListener(), this)
 
         println("Starting Game Manager... Maps: ${gameManager.maps.size}")
     }

@@ -1,8 +1,10 @@
 package me.hugo.savethekweebecs.listeners
 
 import me.hugo.savethekweebecs.arena.GameManager
+import me.hugo.savethekweebecs.extension.arena
 import me.hugo.savethekweebecs.extension.playerData
 import me.hugo.savethekweebecs.extension.playerDataOrCreate
+import me.hugo.savethekweebecs.extension.updateBoardTags
 import me.hugo.savethekweebecs.player.PlayerManager
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -37,6 +39,8 @@ class JoinLeaveListener : KoinComponent, Listener {
         player.playerData()?.initBoard()
         gameManager.sendToHub(player)
         onlinePlayers++
+
+        Bukkit.getOnlinePlayers().filter { it.arena() == null }.forEach { it.updateBoardTags("all_players") }
     }
 
     @EventHandler
@@ -52,5 +56,7 @@ class JoinLeaveListener : KoinComponent, Listener {
         player.playerDataOrCreate().currentArena?.leave(player)
         playerManager.removePlayerData(player.uniqueId)
         onlinePlayers--
+
+        Bukkit.getOnlinePlayers().filter { it.arena() == null }.forEach { it.updateBoardTags("all_players") }
     }
 }

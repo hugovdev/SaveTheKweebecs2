@@ -3,6 +3,7 @@ package me.hugo.savethekweebecs.player
 import fr.mrmicky.fastboard.adventure.FastBoard
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
+import me.hugo.savethekweebecs.clickableitems.ItemSetManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
@@ -21,6 +22,7 @@ import java.util.*
 data class PlayerData(private val uuid: UUID) : KoinComponent {
 
     private val scoreboardManager: ScoreboardTemplateManager by inject()
+    private val itemManager: ItemSetManager by inject()
 
     var currentArena: Arena? = null
     var currentTeam: TeamManager.Team? = null
@@ -42,7 +44,11 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
 
             if (arena != null) {
                 scoreboardManager.loadedTemplates[arena.arenaState.name.lowercase()]!!.printBoard(player)
-            } else setLobbyBoard(player)
+                itemManager.getSet(arena.arenaState.itemSetKey)?.forEach { it.give(player) }
+            } else {
+                setLobbyBoard(player)
+                itemManager.getSet("lobby")?.forEach { it.give(player) }
+            }
         }
 
     var kills: Int = 0

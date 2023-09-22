@@ -21,7 +21,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -32,8 +34,22 @@ class ArenaListener : KoinComponent, Listener {
     private val gameManager: GameManager by inject()
 
     private companion object {
-        private val BREAKABLE_ATTACKER_BLOCKS = MaterialSetTag(NamespacedKey("stk", "kweebec_breakable"))
+        private val BREAKABLE_ATTACKER_BLOCKS = MaterialSetTag(NamespacedKey("stk", "attacker_breakable"))
             .add(MaterialTags.FENCES).add(Material.BAMBOO_PLANKS, Material.IRON_BARS).lock()
+    }
+
+    @EventHandler
+    fun onBedRightClick(event: PlayerInteractEvent) {
+        if (!event.action.isRightClick) return
+        val item = event.item ?: return
+
+        val player = event.player
+        val arena = player.arena() ?: return
+
+        if (arena.hasStarted()) return
+        if (item.type != Material.RED_BED) return
+
+        arena.leave(player)
     }
 
     @EventHandler
@@ -154,6 +170,9 @@ class ArenaListener : KoinComponent, Listener {
     @EventHandler
     fun onBlockPlace(event: BlockPlaceEvent) {
         val player = event.player
+
+        if (player.gameMode == GameMode.CREATIVE) return
+
         val playerData = player.playerDataOrCreate()
 
         val currentArena = playerData.currentArena
@@ -168,6 +187,9 @@ class ArenaListener : KoinComponent, Listener {
     @EventHandler
     fun onBlockBreak(event: BlockBreakEvent) {
         val player = event.player
+
+        if (player.gameMode == GameMode.CREATIVE) return
+
         val playerData = player.playerDataOrCreate()
 
         val currentArena = playerData.currentArena
@@ -185,7 +207,21 @@ class ArenaListener : KoinComponent, Listener {
     }
 
     @EventHandler
+    fun onInventoryClick(event: InventoryClickEvent) {
+        val player = event.whoClicked as Player
+        val arena = player.arena()
+
+        if (player.gameMode == GameMode.CREATIVE) return
+
+        if (arena == null || !arena.isInGame()) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler
     fun onItemDrop(event: PlayerDropItemEvent) {
+        if (event.player.gameMode == GameMode.CREATIVE) return
+
         event.isCancelled = true
     }
 

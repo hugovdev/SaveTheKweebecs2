@@ -3,34 +3,82 @@ package me.hugo.savethekweebecs.arena
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.arena.map.MapPoint
-import me.hugo.savethekweebecs.extension.playerData
-import me.hugo.savethekweebecs.extension.reset
+import me.hugo.savethekweebecs.clickableitems.ItemSetManager
+import me.hugo.savethekweebecs.extension.*
+import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.task.GameControllerTask
+import me.hugo.savethekweebecs.util.menus.Icon
+import me.hugo.savethekweebecs.util.menus.PaginatedMenu
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scoreboard.DisplaySlot
 import org.koin.core.annotation.Single
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
 @Single
-class GameManager {
+class GameManager : KoinComponent {
 
     private val main: SaveTheKweebecs = SaveTheKweebecs.getInstance()
+    private val itemManager: ItemSetManager by inject()
+    private val languageManager: LanguageManager by inject()
 
-    private val hubLocation: Location? =
-        Bukkit.getWorld("world")?.let { MapPoint.deserializeFromConfig("hubLocation")?.toLocation(it) }
+    private val hubLocation: Location? = Bukkit.getWorld("world")
+        ?.let { MapPoint.deserializeFromConfig("hubLocation")?.toLocation(it) }
+
     val maps: Map<String, ArenaMap>
     val arenas: ConcurrentMap<UUID, Arena> = ConcurrentHashMap()
 
+    // lang -> menu
+    val arenaMenus: MutableMap<String, PaginatedMenu> = mutableMapOf()
+
     init {
-        val mapKeys = main.config.getConfigurationSection("maps")?.getKeys(false)
+        val config = main.config
+
+        val mapKeys = config.getConfigurationSection("maps")?.getKeys(false)
         maps = mapKeys?.associateWith { ArenaMap(it) } ?: mapOf()
 
+        languageManager.availableLanguages.forEach {
+            arenaMenus[it] = PaginatedMenu(
+                9 * 4, "menu.arenas.title", PaginatedMenu.PageFormat.TWO_ROWS_TRIMMED.format,
+                ItemStack(Material.ENDER_EYE)
+                    .name("menu.arenas.icon.name", it)
+                    .putLore("menu.arenas.icon.lore", it), null, it
+            )
+        }
+
         GameControllerTask().runTaskTimer(main, 0L, 20L)
+    }
+
+    fun openArenasMenu(player: Player) {
+        (arenaMenus[player.playerDataOrCreate().locale] ?: arenaMenus[LanguageManager.DEFAULT_LANGUAGE]!!).open(player)
+    }
+
+    fun refreshArenaIcon(arena: Arena) {
+        arenaMenus.forEach {
+            arena.lastIcon[it.key]?.let { lastIcon ->
+                it.value.replaceFirst(lastIcon, Icon(arena.getCurrentIcon(it.key)).addClickAction { player, _ ->
+                    arena.joinArena(player)
+                })
+            }
+        }
+    }
+
+    fun registerArena(arena: Arena) {
+        arenas[arena.arenaUUID] = arena
+
+        arenaMenus.forEach {
+            it.value.addItem(Icon(arena.getCurrentIcon(it.key)).addClickAction { player, _ ->
+                arena.joinArena(player)
+            })
+        }
     }
 
     fun sendToHub(player: Player) {
@@ -46,6 +94,9 @@ class GameManager {
         playerData.kills = 0
         playerData.deaths = 0
         playerData.coins = 0
+
+
+        itemManager.getSet("lobby")?.forEach { it.give(player) }
     }
 
     private fun removeScoreboardEntries(player: Player) {

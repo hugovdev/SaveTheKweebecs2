@@ -53,6 +53,14 @@ class SaveTheKweebecsCommand : KoinComponent {
             .maxByOrNull { it.teamPlayers().size }?.joinArena(sender)
     }
 
+    @Subcommand("arenas")
+    @Description("Opens an arena selector menu!")
+    private fun openArenasMenu(sender: Player) {
+        // if (sender.arena() != null) return
+
+        gameManager.openArenasMenu(sender)
+    }
+
     @Subcommand("list")
     @Description("Lists arenas.")
     private fun listArenas(sender: Player) {
@@ -63,8 +71,11 @@ class SaveTheKweebecsCommand : KoinComponent {
                 sender.toComponent(
                     sender.getUnformattedLine("arena.list.member").replace("<arena_uuid>", it.arenaUUID.toString()),
                     Placeholder.unparsed("display_name", it.displayName),
-                    Placeholder.unparsed("display_name", it.displayName),
-                    Placeholder.component("arena_state", Component.text(it.arenaState.name, it.arenaState.color)),
+                    Placeholder.component(
+                        "arena_state",
+                        it.arenaState.getFriendlyName(sender.playerData()?.locale ?: LanguageManager.DEFAULT_LANGUAGE)
+                    ),
+                    Placeholder.unparsed("team_size", (it.arenaMap.maxPlayers / 2).toString()),
                     Placeholder.unparsed("map_name", it.arenaMap.mapName),
                     Placeholder.unparsed("current_players", it.teamPlayers().size.toString()),
                     Placeholder.unparsed("max_players", it.arenaMap.maxPlayers.toString())
@@ -137,7 +148,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     private fun createArena(sender: Player, map: ArenaMap, displayName: String) {
         val arena = Arena(map, displayName)
 
-        gameManager.arenas[arena.arenaUUID] = arena
+        gameManager.registerArena(arena)
 
         sender.sendMessage(
             Component.text(
@@ -394,7 +405,12 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Subcommand("admin lang testmessage")
     @Description("Test messages in the language system.")
     @CommandPermission("savethekweebecs.admin")
-    private fun testMessage(sender: Player, messageKey: String) {
+    private fun testMessage(
+        sender: Player,
+        messageKey: String,
+        locale: String = sender.playerData()?.locale ?: LanguageManager.DEFAULT_LANGUAGE
+    ) {
+        sender.sendMessage(sender.toComponent(languageManager.getLangString(messageKey, locale)))
         sender.sendTranslation(messageKey)
     }
 

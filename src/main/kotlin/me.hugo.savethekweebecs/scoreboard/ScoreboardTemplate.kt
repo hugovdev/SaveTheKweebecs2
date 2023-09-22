@@ -76,7 +76,7 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
         val boardLines = boardLines[language]!!
 
         locations.toSet().forEach {
-            player.playerData()?.fastBoard?.updateLine(
+            playerData.fastBoard?.updateLine(
                 it, player.toComponent(boardLines[it],
                     *tags.map { tag -> Placeholder.unparsed(tag, usedResolvers[tag]?.invoke(player) ?: tag) }
                         .toTypedArray()))
