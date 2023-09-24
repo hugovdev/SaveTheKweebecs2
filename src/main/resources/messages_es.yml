@@ -2,6 +2,7 @@ global.scoreboard.title: "<aqua><b>THANKMAS 2023"
 global.menu.close.name: "<italic:false><green>Cerrar"
 global.menu.back.name: "<italic:false><green>Volver"
 global.menu.previousPage.name: "<italic:false><green>Página anterior"
+global.menu.nextPage.name: "<italic:false><green>Siguiente Page"
 
 scoreboard.lobby.lines:
   - "<gray>Lobby <date>"
@@ -105,6 +106,7 @@ menu.arenas.arenaIcon.lore:
   - "<italic:false><gray>Tamaño de Equipos: <white><team_size>"
   - ""
   - "<italic:false><gray>Mapa: <white><map_name>"
+  - "<italic:false><gray>UUID: <white><arena_short_uuid>"
   - ""
   - "<italic:false><yellow>¡Click para entrar!"
 

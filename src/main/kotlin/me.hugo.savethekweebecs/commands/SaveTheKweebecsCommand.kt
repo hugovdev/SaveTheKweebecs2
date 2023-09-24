@@ -18,10 +18,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import revxrsal.commands.annotation.Command
-import revxrsal.commands.annotation.DefaultFor
-import revxrsal.commands.annotation.Description
-import revxrsal.commands.annotation.Subcommand
+import revxrsal.commands.annotation.*
 import revxrsal.commands.bukkit.annotation.CommandPermission
 import java.util.*
 
@@ -56,8 +53,6 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Subcommand("arenas")
     @Description("Opens an arena selector menu!")
     private fun openArenasMenu(sender: Player) {
-        // if (sender.arena() != null) return
-
         gameManager.openArenasMenu(sender)
     }
 
@@ -405,13 +400,16 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Subcommand("admin lang testmessage")
     @Description("Test messages in the language system.")
     @CommandPermission("savethekweebecs.admin")
+    @AutoComplete("@locale")
     private fun testMessage(
         sender: Player,
-        messageKey: String,
-        locale: String = sender.playerData()?.locale ?: LanguageManager.DEFAULT_LANGUAGE
+        locale: String,
+        messageKey: String
     ) {
-        sender.sendMessage(sender.toComponent(languageManager.getLangString(messageKey, locale)))
-        sender.sendTranslation(messageKey)
+        if (languageManager.isList(messageKey))
+            languageManager.getLangStringList(messageKey, locale).map { sender.toComponent(it) }
+                .forEach { sender.sendMessage(it) }
+        else sender.sendMessage(sender.toComponent(languageManager.getLangString(messageKey, locale)))
     }
 
     private fun Player.getConfiguringMap(): ArenaMap? {

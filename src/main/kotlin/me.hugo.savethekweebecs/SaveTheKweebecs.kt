@@ -24,6 +24,7 @@ import revxrsal.commands.command.CommandActor
 import revxrsal.commands.command.CommandParameter
 import revxrsal.commands.exception.CommandErrorException
 
+
 class SaveTheKweebecs : KoinComponent, JavaPlugin() {
 
     private val gameManager: GameManager by inject()
@@ -68,6 +69,8 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         println("Loaded ${scoreboardManager.loadedTemplates.size} scoreboard templates!")
 
         commandHandler = BukkitCommandHandler.create(this)
+
+        commandHandler.autoCompleter.registerSuggestion("locale") { _, _, _ -> languageManager.availableLanguages }
 
         commandHandler.registerValueResolver(TeamManager.Team::class.java) { context -> teamManager.teams[context.pop()] }
         commandHandler.autoCompleter.registerParameterSuggestions(TeamManager.Team::class.java,

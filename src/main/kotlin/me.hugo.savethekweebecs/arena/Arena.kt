@@ -279,7 +279,8 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             Placeholder.unparsed("map_name", arenaMap.mapName),
             Placeholder.unparsed("team_size", (arenaMap.maxPlayers / 2).toString()),
             Placeholder.unparsed("current_players", teamPlayers().size.toString()),
-            Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString())
+            Placeholder.unparsed("max_players", arenaMap.maxPlayers.toString()),
+            Placeholder.unparsed("arena_short_uuid", arenaUUID.toString().split("-").first())
         )
 
         val item = ItemStack(arenaState.material)
