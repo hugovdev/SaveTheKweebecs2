@@ -24,7 +24,9 @@ private val miniMessage: MiniMessage = MiniMessage.miniMessage()
 
 fun UUID.player(): Player? = Bukkit.getPlayer(this)
 
-fun Player.sendTranslation(key: String, vararg tagResolver: TagResolver) {
+fun UUID.playerData(): PlayerData? = playerManager.getPlayerData(this)
+
+fun Player.sendTranslated(key: String, vararg tagResolver: TagResolver) {
     if (languageManager.isList(key)) {
         getUnformattedList(key).forEach { sendMessage(toComponent(it, *tagResolver)) }
     } else sendMessage(translate(key, *tagResolver))
@@ -50,8 +52,6 @@ fun Player.toComponent(miniString: String, vararg tagResolver: TagResolver): Com
     return miniMessage.deserialize(miniString, *tagResolver)
 }
 
-fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
-
 fun Player.arena(): Arena? = playerManager.getPlayerData(this)?.currentArena
 
 fun Player.updateBoardTags(vararg tags: String) {
@@ -63,6 +63,8 @@ fun Player.updateBoardTags(vararg tags: String) {
 }
 
 fun Player.playerDataOrCreate(): PlayerData = playerManager.getOrCreatePlayerData(this)
+fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
+
 
 fun Player.playSound(sound: Sound) = playSound(location, sound, 1.0f, 1.0f)
 

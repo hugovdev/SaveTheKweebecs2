@@ -87,19 +87,19 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     fun joinArena(player: Player) {
         if (hasStarted()) {
-            player.sendTranslation("arena.join.started", Placeholder.unparsed("arena_name", displayName))
+            player.sendTranslated("arena.join.started", Placeholder.unparsed("arena_name", displayName))
             return
         }
 
         if (teamPlayers().size >= arenaMap.maxPlayers) {
-            player.sendTranslation("arena.join.full", Placeholder.unparsed("arena_name", displayName))
+            player.sendTranslated("arena.join.full", Placeholder.unparsed("arena_name", displayName))
             return
         }
 
-        val playerData = player.playerDataOrCreate()
+        val playerData = player.playerData() ?: return
 
         if (playerData.currentArena != null) {
-            player.sendTranslation("arena.join.alreadyInArena")
+            player.sendTranslated("arena.join.alreadyInArena")
             return
         }
 
@@ -139,7 +139,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
     }
 
     fun leave(player: Player) {
-        val playerData = player.playerDataOrCreate()
+        val playerData = player.playerData() ?: return
 
         if (!hasStarted()) {
             playerData.currentTeam?.let { removePlayerFrom(player, it) }
@@ -260,7 +260,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private fun addPlayerTo(uuid: UUID, team: TeamManager.Team) {
         playersPerTeam.computeIfAbsent(team) { mutableListOf() }.add(uuid)
-        uuid.player()?.playerData()?.currentTeam = team
+        uuid.playerData()?.currentTeam = team
     }
 
     private fun removePlayerFrom(player: Player, team: TeamManager.Team) {
@@ -269,7 +269,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private fun removePlayerFrom(uuid: UUID, team: TeamManager.Team) {
         playersPerTeam[team]?.remove(uuid)
-        uuid.player()?.playerData()?.currentTeam = null
+        uuid.playerData()?.currentTeam = null
     }
 
     fun getCurrentIcon(locale: String): ItemStack {

@@ -1,6 +1,9 @@
 package me.hugo.savethekweebecs.clickableitems
 
+import com.destroystokyo.paper.MaterialSetTag
 import me.hugo.savethekweebecs.SaveTheKweebecs
+import me.hugo.savethekweebecs.extension.arena
+import me.hugo.savethekweebecs.extension.playerData
 import me.hugo.savethekweebecs.util.TranslatableClickableItem
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -30,6 +33,8 @@ class ItemSetManager : Listener {
     }
 
     fun registerItem(item: ItemStack, command: String) {
+        if (MaterialSetTag.ITEMS_BANNERS.isTagged(item.type)) return
+
         itemActions[item] = command
     }
 
@@ -42,6 +47,20 @@ class ItemSetManager : Listener {
         event.player.chat("/$command")
 
         event.isCancelled = true
+    }
+
+    @EventHandler
+    private fun onBannerRightClick(event: PlayerInteractEvent) {
+        if (!event.action.isRightClick) return
+        val player = event.player
+
+        if (player.arena() != null) return
+        val item = event.item ?: return
+
+        if (MaterialSetTag.ITEMS_BANNERS.isTagged(item.type)) {
+            event.isCancelled = true
+            player.playerData()?.bannersMenu?.open(player)
+        }
     }
 
 }

@@ -4,15 +4,20 @@ import fr.mrmicky.fastboard.adventure.FastBoard
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.clickableitems.ItemSetManager
+import me.hugo.savethekweebecs.cosmetic.BannerCosmetic
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
+import me.hugo.savethekweebecs.util.menus.MenuRegistry
+import me.hugo.savethekweebecs.util.menus.PaginatedMenu
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.skinsrestorer.api.SkinsRestorerAPI
 import net.skinsrestorer.api.property.IProperty
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -21,6 +26,7 @@ import java.util.*
 
 data class PlayerData(private val uuid: UUID) : KoinComponent {
 
+    private val menuRegistry: MenuRegistry by inject()
     private val scoreboardManager: ScoreboardTemplateManager by inject()
     private val itemManager: ItemSetManager by inject()
 
@@ -38,7 +44,7 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
 
             val player = uuid.player() ?: return
 
-            player.sendTranslation("system.lang.changed", Placeholder.unparsed("language", newLanguage))
+            player.sendTranslated("system.lang.changed", Placeholder.unparsed("language", newLanguage))
 
             val arena = player.arena()
 
@@ -49,6 +55,20 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
                 setLobbyBoard(player)
                 itemManager.getSet("lobby")?.forEach { it.give(player) }
             }
+
+            // Rebuild the banner menu in the new language.
+            makeBannersMenu()
+        }
+
+    var bannersMenu: PaginatedMenu? = makeBannersMenu()
+
+    var bannerCosmetic: BannerCosmetic = BannerCosmetic.NONE
+        set(banner) {
+            val old = field
+            field = banner
+
+            bannersMenu?.replaceFirst(old.getDisplayItem(uuid, true), old.getIcon(uuid, false))
+            bannersMenu?.replaceFirst(banner.getDisplayItem(uuid, false), banner.getIcon(uuid, true))
         }
 
     var kills: Int = 0
@@ -76,6 +96,24 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
                 playerSkin = SkinsRestorerAPI.getApi().getProfile(uuid.toString())
             }
         }.runTaskAsynchronously(SaveTheKweebecs.getInstance())
+    }
+
+    private fun makeBannersMenu(): PaginatedMenu? {
+        bannersMenu?.pages?.forEach { menuRegistry.unregisterMenu(it) }
+
+        bannersMenu = PaginatedMenu(
+            9 * 4, "menu.banners.title",
+            PaginatedMenu.PageFormat.TWO_ROWS_TRIMMED.format,
+            ItemStack(Material.WHITE_BANNER)
+                .nameTranslatable("menu.banners.icon.name", locale)
+                .loreTranslatable("menu.banners.icon.lore", locale)
+            ,
+            null, locale
+        )
+
+        BannerCosmetic.entries.forEach { bannersMenu!!.addItem(it.getIcon(uuid, bannerCosmetic == it)) }
+
+        return bannersMenu
     }
 
     fun initBoard() {

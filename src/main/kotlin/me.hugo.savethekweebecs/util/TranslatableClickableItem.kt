@@ -1,21 +1,23 @@
 package me.hugo.savethekweebecs.util
 
+import com.destroystokyo.paper.MaterialSetTag
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.clickableitems.ItemSetManager
-import me.hugo.savethekweebecs.extension.name
+import me.hugo.savethekweebecs.extension.flag
+import me.hugo.savethekweebecs.extension.loreTranslatable
+import me.hugo.savethekweebecs.extension.nameTranslatable
 import me.hugo.savethekweebecs.extension.playerData
-import me.hugo.savethekweebecs.extension.putLore
 import me.hugo.savethekweebecs.lang.LanguageManager
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BannerMeta
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class TranslatableClickableItem(configPath: String) : KoinComponent {
 
-    private val miniMessage = MiniMessage.miniMessage()
     private val languageManager: LanguageManager by inject()
     private val itemManager: ItemSetManager by inject()
 
@@ -36,9 +38,8 @@ class TranslatableClickableItem(configPath: String) : KoinComponent {
 
         languageManager.availableLanguages.forEach { langKey ->
             val item = ItemStack(material)
-                .name(miniMessage.deserialize(languageManager.getLangString(nameTranslation, langKey)))
-                .putLore(
-                    languageManager.getLangStringList(loreTranslation, langKey).map { miniMessage.deserialize(it) })
+                .nameTranslatable(nameTranslation, langKey)
+                .loreTranslatable(loreTranslation, langKey)
 
             items[langKey] = item
             itemManager.registerItem(item, command)
@@ -51,7 +52,25 @@ class TranslatableClickableItem(configPath: String) : KoinComponent {
         val language = if (languageManager.availableLanguages.contains(locale)) locale
         else LanguageManager.DEFAULT_LANGUAGE
 
-        player.inventory.setItem(slot, items[language])
+        val item = items[language]?.clone()
+
+        if (item?.type?.let { MaterialSetTag.ITEMS_BANNERS.isTagged(it) } == true) {
+            val bannerMeta = item.itemMeta as BannerMeta
+
+            val currentBanner = player.playerData()?.bannerCosmetic?.banner
+
+            (currentBanner?.itemMeta as BannerMeta?)?.let {
+                bannerMeta.patterns = it.patterns
+                item.type = currentBanner!!.type
+            }
+
+            item.itemMeta = bannerMeta
+
+
+            item.flag(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ITEM_SPECIFICS)
+        }
+
+        player.inventory.setItem(slot, item)
     }
 
 }

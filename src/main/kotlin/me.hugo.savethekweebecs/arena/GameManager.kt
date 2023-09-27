@@ -82,6 +82,8 @@ class GameManager : KoinComponent {
     }
 
     fun sendToHub(player: Player) {
+        if (!player.isOnline) return
+
         removeScoreboardEntries(player)
 
         hubLocation?.let { player.teleport(it) }

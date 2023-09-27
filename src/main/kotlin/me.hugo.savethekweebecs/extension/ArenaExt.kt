@@ -42,10 +42,11 @@ fun Arena.start() {
             println("${spawnPoints?.size} spawns! [${team.id}] - $spawnPointIndex")
             teamPlayer.teleport(spawnPoints!![spawnPointIndex].toLocation(world!!))
 
-            teamPlayer.sendTranslation("arena.start.${team.id}")
+            teamPlayer.sendTranslated("arena.start.${team.id}")
             SkinsRestorerAPI.getApi().applySkin(PlayerWrapper(teamPlayer), team.playerSkin)
 
             team.giveItems(teamPlayer)
+            teamPlayer.inventory.helmet = teamPlayer.playerData()?.bannerCosmetic?.getBanner(teamPlayer)
             loadTeamColors(teamPlayer)
 
             spawnPointIndex = if (spawnPointIndex == spawnPoints.size - 1) 0 else spawnPointIndex + 1
@@ -120,7 +121,7 @@ fun Arena.announce(message: Component) {
 
 fun Arena.announceTranslation(key: String, vararg tagResolver: TagResolver) {
     arenaPlayers().forEach {
-        it.player()?.sendTranslation(key, *tagResolver)
+        it.player()?.sendTranslated(key, *tagResolver)
     }
 }
 

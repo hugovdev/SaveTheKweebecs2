@@ -39,7 +39,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @DefaultFor("savethekweebecs", "stk", "savethekweebecs help", "stk help")
     @Description("Help for the the main STK plugin.")
     private fun help(sender: Player) {
-        sender.sendTranslation("system.help")
+        sender.sendTranslated("system.help")
     }
 
     @Subcommand("auto-join")
@@ -56,10 +56,17 @@ class SaveTheKweebecsCommand : KoinComponent {
         gameManager.openArenasMenu(sender)
     }
 
+    @Subcommand("banners")
+    @Description("Opens the banner selector menu!")
+    private fun openBannerSelector(sender: Player) {
+        if (sender.arena() != null) return
+        sender.playerData()?.bannersMenu?.open(sender)
+    }
+
     @Subcommand("list")
     @Description("Lists arenas.")
     private fun listArenas(sender: Player) {
-        sender.sendTranslation("arena.list.header")
+        sender.sendTranslated("arena.list.header")
 
         gameManager.arenas.values.forEach {
             sender.sendMessage(
@@ -85,13 +92,13 @@ class SaveTheKweebecsCommand : KoinComponent {
         try {
             val arena = gameManager.arenas[UUID.fromString(uuid)]
             if (arena == null) {
-                sender.sendTranslation("arena.join.noExist")
+                sender.sendTranslated("arena.join.noExist")
                 return
             }
 
             arena.joinArena(sender)
         } catch (exception: IllegalArgumentException) {
-            sender.sendTranslation("arena.join.noExist")
+            sender.sendTranslated("arena.join.noExist")
         }
     }
 
@@ -101,7 +108,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         val currentArena = sender.playerDataOrCreate().currentArena
 
         if (currentArena == null) {
-            sender.sendTranslation("arena.leave.notInArena")
+            sender.sendTranslated("arena.leave.notInArena")
             return
         }
 
@@ -112,7 +119,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Description("Help for the admin system.")
     @CommandPermission("savethekweebecs.admin")
     private fun helpAdmin(sender: Player) {
-        sender.sendTranslation("system.admin.help")
+        sender.sendTranslated("system.admin.help")
     }
 
     @Subcommand("admin sethub")
@@ -157,7 +164,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Description("Help for the kit system.")
     @CommandPermission("savethekweebecs.admin")
     private fun helpKit(sender: Player) {
-        sender.sendTranslation("system.kit.help")
+        sender.sendTranslated("system.kit.help")
     }
 
     @Subcommand("admin kit get")
@@ -167,7 +174,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         val items = team.items
 
         if (items.isEmpty()) {
-            sender.sendTranslation("system.kit.noKit", Placeholder.unparsed("team", team.id))
+            sender.sendTranslated("system.kit.noKit", Placeholder.unparsed("team", team.id))
             return
         }
 
@@ -201,7 +208,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Description("Help for the map system.")
     @CommandPermission("savethekweebecs.admin")
     private fun helpMap(sender: Player) {
-        sender.sendTranslation("system.map.help")
+        sender.sendTranslated("system.map.help")
     }
 
     @Subcommand("admin map create")
@@ -385,7 +392,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Description("Help for the language system.")
     @CommandPermission("savethekweebecs.admin")
     private fun helpLang(sender: Player) {
-        sender.sendTranslation("system.lang.help")
+        sender.sendTranslated("system.lang.help")
     }
 
     @Subcommand("admin lang reload")
@@ -394,7 +401,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     private fun reloadLang(sender: Player) {
         languageManager.reloadLanguages()
         scoreboardManager.loadTemplates()
-        sender.sendTranslation("system.lang.reloaded")
+        sender.sendTranslated("system.lang.reloaded")
     }
 
     @Subcommand("admin lang testmessage")
@@ -410,6 +417,14 @@ class SaveTheKweebecsCommand : KoinComponent {
             languageManager.getLangStringList(messageKey, locale).map { sender.toComponent(it) }
                 .forEach { sender.sendMessage(it) }
         else sender.sendMessage(sender.toComponent(languageManager.getLangString(messageKey, locale)))
+    }
+
+    @Subcommand("admin lang setlocale")
+    @Description("Reloads the language system.")
+    @CommandPermission("savethekweebecs.admin")
+    @AutoComplete("@locale")
+    private fun reloadLang(sender: Player, locale: String) {
+        sender.playerData()?.locale = locale
     }
 
     private fun Player.getConfiguringMap(): ArenaMap? {

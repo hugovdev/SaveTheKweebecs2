@@ -17,7 +17,7 @@ enum class ArenaEvent(val eventRun: (arena: Arena) -> Unit) {
                     .flag(ItemFlag.HIDE_ATTRIBUTES)
             )
 
-            player.sendTranslation("arena.event.patch_up.receive")
+            player.sendTranslated("arena.event.patch_up.receive")
         }
     }),
     PETS({ arena ->

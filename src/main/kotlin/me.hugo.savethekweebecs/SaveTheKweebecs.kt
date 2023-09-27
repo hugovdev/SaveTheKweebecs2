@@ -4,6 +4,7 @@ import com.infernalsuite.aswm.api.SlimePlugin
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.arena.map.ArenaMap
 import me.hugo.savethekweebecs.clickableitems.ItemSetManager
+import me.hugo.savethekweebecs.commands.LobbyCommand
 import me.hugo.savethekweebecs.commands.SaveTheKweebecsCommand
 import me.hugo.savethekweebecs.dependencyinjection.SaveTheKweebecsModules
 import me.hugo.savethekweebecs.lang.LanguageManager
@@ -93,9 +94,8 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         }
 
         commandHandler.register(SaveTheKweebecsCommand())
+        commandHandler.register(LobbyCommand())
         commandHandler.registerBrigadier()
-
-        pluginManager
 
         pluginManager.registerEvents(menuRegistry, this)
         pluginManager.registerEvents(joinLeaveListener, this)

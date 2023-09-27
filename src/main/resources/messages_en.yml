@@ -1,21 +1,15 @@
+##################################
+# GLOBAL STUFF
+##################################
 global.scoreboard.title: "<aqua><b>THANKMAS 2023"
 global.menu.close.name: "<italic:false><green>Close"
 global.menu.back.name: "<italic:false><green>Go Back"
 global.menu.previousPage.name: "<italic:false><green>Previous Page"
 global.menu.nextPage.name: "<italic:false><green>Next Page"
 
-scoreboard.lobby.lines:
-  - "<gray>Lobby <date>"
-  - ""
-  - "Welcome to"
-  - "Hytale Thankmas!"
-  - ""
-  - "Lobby: <green>#1"
-  - ""
-  - "Players: <green><all_players>"
-  - ""
-  - "<yellow>thankmas.skynode.pro"
-
+##################################
+# CLICKABLE ITEMS
+##################################
 lobby.item.gameSelector.name: "<italic:false><green>Map Selector</green> <gray>(Right Click)"
 lobby.item.gameSelector.lore:
   - "<italic:false><gray>Open the arena selector and"
@@ -36,6 +30,9 @@ lobby.item.backLobby.lore:
   - ""
   - "<italic:false><yellow>Click to teleport!"
 
+##################################
+# SCOREBOARDS
+##################################
 scoreboard.waiting.lines:
   - "<gray>Teams <date>"
   - ""
@@ -88,17 +85,26 @@ scoreboard.finishing.lines:
   - ""
   - "<yellow>thankmas.skynode.pro"
 
-arena.state.waiting: "<green>Waiting</green>"
-arena.state.starting: "<gold>Starting</gold>"
-arena.state.in_game: "<red>Playing</red>"
-arena.state.finishing: "<red>Finishing</red>"
-arena.state.resetting: "<gray>Resetting</gray>"
+scoreboard.lobby.lines:
+  - "<gray>Lobby <date>"
+  - ""
+  - "Welcome to"
+  - "Hytale Thankmas!"
+  - ""
+  - "Lobby: <green>#1"
+  - ""
+  - "Players: <green><all_players>"
+  - ""
+  - "<yellow>thankmas.skynode.pro"
 
+##################################
+# MENUS | ARENAS AND BANNERS
+##################################
+menu.arenas.title: "Map Selector"
 menu.arenas.icon.name: "<italic:false><green>Map Selector"
 menu.arenas.icon.lore:
   - "<italic:false><gray>Choose a map to play above!"
 
-menu.arenas.title: "Map Selector"
 menu.arenas.arenaIcon.name: "<italic:false><green><display_name>"
 menu.arenas.arenaIcon.lore:
   - "<italic:false><gray>Players: <white><current_players>/<max_players>"
@@ -109,6 +115,42 @@ menu.arenas.arenaIcon.lore:
   - "<italic:false><gray>UUID: <white><arena_short_uuid>"
   - ""
   - "<italic:false><yellow>Click to join!"
+
+menu.banners.title: "Banner Selector"
+menu.banners.icon.name: "<italic:false><green>Banner Selector"
+menu.banners.icon.lore:
+  - "<italic:false><gray>Choose a banner and wear"
+  - "<italic:false><gray>it into battle!"
+
+menu.banners.selectLore:
+  - "<italic:false><gray>Wear <banner_name> and show your"
+  - "<italic:false><gray>own style during the battle!"
+  - ""
+  - "<italic:false><yellow>Click to select!"
+
+menu.banners.selectedLore:
+  - "<italic:false><gray>Wear <banner_name> and show your"
+  - "<italic:false><gray>own style during the battle!"
+  - ""
+  - "<italic:false><green>SELECTED"
+
+menu.banners.deselect.name: "<italic:false><red>None"
+menu.banners.deselect.lore:
+  - "<italic:false><gray>Clean head, no banners!"
+  - ""
+  - "<italic:false><yellow>Click to remove banner!"
+
+system.banners.removed: "<yellow>You have removed your banner!"
+system.banners.equipped: "<yellow>You equipped the banner </yellow><banner_name><yellow>!"
+
+##################################
+# ARENA EVENTS AND MESSAGES
+##################################
+arena.state.waiting: "<green>Waiting</green>"
+arena.state.starting: "<gold>Starting</gold>"
+arena.state.in_game: "<red>Playing</red>"
+arena.state.finishing: "<red>Finishing</red>"
+arena.state.resetting: "<gray>Resetting</gray>"
 
 arena.join.global: "<yellow>[<b>!</b>] <green><player_name></green> joined the game! (<aqua><current_players></aqua>/<aqua><max_players></aqua>)"
 arena.leave.global: "<yellow>[<b>!</b>] <red><player_name></red> left the game! (<aqua><current_players></aqua>/<aqua><max_players></aqua>)"
@@ -174,11 +216,32 @@ arena.start.trork:
   - ""
 arena.list.header: "<green>Current Arenas:"
 arena.list.member: " <gray>- <aqua><display_name></aqua> |</gray> <arena_state><gray> | <map_name> | <yellow><b><hover:show_text:'<green><display_name>\n<gray>Players: <white><current_players>/<max_players>\n\n<yellow>Click to join!'><click:run_command:'/stk join <arena_uuid>'>JOIN</click></hover>"
-#############################################
-#
+
+##################################
+# BANNER COSMETIC NAMES
+##################################
+global.cosmetic.banner.united_kingdom.name: "<italic:false><green>United Kingdom"
+global.cosmetic.banner.spain.name: "<italic:false><green>Spain"
+global.cosmetic.banner.germany.name: "<italic:false><green>Germany"
+global.cosmetic.banner.colombia.name: "<italic:false><green>Colombia"
+global.cosmetic.banner.argentina.name: "<italic:false><green>Argentina"
+global.cosmetic.banner.france.name: "<italic:false><green>France"
+global.cosmetic.banner.italy.name: "<italic:false><green>Italy"
+global.cosmetic.banner.mexico.name: "<italic:false><green>Mexico"
+global.cosmetic.banner.uruguay.name: "<italic:false><green>Uruguay"
+global.cosmetic.banner.canada.name: "<italic:false><green>Canada"
+global.cosmetic.banner.usa.name: "<italic:false><green>USA"
+global.cosmetic.banner.lgbt_pride.name: "<italic:false><green>LGBT Pride <red>❤"
+global.cosmetic.banner.trans_pride.name: "<italic:false><green>Trans Pride <red>❤"
+global.cosmetic.banner.hypixel_studios.name: "<italic:false><green>Hypixel Studios"
+global.cosmetic.banner.hytale_info.name: "<italic:false><green>Hytale Info"
+global.cosmetic.banner.scarak.name: "<italic:false><green>Scarak"
+global.cosmetic.banner.kweebec.name: "<italic:false><green>Kweebec"
+global.cosmetic.banner.trork.name: "<italic:false><green>Trork"
+
+##################################
 # HELP COMMANDS AND ADMIN SYSTEMS
-#
-#############################################
+##################################
 system.lang.reloaded: "<green>Language files have been reloaded!"
 system.help:
   - ""
@@ -188,6 +251,7 @@ system.help:
   - "<aqua>/stk auto-join</aqua> <gray>- Joins the best available arena."
   - "<aqua>/stk list</aqua> <gray>- Lists arenas."
   - "<aqua>/stk arenas</aqua> <gray>- Open the arena selector menu."
+  - "<aqua>/stk banners</aqua> <gray>- Open the banner selector menu."
   - "<aqua>/stk join <gold>[uuid]</gold></aqua> <gray>- Joins arena with that UUID."
   - "<aqua>/stk leave</aqua> <gray>- Leave the arena you're in."
   - ""
@@ -215,7 +279,8 @@ system.lang.help:
   - ""
   - "<gold>Save The Kweebecs Language System"
   - "<aqua>/stk admin lang reload</aqua> <gray>- Reloads the language file."
-  - "<aqua>/stk admin lang testmessage <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang testmessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sends you a translated message."
   - ""
 system.lang.changed: "<green>We detected a language change to: <aqua><language></aqua>!"
 

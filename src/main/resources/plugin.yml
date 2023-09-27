@@ -3,3 +3,7 @@ version: '1.0'
 main: me.hugo.savethekweebecs.SaveTheKweebecs
 depend: [ SlimeWorldManager, Citizens ]
 api-version: '1.20'
+commands:
+  savethekweebecs:
+    aliases: [ stk ]
+    description: "Main Save The Kweebecs command."

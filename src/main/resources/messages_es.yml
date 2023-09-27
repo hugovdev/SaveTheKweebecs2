@@ -188,6 +188,7 @@ system.help:
   - "<aqua>/stk auto-join</aqua> <gray>- Joins the best available arena."
   - "<aqua>/stk list</aqua> <gray>- Lists arenas."
   - "<aqua>/stk arenas</aqua> <gray>- Open the arena selector menu."
+  - "<aqua>/stk banners</aqua> <gray>- Open the banner selector menu."
   - "<aqua>/stk join <gold>[uuid]</gold></aqua> <gray>- Joins arena with that UUID."
   - "<aqua>/stk leave</aqua> <gray>- Leave the arena you're in."
   - ""
@@ -215,7 +216,8 @@ system.lang.help:
   - ""
   - "<gold>Save The Kweebecs Language System"
   - "<aqua>/stk admin lang reload</aqua> <gray>- Reloads the language file."
-  - "<aqua>/stk admin lang testmessage <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang testmessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sends you a translated message."
   - ""
 system.lang.changed: "<green>¡Hemos detectado un cambio de lenguaje a: <aqua><language></aqua>!"
 

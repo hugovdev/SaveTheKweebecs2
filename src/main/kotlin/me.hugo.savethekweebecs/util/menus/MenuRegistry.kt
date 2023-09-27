@@ -16,6 +16,10 @@ class MenuRegistry : Listener {
         menus[inventory] = menu
     }
 
+    fun unregisterMenu(menu: InventoryMenu) {
+        menus.remove(menu.inventory)
+    }
+
     @EventHandler
     private fun onInventoryClick(event: InventoryClickEvent) {
         val player = event.whoClicked as Player ?: return

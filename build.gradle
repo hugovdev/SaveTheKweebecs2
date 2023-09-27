@@ -46,8 +46,8 @@ dependencies {
     compileOnly 'net.skinsrestorer:skinsrestorer-api:14.2.12'
 
     // Lamp Command Framework
-    implementation 'com.github.Revxrsal.Lamp:common:3.1.5'
-    implementation 'com.github.Revxrsal.Lamp:bukkit:3.1.5'
+    implementation 'com.github.Revxrsal.Lamp:common:3.1.6'
+    implementation 'com.github.Revxrsal.Lamp:bukkit:3.1.6'
 
     // Scoreboard API
     implementation 'fr.mrmicky:fastboard:2.0.0'

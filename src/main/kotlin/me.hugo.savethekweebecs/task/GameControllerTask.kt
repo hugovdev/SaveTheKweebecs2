@@ -81,6 +81,7 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
                         player.teleport(it)
                         player.reset(GameMode.SURVIVAL)
                         team.giveItems(player)
+                        player.inventory.helmet = player.playerData()?.bannerCosmetic?.getBanner(player)
                     }
                 } else {
                     player.showTitle(
