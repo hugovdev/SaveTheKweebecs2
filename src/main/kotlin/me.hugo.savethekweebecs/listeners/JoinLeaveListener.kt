@@ -35,6 +35,9 @@ class JoinLeaveListener : KoinComponent, Listener {
         event.joinMessage(null)
         val player = event.player
 
+        // Don't save any player data on worlds, etc.
+        player.isPersistent = false
+
         player.playerData()?.initBoard()
         gameManager.sendToHub(player)
         onlinePlayers++

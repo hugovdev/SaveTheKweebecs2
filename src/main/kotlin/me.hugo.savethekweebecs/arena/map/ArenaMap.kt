@@ -118,6 +118,11 @@ class ArenaMap(val configName: String, load: Boolean = true) : KoinComponent {
                         slimeWorldName, true, DEFAULT_PROPERTIES
                     )
 
+                    if (slimeWorld == null) {
+                        println("SlimeWorld for $configName is null!")
+                        return
+                    }
+
                     object : BukkitRunnable() {
                         override fun run() {
                             onSuccessful()

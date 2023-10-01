@@ -80,4 +80,6 @@ fun Player.reset(gameMode: GameMode) {
 
     inventory.clear()
     inventory.setArmorContents(null)
+
+    inventory.heldItemSlot = 0
 }
