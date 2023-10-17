@@ -1,5 +1,6 @@
 package me.hugo.savethekweebecs.extension
 
+import com.destroystokyo.paper.profile.ProfileProperty
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.arena.GameManager
@@ -7,8 +8,6 @@ import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import net.skinsrestorer.api.PlayerWrapper
-import net.skinsrestorer.api.SkinsRestorerAPI
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -43,11 +42,18 @@ fun Arena.start() {
             teamPlayer.teleport(spawnPoints!![spawnPointIndex].toLocation(world!!))
 
             teamPlayer.sendTranslated("arena.start.${team.id}")
-            SkinsRestorerAPI.getApi().applySkin(PlayerWrapper(teamPlayer), team.playerSkin)
 
             team.giveItems(teamPlayer)
-            teamPlayer.inventory.helmet = teamPlayer.playerData()?.bannerCosmetic?.getBanner(teamPlayer)
+
+            val selectedVisual = teamPlayer.playerDataOrCreate().selectedTeamVisuals[team] ?: team.defaultPlayerVisual
+
+            teamPlayer.inventory.helmet = selectedVisual.craftHead(teamPlayer)
             loadTeamColors(teamPlayer)
+
+            val profile = teamPlayer.playerProfile
+            profile.setProperty(ProfileProperty("textures", selectedVisual.skin.value, selectedVisual.skin.signature))
+
+            teamPlayer.playerProfile = profile
 
             spawnPointIndex = if (spawnPointIndex == spawnPoints.size - 1) 0 else spawnPointIndex + 1
         }
@@ -61,7 +67,11 @@ fun Arena.end(winnerTeam: TeamManager.Team) {
     playersPerTeam.forEach { (_, players) ->
         players.mapNotNull { it.player() }.forEach { teamPlayer ->
             teamPlayer.reset(GameMode.ADVENTURE)
-            SkinsRestorerAPI.getApi().applySkin(PlayerWrapper(teamPlayer), teamPlayer.playerDataOrCreate().playerSkin)
+
+            val profile = teamPlayer.playerProfile
+            profile.setTextures(null)
+
+            teamPlayer.playerProfile = profile
         }
     }
 
@@ -108,6 +118,8 @@ fun Arena.loadTeamColors(player: Player) {
             it.player()?.name?.let { playerName ->
                 if (isOwnTeam) ownTeam.addEntry(playerName)
                 else enemyTeam.addEntry(playerName)
+
+                health.getScore(playerName).score = 20
             }
         }
     }

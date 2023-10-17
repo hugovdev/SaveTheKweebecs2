@@ -56,11 +56,13 @@ class SaveTheKweebecsCommand : KoinComponent {
         gameManager.openArenasMenu(sender)
     }
 
-    @Subcommand("banners")
-    @Description("Opens the banner selector menu!")
+    @Subcommand("transformations")
+    @Description("Opens the transformations selector menu!")
     private fun openBannerSelector(sender: Player) {
-        if (sender.arena() != null) return
-        sender.playerData()?.bannersMenu?.open(sender)
+        val arena = sender.arena()
+        if (arena?.hasStarted() == true) return
+
+        sender.playerData()?.transformationsMenu?.open(sender)
     }
 
     @Subcommand("list")

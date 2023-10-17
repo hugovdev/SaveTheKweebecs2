@@ -1,6 +1,5 @@
 package me.hugo.savethekweebecs.util
 
-import com.destroystokyo.paper.MaterialSetTag
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.clickableitems.ItemSetManager
 import me.hugo.savethekweebecs.extension.flag
@@ -12,7 +11,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BannerMeta
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -40,6 +38,13 @@ class TranslatableClickableItem(configPath: String) : KoinComponent {
             val item = ItemStack(material)
                 .nameTranslatable(nameTranslation, langKey)
                 .loreTranslatable(loreTranslation, langKey)
+                .flag(
+                    ItemFlag.HIDE_ATTRIBUTES,
+                    ItemFlag.HIDE_ITEM_SPECIFICS,
+                    ItemFlag.HIDE_ENCHANTS,
+                    ItemFlag.HIDE_DYE,
+                    ItemFlag.HIDE_ARMOR_TRIM
+                )
 
             items[langKey] = item
             itemManager.registerItem(item, command)
@@ -52,23 +57,7 @@ class TranslatableClickableItem(configPath: String) : KoinComponent {
         val language = if (languageManager.availableLanguages.contains(locale)) locale
         else LanguageManager.DEFAULT_LANGUAGE
 
-        val item = items[language]?.clone()
-
-        if (item?.type?.let { MaterialSetTag.ITEMS_BANNERS.isTagged(it) } == true) {
-            val bannerMeta = item.itemMeta as BannerMeta
-
-            val currentBanner = player.playerData()?.bannerCosmetic?.banner
-
-            (currentBanner?.itemMeta as BannerMeta?)?.let {
-                bannerMeta.patterns = it.patterns
-                item.type = currentBanner!!.type
-            }
-
-            item.itemMeta = bannerMeta
-
-
-            item.flag(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ITEM_SPECIFICS)
-        }
+        val item = items[language] ?: return
 
         player.inventory.setItem(slot, item)
     }

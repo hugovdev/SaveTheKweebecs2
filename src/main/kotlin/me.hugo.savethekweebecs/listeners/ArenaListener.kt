@@ -138,6 +138,8 @@ class ArenaListener : KoinComponent, Listener {
     fun onNPCClick(event: NPCRightClickEvent) {
         val npc = event.npc
 
+        if (event.clicker.gameMode == GameMode.SPECTATOR) return
+
         if (npc.data().has("arena")) {
             val arena = gameManager.arenas[UUID.fromString(npc.data().get("arena"))] ?: return
 

@@ -145,7 +145,7 @@ class PaginatedMenu(
             "---------"
                     + "-XXXXXXX-"
         ),
-        ONE_ROW_WITHOUT_SIDES(
+        ONE_TRIMMED(
             ("---------"
                     + "--XXXXX--")
         ),

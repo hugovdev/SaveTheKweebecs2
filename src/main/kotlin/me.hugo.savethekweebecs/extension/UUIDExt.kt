@@ -11,5 +11,10 @@ private val languageManager: LanguageManager by KoinJavaComponent.inject(Languag
 private val miniMessage: MiniMessage = MiniMessage.miniMessage()
 
 fun UUID.translate(key: String, vararg tagResolver: TagResolver): Component {
-    return miniMessage.deserialize(languageManager.getLangString(key, this.playerData()?.locale?:LanguageManager.DEFAULT_LANGUAGE), *tagResolver)
+    return miniMessage.deserialize(
+        languageManager.getLangString(
+            key,
+            this.playerData()?.locale ?: LanguageManager.DEFAULT_LANGUAGE
+        ), *tagResolver
+    )
 }

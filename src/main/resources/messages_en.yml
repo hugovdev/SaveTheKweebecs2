@@ -17,13 +17,19 @@ lobby.item.gameSelector.lore:
   - ""
   - "<italic:false><yellow>Click to open!"
 
-lobby.item.bannerSelector.name: "<italic:false><green>Banner Selector</green> <gray>(Right Click)"
-lobby.item.bannerSelector.lore:
-  - "<italic:false><gray>Open the banner selector and"
-  - "<italic:false><gray>choose a banner to wear!"
+lobby.item.transformationSelector.name: "<italic:false><green>Transformation Selector</green> <gray>(Right Click)"
+lobby.item.transformationSelector.lore:
+  - "<italic:false><gray>Choose between team transformations"
+  - "<italic:false><gray>like trork type or kweebec age!"
   - ""
   - "<italic:false><yellow>Click to open!"
 
+lobby.item.teamSelector.name: "<italic:false><green>Team Selector</green> <gray>(Right Click)"
+lobby.item.teamSelector.lore:
+  - "<italic:false><gray>Choose a prefer to team to play as!"
+  - ""
+  - "<italic:false><yellow>Click to open!"
+  -
 lobby.item.backLobby.name: "<italic:false><green>Back to Hub</green> <gray>(Right Click)"
 lobby.item.backLobby.lore:
   - "<italic:false><gray>Go back to the main Thankmas hub!"
@@ -116,32 +122,43 @@ menu.arenas.arenaIcon.lore:
   - ""
   - "<italic:false><yellow>Click to join!"
 
-menu.banners.title: "Banner Selector"
-menu.banners.icon.name: "<italic:false><green>Banner Selector"
-menu.banners.icon.lore:
-  - "<italic:false><gray>Choose a banner and wear"
-  - "<italic:false><gray>it into battle!"
+menu.teamVisuals.title: "Transformation Selector"
+menu.teamVisuals.icon.name: "<italic:false><green>Transformation Selector"
+menu.teamVisuals.icon.lore:
+  - "<italic:false><gray>Choose a transformation for a"
+  - "<italic:false><gray>team to use in battle!"
 
-menu.banners.selectLore:
-  - "<italic:false><gray>Wear <banner_name> and show your"
-  - "<italic:false><gray>own style during the battle!"
+menu.teamVisuals.icon.team.trork.name: "<italic:false><green>Trork Archetypes"
+menu.teamVisuals.icon.team.trork.lore:
+  - "<italic:false><gray>Select the trork archetype you"
+  - "<italic:false><gray>want to play as!"
+  - ""
+  - "<italic:false><gray>Archetypes are cosmetic-only."
+  - ""
+  - "<italic:false><yellow>Click to open!"
+
+menu.teamVisuals.icon.team.kweebec.name: "<italic:false><green>Kweebec Age"
+menu.teamVisuals.icon.team.kweebec.lore:
+  - "<italic:false><gray>Select the kweebec age you"
+  - "<italic:false><gray>want to play as!"
+  - ""
+  - "<italic:false><gray>Kweebec ages are cosmetic-only."
+  - ""
+  - "<italic:false><yellow>Click to open!"
+
+menu.teamVisuals.selectLore:
+  - "<italic:false><gray>Use the <visual_name>"
+  - "<italic:false><gray>transformation!"
   - ""
   - "<italic:false><yellow>Click to select!"
 
-menu.banners.selectedLore:
-  - "<italic:false><gray>Wear <banner_name> and show your"
-  - "<italic:false><gray>own style during the battle!"
+menu.teamVisuals.selectedLore:
+  - "<italic:false><gray>Use the <visual_name>"
+  - "<italic:false><gray>transformation!"
   - ""
   - "<italic:false><green>SELECTED"
 
-menu.banners.deselect.name: "<italic:false><red>None"
-menu.banners.deselect.lore:
-  - "<italic:false><gray>Clean head, no banners!"
-  - ""
-  - "<italic:false><yellow>Click to remove banner!"
-
-system.banners.removed: "<yellow>You have removed your banner!"
-system.banners.equipped: "<yellow>You equipped the banner </yellow><banner_name><yellow>!"
+system.teamVisuals.equipped: "<yellow>You selected the </yellow><visual_name><yellow> transformation!"
 
 ##################################
 # ARENA EVENTS AND MESSAGES
@@ -218,26 +235,25 @@ arena.list.header: "<green>Current Arenas:"
 arena.list.member: " <gray>- <aqua><display_name></aqua> |</gray> <arena_state><gray> | <map_name> | <yellow><b><hover:show_text:'<green><display_name>\n<gray>Players: <white><current_players>/<max_players>\n\n<yellow>Click to join!'><click:run_command:'/stk join <arena_uuid>'>JOIN</click></hover>"
 
 ##################################
-# BANNER COSMETIC NAMES
+# TEAM HEAD COSMETIC NAMES
 ##################################
-global.cosmetic.banner.united_kingdom.name: "<italic:false><green>United Kingdom"
-global.cosmetic.banner.spain.name: "<italic:false><green>Spain"
-global.cosmetic.banner.germany.name: "<italic:false><green>Germany"
-global.cosmetic.banner.colombia.name: "<italic:false><green>Colombia"
-global.cosmetic.banner.argentina.name: "<italic:false><green>Argentina"
-global.cosmetic.banner.france.name: "<italic:false><green>France"
-global.cosmetic.banner.italy.name: "<italic:false><green>Italy"
-global.cosmetic.banner.mexico.name: "<italic:false><green>Mexico"
-global.cosmetic.banner.uruguay.name: "<italic:false><green>Uruguay"
-global.cosmetic.banner.canada.name: "<italic:false><green>Canada"
-global.cosmetic.banner.usa.name: "<italic:false><green>USA"
-global.cosmetic.banner.lgbt_pride.name: "<italic:false><green>LGBT Pride <red>❤"
-global.cosmetic.banner.trans_pride.name: "<italic:false><green>Trans Pride <red>❤"
-global.cosmetic.banner.hypixel_studios.name: "<italic:false><green>Hypixel Studios"
-global.cosmetic.banner.hytale_info.name: "<italic:false><green>Hytale Info"
-global.cosmetic.banner.scarak.name: "<italic:false><green>Scarak"
-global.cosmetic.banner.kweebec.name: "<italic:false><green>Kweebec"
-global.cosmetic.banner.trork.name: "<italic:false><green>Trork"
+global.cosmetic.head.trork-shaman.hat_name: "<italic:false><green>Shaman Trork Head"
+global.cosmetic.head.trork-shaman.selector_name: "<italic:false><green>Shaman Trork</green>"
+global.cosmetic.head.trork-chieftain.hat_name: "<italic:false><green>Chieftain Trork Head"
+global.cosmetic.head.trork-chieftain.selector_name: "<italic:false><green>Chieftain Trork</green>"
+global.cosmetic.head.trork-warrior.hat_name: "<italic:false><green>Warrior Trork Head"
+global.cosmetic.head.trork-warrior.selector_name: "<italic:false><green>Warrior Trork</green>"
+global.cosmetic.head.trork-hunter.hat_name: "<italic:false><green>Hunter Trork Head"
+global.cosmetic.head.trork-hunter.selector_name: "<italic:false><green>Hunter Trork</green>"
+
+global.cosmetic.head.kweebec-seedling.hat_name: "<italic:false><green>Seedling Head"
+global.cosmetic.head.kweebec-seedling.selector_name: "<italic:false><green>Kweebec Seedling</green>"
+global.cosmetic.head.kweebec-young.hat_name: "<italic:false><green>Young Kweebec Head"
+global.cosmetic.head.kweebec-young.selector_name: "<italic:false><green>Young Kweebec</green>"
+global.cosmetic.head.kweebec-adult.hat_name: "<italic:false><green>Adult Kweebec Head"
+global.cosmetic.head.kweebec-adult.selector_name: "<italic:false><green>Adult Kweebec</green>"
+global.cosmetic.head.kweebec-elder.hat_name: "<italic:false><green>Elder Kweebec Head"
+global.cosmetic.head.kweebec-elder.selector_name: "<italic:false><green>Elder Kweebec</green>"
 
 ##################################
 # HELP COMMANDS AND ADMIN SYSTEMS
@@ -251,7 +267,7 @@ system.help:
   - "<aqua>/stk auto-join</aqua> <gray>- Joins the best available arena."
   - "<aqua>/stk list</aqua> <gray>- Lists arenas."
   - "<aqua>/stk arenas</aqua> <gray>- Open the arena selector menu."
-  - "<aqua>/stk banners</aqua> <gray>- Open the banner selector menu."
+  - "<aqua>/stk transformations</aqua> <gray>- Open the transformations selector menu."
   - "<aqua>/stk join <gold>[uuid]</gold></aqua> <gray>- Joins arena with that UUID."
   - "<aqua>/stk leave</aqua> <gray>- Leave the arena you're in."
   - ""

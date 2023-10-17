@@ -73,7 +73,8 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
                 val newTime = secondsLeft - 1
                 arena.deadPlayers[player] = newTime
 
-                val team = player.playerDataOrCreate().currentTeam ?: return@deadPlayers
+                val playerData = player.playerDataOrCreate()
+                val team = playerData.currentTeam ?: return@deadPlayers
 
                 if (newTime == 0) {
                     arena.deadPlayers.remove(player)
@@ -81,7 +82,10 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
                         player.teleport(it)
                         player.reset(GameMode.SURVIVAL)
                         team.giveItems(player)
-                        player.inventory.helmet = player.playerData()?.bannerCosmetic?.getBanner(player)
+
+                        val selectedVisual =
+                            playerData.selectedTeamVisuals[team] ?: team.defaultPlayerVisual
+                        player.inventory.helmet = selectedVisual.craftHead(player)
                     }
                 } else {
                     player.showTitle(

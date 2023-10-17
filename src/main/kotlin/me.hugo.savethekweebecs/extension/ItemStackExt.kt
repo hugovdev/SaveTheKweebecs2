@@ -30,6 +30,13 @@ fun ItemStack.nameTranslatable(key: String, locale: String, vararg tagResolvers:
     return this
 }
 
+fun ItemStack.customModelData(id: Int): ItemStack {
+    val meta = itemMeta
+    meta.setCustomModelData(id)
+    itemMeta = meta
+    return this
+}
+
 fun ItemStack.loreTranslatable(key: String, locale: String, vararg tagResolvers: TagResolver): ItemStack {
     lore(languageManager.getLangStringList(key, locale).map { miniMessage.deserialize(it, *tagResolvers) })
     return this

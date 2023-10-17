@@ -38,7 +38,7 @@ class JoinLeaveListener : KoinComponent, Listener {
         // Don't save any player data on worlds, etc.
         player.isPersistent = false
 
-        player.playerData()?.initBoard()
+        player.playerData()?.initialize()
         gameManager.sendToHub(player)
         onlinePlayers++
 

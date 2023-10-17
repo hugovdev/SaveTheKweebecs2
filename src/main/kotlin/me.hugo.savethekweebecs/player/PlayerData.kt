@@ -1,24 +1,23 @@
 package me.hugo.savethekweebecs.player
 
 import fr.mrmicky.fastboard.adventure.FastBoard
-import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.clickableitems.ItemSetManager
-import me.hugo.savethekweebecs.cosmetic.BannerCosmetic
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
+import me.hugo.savethekweebecs.util.menus.Icon
 import me.hugo.savethekweebecs.util.menus.MenuRegistry
 import me.hugo.savethekweebecs.util.menus.PaginatedMenu
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import net.skinsrestorer.api.SkinsRestorerAPI
-import net.skinsrestorer.api.property.IProperty
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.profile.PlayerTextures
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
@@ -29,12 +28,13 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
     private val menuRegistry: MenuRegistry by inject()
     private val scoreboardManager: ScoreboardTemplateManager by inject()
     private val itemManager: ItemSetManager by inject()
+    private val teamManager: TeamManager by inject()
 
     var currentArena: Arena? = null
     var currentTeam: TeamManager.Team? = null
     var lastAttack: PlayerAttack? = null
 
-    var playerSkin: IProperty? = null
+    var playerSkin: PlayerTextures? = null
     var fastBoard: FastBoard? = null
 
     var locale: String = LanguageManager.DEFAULT_LANGUAGE
@@ -56,20 +56,18 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
                 itemManager.getSet("lobby")?.forEach { it.give(player) }
             }
 
-            // Rebuild the banner menu in the new language.
-            makeBannersMenu()
+            // Rebuild the visuals menus in the new language.
+            transformationsMenu = createTransformationsMenu()
+            teamVisualMenu.keys.forEach { teamVisualMenu[it] = it.makeTeamVisualsMenu() }
         }
 
-    var bannersMenu: PaginatedMenu? = makeBannersMenu()
+    var transformationsMenu: PaginatedMenu = createTransformationsMenu()
 
-    var bannerCosmetic: BannerCosmetic = BannerCosmetic.NONE
-        set(banner) {
-            val old = field
-            field = banner
+    val selectedTeamVisuals: MutableMap<TeamManager.Team, TeamManager.TeamVisual> =
+        teamManager.teams.values.associateWith { it.defaultPlayerVisual }.toMutableMap()
 
-            bannersMenu?.replaceFirst(old.getDisplayItem(uuid, true), old.getIcon(uuid, false))
-            bannersMenu?.replaceFirst(banner.getDisplayItem(uuid, false), banner.getIcon(uuid, true))
-        }
+    val teamVisualMenu: MutableMap<TeamManager.Team, PaginatedMenu> =
+        teamManager.teams.values.associateWith { it.makeTeamVisualsMenu() }.toMutableMap()
 
     var kills: Int = 0
         set(value) {
@@ -89,39 +87,78 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
             uuid.player()?.updateBoardTags("coins")
         }
 
-    init {
-        // Save the player skin for later!
-        object : BukkitRunnable() {
-            override fun run() {
-                playerSkin = SkinsRestorerAPI.getApi().getProfile(uuid.toString())
-            }
-        }.runTaskAsynchronously(SaveTheKweebecs.getInstance())
-    }
+    private fun createTransformationsMenu(): PaginatedMenu {
+        transformationsMenu?.let { it.pages.forEach { menuRegistry.unregisterMenu(it) } }
 
-    private fun makeBannersMenu(): PaginatedMenu? {
-        bannersMenu?.pages?.forEach { menuRegistry.unregisterMenu(it) }
-
-        bannersMenu = PaginatedMenu(
-            9 * 4, "menu.banners.title",
-            PaginatedMenu.PageFormat.TWO_ROWS_TRIMMED.format,
-            ItemStack(Material.WHITE_BANNER)
-                .nameTranslatable("menu.banners.icon.name", locale)
-                .loreTranslatable("menu.banners.icon.lore", locale)
-            ,
+        val newMenu = PaginatedMenu(
+            9 * 4, "menu.teamVisuals.title",
+            "",
+            ItemStack(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
+                .flag(
+                    ItemFlag.HIDE_ARMOR_TRIM,
+                    ItemFlag.HIDE_ATTRIBUTES,
+                    ItemFlag.HIDE_ITEM_SPECIFICS,
+                    ItemFlag.HIDE_ENCHANTS
+                )
+                .nameTranslatable("menu.teamVisuals.icon.name", locale)
+                .loreTranslatable("menu.teamVisuals.icon.lore", locale),
             null, locale
         )
 
-        BannerCosmetic.entries.forEach { bannersMenu!!.addItem(it.getIcon(uuid, bannerCosmetic == it)) }
+        teamManager.teams.values.forEach {
+            newMenu.setItem(Icon(
+                ItemStack(Material.CARVED_PUMPKIN)
+                    .customModelData(it.defaultPlayerVisual.headCustomId)
+                    .nameTranslatable("menu.teamVisuals.icon.team.${it.id}.name", locale)
+                    .loreTranslatable("menu.teamVisuals.icon.team.${it.id}.lore", locale)
+            ).addClickAction { player, _ ->
+                teamVisualMenu[it]?.open(player)
+                player.playSound(Sound.BLOCK_CHEST_OPEN)
+            }, 0, it.transformationsMenuSlot
+            )
+        }
 
-        return bannersMenu
+        return newMenu
     }
 
-    fun initBoard() {
+    private fun TeamManager.Team.makeTeamVisualsMenu(): PaginatedMenu {
+        if (teamVisualMenu != null) teamVisualMenu[this]?.pages?.forEach { menuRegistry.unregisterMenu(it) }
+
+        val newMenu = PaginatedMenu(
+            9 * 4, "menu.teamVisuals.title",
+            PaginatedMenu.PageFormat.ONE_TRIMMED.format,
+            ItemStack(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
+                .flag(
+                    ItemFlag.HIDE_ARMOR_TRIM,
+                    ItemFlag.HIDE_ATTRIBUTES,
+                    ItemFlag.HIDE_ITEM_SPECIFICS,
+                    ItemFlag.HIDE_ENCHANTS
+                )
+                .nameTranslatable("menu.teamVisuals.icon.name", locale)
+                .loreTranslatable("menu.teamVisuals.icon.lore", locale),
+            transformationsMenu.pages.firstOrNull(), locale
+        )
+
+        this.visuals.forEach {
+            newMenu.addItem(
+                it.getIcon(
+                    uuid, this,
+                    (selectedTeamVisuals[this] ?: this.defaultPlayerVisual) == it
+                )
+            )
+        }
+
+        return newMenu
+    }
+
+    fun initialize() {
         val player = uuid.player() ?: return
         player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
 
         fastBoard = FastBoard(player)
         fastBoard!!.updateTitle(player.translate("global.scoreboard.title"))
+
+        playerSkin = player.playerProfile.textures
     }
 
     fun setLobbyBoard(player: Player) {
