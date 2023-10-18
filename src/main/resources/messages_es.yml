@@ -1,9 +1,52 @@
+##################################
+# GLOBAL STUFF
+##################################
 global.scoreboard.title: "<aqua><b>THANKMAS 2023"
 global.menu.close.name: "<italic:false><green>Cerrar"
 global.menu.back.name: "<italic:false><green>Volver"
 global.menu.previousPage.name: "<italic:false><green>Página anterior"
-global.menu.nextPage.name: "<italic:false><green>Siguiente Page"
+global.menu.nextPage.name: "<italic:false><green>Siguiente Página"
 
+##################################
+# CLICKABLE ITEMS
+##################################
+lobby.item.gameSelector.name: "<italic:false><green>Selector de Mapas</green> <gray>(Click Derecho)"
+lobby.item.gameSelector.lore:
+  - "<italic:false><gray>Abre el selector de mapas y elige"
+  - "<italic:false><gray>una arena en la que entrar."
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+lobby.item.transformationSelector.name: "<italic:false><green>Selector de Transformaciones</green> <gray>(Click Derecho)"
+lobby.item.transformationSelector.lore:
+  - "<italic:false><gray>¡Elige entre disfraces de equipos como"
+  - "<italic:false><gray>tipos de trork o edad de kweebec!"
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+lobby.item.backLobby.name: "<italic:false><green>Volver al Hub</green> <gray>(Click Derecho)"
+lobby.item.backLobby.lore:
+  - "<italic:false><gray>¡Vuelve al hub principal de Thankmas!"
+  - ""
+  - "<italic:false><yellow>¡Click para teletransportarte!"
+
+arena.item.leave.name: "<italic:false><red><b>Volver al Lobby</b></red> <gray>(Click Derecho)"
+arena.item.leave.lore:
+  - "<italic:false><gray>¡Vuelve al lobby principal"
+  - "<italic:false><gray>de Save The Kweebecs!"
+  - ""
+  - "<italic:false><yellow>¡Click para teletransportarte!"
+
+arena.item.teamSelector.name: "<italic:false><green>Selector de Equipo</green> <gray>(Click Derecho)"
+arena.item.teamSelector.lore:
+  - "<italic:false><gray>¡Elige un equipo preferido"
+  - "<italic:false><gray>al que unirte!"
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+##################################
+# SCOREBOARDS
+##################################
 scoreboard.lobby.lines:
   - "<gray>Lobby <date>"
   - ""
@@ -15,26 +58,6 @@ scoreboard.lobby.lines:
   - "Jugadores: <green><all_players>"
   - ""
   - "<yellow>thankmas.skynode.pro"
-
-lobby.item.gameSelector.name: "<italic:false><green>Selector de Mapas</green> <gray>(Click Derecho)"
-lobby.item.gameSelector.lore:
-  - "<italic:false><gray>Abre el selector de mapas y elige"
-  - "<italic:false><gray>una arena en la que entrar."
-  - ""
-  - "<italic:false><yellow>¡Click para abrir!"
-
-lobby.item.bannerSelector.name: "<italic:false><green>Selector de Banner</green> <gray>(Click Derecho)"
-lobby.item.bannerSelector.lore:
-  - "<italic:false><gray>Abre el selector de banners y elige"
-  - "<italic:false><gray>uno para ponértelo."
-  - ""
-  - "<italic:false><yellow>¡Click para abrir!"
-
-lobby.item.backLobby.name: "<italic:false><green>Volver al Hub</green> <gray>(Click Derecho)"
-lobby.item.backLobby.lore:
-  - "<italic:false><gray>¡Vuelve al hub principal de Thankmas!"
-  - ""
-  - "<italic:false><yellow>¡Click para teletransportarte!"
 
 scoreboard.waiting.lines:
   - "<gray>Equipos <date>"
@@ -88,17 +111,14 @@ scoreboard.finishing.lines:
   - ""
   - "<yellow>thankmas.skynode.pro"
 
-arena.state.waiting: "<green>Esperando</green>"
-arena.state.starting: "<gold>Empezando</gold>"
-arena.state.in_game: "<red>Jugando</red>"
-arena.state.finishing: "<red>Terminando</red>"
-arena.state.resetting: "<gray>Reiniciando</gray>"
-
+##################################
+# MENUS | ARENAS AND TRANSFORMATIONS
+##################################
+menu.arenas.title: "Selector de Mapas"
 menu.arenas.icon.name: "<italic:false><green>Selector de Mapas"
 menu.arenas.icon.lore:
   - "<italic:false><gray>Elige un mapa que jugar arriba."
 
-menu.arenas.title: "Selector de Mapas"
 menu.arenas.arenaIcon.name: "<italic:false><green><display_name>"
 menu.arenas.arenaIcon.lore:
   - "<italic:false><gray>Jugadores: <white><current_players>/<max_players>"
@@ -109,6 +129,63 @@ menu.arenas.arenaIcon.lore:
   - "<italic:false><gray>UUID: <white><arena_short_uuid>"
   - ""
   - "<italic:false><yellow>¡Click para entrar!"
+
+menu.teamVisuals.title: "Selector de Transformación"
+menu.teamVisuals.icon.name: "<italic:false><green>Selector de Transformación"
+menu.teamVisuals.icon.lore:
+  - "<italic:false><gray>¡Elige una transformación para"
+  - "<italic:false><gray>cada equipo y úsala en batalla!"
+
+menu.teamVisuals.icon.team.trork.name: "<italic:false><green>Arquetipo de Trork"
+menu.teamVisuals.icon.team.trork.lore:
+  - "<italic:false><dark_gray>Cosmético de Batalla"
+  - ""
+  - "<italic:false><gray>¡Selecciona el tipo de trork"
+  - "<italic:false><gray>con el que vas a jugar!"
+  - ""
+  - "<italic:false><gray>Arquetipos:"
+  - "<italic:false>  <white>•</white> <gray>Chamán"
+  - "<italic:false>  <white>•</white> <gray>Jefe"
+  - "<italic:false>  <white>•</white> <gray>Guerrero"
+  - "<italic:false>  <white>•</white> <gray>Cazador"
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+menu.teamVisuals.icon.team.kweebec.name: "<italic:false><green>Edad del Kweebec"
+menu.teamVisuals.icon.team.kweebec.lore:
+  - "<italic:false><dark_gray>Cosmético de Batalla"
+  - ""
+  - "<italic:false><gray>¡Selecciona la etapa de vida"
+  - "<italic:false><gray>con la que vas a jugar!"
+  - ""
+  - "<italic:false><gray>Etapas de Vida:"
+  - "<italic:false>  <white>•</white> <gray>Semilla"
+  - "<italic:false>  <white>•</white> <gray>Joven"
+  - "<italic:false>  <white>•</white> <gray>Adulto"
+  - "<italic:false>  <white>•</white> <gray>Anciano"
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+menu.teamVisuals.selectLore:
+  - "<italic:false><gray>¡Usa <visual_name> como"
+  - "<italic:false><gray>tu transformación!"
+  - ""
+  - "<italic:false><yellow>¡Click para seleccionar!"
+
+menu.teamVisuals.selectedLore:
+  - "<italic:false><gray>¡Usa <visual_name> como"
+  - "<italic:false><gray>tu transformación!"
+  - ""
+  - "<italic:false><green>SELECCIONADA"
+
+##################################
+# ARENA EVENTS AND MESSAGES
+##################################
+arena.state.waiting: "<green>Esperando</green>"
+arena.state.starting: "<gold>Empezando</gold>"
+arena.state.in_game: "<red>Jugando</red>"
+arena.state.finishing: "<red>Terminando</red>"
+arena.state.resetting: "<gray>Reiniciando</gray>"
 
 arena.join.global: "<yellow>[<b>!</b>] ¡<green><player_name></green> se ha unido! (<aqua><current_players></aqua>/<aqua><max_players></aqua>)"
 arena.leave.global: "<yellow>[<b>!</b>] ¡<red><player_name></red> se ha ido! (<aqua><current_players></aqua>/<aqua><max_players></aqua>)"
@@ -122,13 +199,6 @@ arena.starting.seconds: "<yellow>[<b>!</b>] ¡La partida comienza en <gold><coun
 arena.starting.second: "<yellow>[<b>!</b>] ¡La partida comienza en <gold><count></gold> segundo!"
 arena.finishing.seconds: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundos!"
 arena.finishing.second: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundo!"
-
-arena.item.leave.name: "<italic:false><red><b>Volver al Lobby</b></red> <gray>(Click Derecho)"
-arena.item.leave.lore:
-  - "<italic:false><gray>¡Vuelve al lobby principal"
-  - "<italic:false><gray>de Save The Kweebecs!"
-  - ""
-  - "<italic:false><yellow>¡Click para teletransportarte!"
 
 arena.death.self: "<yellow>¡<red><player></red> ha muerto!"
 arena.death.player: "<yellow>¡<red><player></red> fue asesinado por <red><killer></red>!"
@@ -174,12 +244,42 @@ arena.start.trork:
   - ""
 arena.list.header: "<green>Arenas actuales:"
 arena.list.member: " <gray>- <aqua><display_name></aqua> |</gray> <arena_state><gray> | <map_name> | <yellow><b><hover:show_text:'<green><display_name>\n<gray>Jugadores: <white><current_players>/<max_players>\n\n<yellow>¡Click para entrar!'><click:run_command:'/stk join <arena_uuid>'>JOIN</click></hover>"
+
+##################################
+# TEAM HEAD COSMETIC NAMES
+##################################
+global.cosmetic.head.trork-shaman.hat_name: "<italic:false><green>Cabeza de Trork Chamán"
+global.cosmetic.head.trork-shaman.selector_name: "<italic:false><green>Trork Chamán</green>"
+
+global.cosmetic.head.trork-chieftain.hat_name: "<italic:false><green>Cabeza de Trork Jefe"
+global.cosmetic.head.trork-chieftain.selector_name: "<italic:false><green>Trork Jefe</green>"
+
+global.cosmetic.head.trork-warrior.hat_name: "<italic:false><green>Cabeza de Trork Guerrero"
+global.cosmetic.head.trork-warrior.selector_name: "<italic:false><green>Trork Guerrero</green>"
+
+global.cosmetic.head.trork-hunter.hat_name: "<italic:false><green>Cabeza de Trork Cazador"
+global.cosmetic.head.trork-hunter.selector_name: "<italic:false><green>Trork Cazador</green>"
+
+global.cosmetic.head.kweebec-seedling.hat_name: "<italic:false><green>Cabeza de Kweebec Semilla"
+global.cosmetic.head.kweebec-seedling.selector_name: "<italic:false><green>Kweebec Semilla</green>"
+
+global.cosmetic.head.kweebec-child.hat_name: "<italic:false><green>Cabeza de Kweebec Joven"
+global.cosmetic.head.kweebec-child.selector_name: "<italic:false><green>Kweebec Joven</green>"
+
+global.cosmetic.head.kweebec-adult.hat_name: "<italic:false><green>Cabeza de Kweebec Adulto"
+global.cosmetic.head.kweebec-adult.selector_name: "<italic:false><green>Kweebec Adulto</green>"
+
+global.cosmetic.head.kweebec-elder.hat_name: "<italic:false><green>Cabeza de Kweebec Anciano"
+global.cosmetic.head.kweebec-elder.selector_name: "<italic:false><green>Kweebec Anciano</green>"
+
 #############################################
 #
 # HELP COMMANDS AND ADMIN SYSTEMS
 #
 #############################################
-system.lang.reloaded: "<green>¡Se han recargado los archivos de lenguaje!"
+system.teamVisuals.equipped: "<yellow>¡Has seleccionado la transformación </yellow><visual_name><yellow>!"
+system.teamVisuals.alreadySelected: "<red>¡Ya tienes la transformación </red><visual_name><red> seleccionada!"
+system.lang.reloaded: "<green>¡El archivo del lenguaje ha sido recargado!"
 system.help:
   - ""
   - "<gold>Save The Kweebecs Help System"

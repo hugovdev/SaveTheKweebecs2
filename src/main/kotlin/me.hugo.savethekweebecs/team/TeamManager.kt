@@ -104,6 +104,21 @@ class TeamManager {
                 val playerData = player.playerData() ?: return@addClickAction
 
                 val oldVisual = playerData.selectedTeamVisuals[team] ?: team.defaultPlayerVisual
+
+                if (oldVisual == this) {
+                    player.sendTranslated(
+                        "system.teamVisuals.alreadySelected",
+                        Placeholder.component(
+                            "visual_name",
+                            playerUuid.translate("global.cosmetic.head.$key.selector_name")
+                        )
+                    )
+
+                    player.playSound(Sound.ENTITY_ENDERMAN_TELEPORT)
+
+                    return@addClickAction
+                }
+
                 playerData.selectedTeamVisuals[team] = this
 
                 player.sendTranslated(

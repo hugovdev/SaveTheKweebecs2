@@ -19,26 +19,46 @@ lobby.item.gameSelector.lore:
 
 lobby.item.transformationSelector.name: "<italic:false><green>Transformation Selector</green> <gray>(Right Click)"
 lobby.item.transformationSelector.lore:
-  - "<italic:false><gray>Choose between team transformations"
+  - "<italic:false><gray>Choose between team disguises"
   - "<italic:false><gray>like trork type or kweebec age!"
   - ""
   - "<italic:false><yellow>Click to open!"
 
-lobby.item.teamSelector.name: "<italic:false><green>Team Selector</green> <gray>(Right Click)"
-lobby.item.teamSelector.lore:
-  - "<italic:false><gray>Choose a prefer to team to play as!"
-  - ""
-  - "<italic:false><yellow>Click to open!"
-  -
 lobby.item.backLobby.name: "<italic:false><green>Back to Hub</green> <gray>(Right Click)"
 lobby.item.backLobby.lore:
   - "<italic:false><gray>Go back to the main Thankmas hub!"
   - ""
   - "<italic:false><yellow>Click to teleport!"
 
+arena.item.leave.name: "<italic:false><red><b>Back to Lobby</b></red> <gray>(Right Click)"
+arena.item.leave.lore:
+  - "<italic:false><gray>Go back to the save the"
+  - "<italic:false><gray>kweebecs lobby!"
+  - ""
+  - "<italic:false><yellow>Click to teleport!"
+
+arena.item.teamSelector.name: "<italic:false><green>Team Selector</green> <gray>(Right Click)"
+arena.item.teamSelector.lore:
+  - "<italic:false><gray>Choose a prefer to"
+  - "<italic:false><gray>team to play as!"
+  - ""
+  - "<italic:false><yellow>Click to open!"
+
 ##################################
 # SCOREBOARDS
 ##################################
+scoreboard.lobby.lines:
+  - "<gray>Lobby <date>"
+  - ""
+  - "Welcome to"
+  - "Hytale Thankmas!"
+  - ""
+  - "Lobby: <green>#1"
+  - ""
+  - "Players: <green><all_players>"
+  - ""
+  - "<yellow>thankmas.skynode.pro"
+
 scoreboard.waiting.lines:
   - "<gray>Teams <date>"
   - ""
@@ -91,20 +111,8 @@ scoreboard.finishing.lines:
   - ""
   - "<yellow>thankmas.skynode.pro"
 
-scoreboard.lobby.lines:
-  - "<gray>Lobby <date>"
-  - ""
-  - "Welcome to"
-  - "Hytale Thankmas!"
-  - ""
-  - "Lobby: <green>#1"
-  - ""
-  - "Players: <green><all_players>"
-  - ""
-  - "<yellow>thankmas.skynode.pro"
-
 ##################################
-# MENUS | ARENAS AND BANNERS
+# MENUS | ARENAS AND TRANSFORMATIONS
 ##################################
 menu.arenas.title: "Map Selector"
 menu.arenas.icon.name: "<italic:false><green>Map Selector"
@@ -128,21 +136,33 @@ menu.teamVisuals.icon.lore:
   - "<italic:false><gray>Choose a transformation for a"
   - "<italic:false><gray>team to use in battle!"
 
-menu.teamVisuals.icon.team.trork.name: "<italic:false><green>Trork Archetypes"
+menu.teamVisuals.icon.team.trork.name: "<italic:false><green>Trork Archetype"
 menu.teamVisuals.icon.team.trork.lore:
-  - "<italic:false><gray>Select the trork archetype you"
-  - "<italic:false><gray>want to play as!"
+  - "<italic:false><dark_gray>Battle Cosmetic"
   - ""
-  - "<italic:false><gray>Archetypes are cosmetic-only."
+  - "<italic:false><gray>Select the trork type"
+  - "<italic:false><gray>you want to play as!"
+  - ""
+  - "<italic:false><gray>Archetypes:"
+  - "<italic:false>  <white>•</white> <gray>Shaman"
+  - "<italic:false>  <white>•</white> <gray>Chieftain"
+  - "<italic:false>  <white>•</white> <gray>Warrior"
+  - "<italic:false>  <white>•</white> <gray>Hunter"
   - ""
   - "<italic:false><yellow>Click to open!"
 
 menu.teamVisuals.icon.team.kweebec.name: "<italic:false><green>Kweebec Age"
 menu.teamVisuals.icon.team.kweebec.lore:
-  - "<italic:false><gray>Select the kweebec age you"
-  - "<italic:false><gray>want to play as!"
+  - "<italic:false><dark_gray>Battle Cosmetic"
   - ""
-  - "<italic:false><gray>Kweebec ages are cosmetic-only."
+  - "<italic:false><gray>Select the kweebec age"
+  - "<italic:false><gray>you want to play as!"
+  - ""
+  - "<italic:false><gray>Kweebec Lifecycle:"
+  - "<italic:false>  <white>•</white> <gray>Seedling"
+  - "<italic:false>  <white>•</white> <gray>Young"
+  - "<italic:false>  <white>•</white> <gray>Adult"
+  - "<italic:false>  <white>•</white> <gray>Elder"
   - ""
   - "<italic:false><yellow>Click to open!"
 
@@ -157,8 +177,6 @@ menu.teamVisuals.selectedLore:
   - "<italic:false><gray>transformation!"
   - ""
   - "<italic:false><green>SELECTED"
-
-system.teamVisuals.equipped: "<yellow>You selected the </yellow><visual_name><yellow> transformation!"
 
 ##################################
 # ARENA EVENTS AND MESSAGES
@@ -181,13 +199,6 @@ arena.starting.seconds: "<yellow>[<b>!</b>] Game starting in <gold><count></gold
 arena.starting.second: "<yellow>[<b>!</b>] Game starting in <gold><count></gold> second!"
 arena.finishing.seconds: "<yellow>[<b>!</b>] Teleporting to lobby in <red><count></red> seconds!"
 arena.finishing.second: "<yellow>[<b>!</b>] Teleporting to lobby in <red><count></red> second!"
-
-arena.item.leave.name: "<italic:false><red><b>Back to Lobby</b></red> <gray>(Right Click)"
-arena.item.leave.lore:
-  - "<italic:false><gray>Go back to the save the"
-  - "<italic:false><gray>kweebecs lobby!"
-  - ""
-  - "<italic:false><yellow>Click to teleport!"
 
 arena.death.self: "<yellow><red><player></red> died by themselves!"
 arena.death.player: "<yellow><red><player></red> was killed by <red><killer></red>!"
@@ -248,8 +259,8 @@ global.cosmetic.head.trork-hunter.selector_name: "<italic:false><green>Hunter Tr
 
 global.cosmetic.head.kweebec-seedling.hat_name: "<italic:false><green>Seedling Head"
 global.cosmetic.head.kweebec-seedling.selector_name: "<italic:false><green>Kweebec Seedling</green>"
-global.cosmetic.head.kweebec-young.hat_name: "<italic:false><green>Young Kweebec Head"
-global.cosmetic.head.kweebec-young.selector_name: "<italic:false><green>Young Kweebec</green>"
+global.cosmetic.head.kweebec-child.hat_name: "<italic:false><green>Young Kweebec Head"
+global.cosmetic.head.kweebec-child.selector_name: "<italic:false><green>Young Kweebec</green>"
 global.cosmetic.head.kweebec-adult.hat_name: "<italic:false><green>Adult Kweebec Head"
 global.cosmetic.head.kweebec-adult.selector_name: "<italic:false><green>Adult Kweebec</green>"
 global.cosmetic.head.kweebec-elder.hat_name: "<italic:false><green>Elder Kweebec Head"
@@ -258,6 +269,8 @@ global.cosmetic.head.kweebec-elder.selector_name: "<italic:false><green>Elder Kw
 ##################################
 # HELP COMMANDS AND ADMIN SYSTEMS
 ##################################
+system.teamVisuals.equipped: "<yellow>You selected the </yellow><visual_name><yellow> transformation!"
+system.teamVisuals.alreadySelected: "<red>You already have </red><visual_name><red> selected!"
 system.lang.reloaded: "<green>Language files have been reloaded!"
 system.help:
   - ""
