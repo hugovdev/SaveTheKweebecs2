@@ -7,6 +7,10 @@ global.menu.back.name: "<italic:false><green>Volver"
 global.menu.previousPage.name: "<italic:false><green>Página anterior"
 global.menu.nextPage.name: "<italic:false><green>Siguiente Página"
 
+global.sound.music.save_the_kweebecs.name: "Save The Kweebecs"
+global.sound.music.save_the_kweebecs.author: "Slamma"
+global.sound.music.now_playing: "<yellow>Sonando <green><track_name></green> por <aqua><track_author></aqua>"
+
 ##################################
 # CLICKABLE ITEMS
 ##################################

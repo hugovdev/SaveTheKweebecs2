@@ -4,6 +4,7 @@ import com.destroystokyo.paper.profile.ProfileProperty
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.arena.GameManager
+import me.hugo.savethekweebecs.music.MusicManager
 import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -18,6 +19,7 @@ import org.koin.java.KoinJavaComponent
 
 
 private val gameManager: GameManager by KoinJavaComponent.inject(GameManager::class.java)
+private val musicManager: MusicManager by KoinJavaComponent.inject(MusicManager::class.java)
 
 fun Arena.start() {
     if (this.teamPlayers().size < arenaMap.minPlayers) {
@@ -55,6 +57,7 @@ fun Arena.start() {
 
             teamPlayer.playerProfile = profile
 
+            musicManager.playTrack(musicManager.inGameMusic, teamPlayer)
             spawnPointIndex = if (spawnPointIndex == spawnPoints.size - 1) 0 else spawnPointIndex + 1
         }
     }
@@ -72,6 +75,7 @@ fun Arena.end(winnerTeam: TeamManager.Team) {
             profile.setTextures(null)
 
             teamPlayer.playerProfile = profile
+            musicManager.stopTrack(teamPlayer)
         }
     }
 
