@@ -29,7 +29,7 @@ class MusicManager : BukkitRunnable() {
             if (playbackData.showTrackStatus && notify) uuid.player()?.let { sendPlayingNotification(it) }
 
             if (playbackData.startTime + playbackData.track.duration.inWholeMilliseconds <= System.currentTimeMillis()) {
-                musicPlayers[uuid] = PlaybackData(playbackData.track, System.currentTimeMillis())
+                musicPlayers[uuid] = PlaybackData(playbackData.track, System.currentTimeMillis(), playbackData.showTrackStatus)
 
                 val player = uuid.player()
 
@@ -45,9 +45,9 @@ class MusicManager : BukkitRunnable() {
         else timeSinceNotification++
     }
 
-    fun playTrack(track: MusicTrack, player: Player) {
+    fun playTrack(track: MusicTrack, player: Player, showTrackStatus: Boolean = true) {
         player.playSound(track.sound)
-        musicPlayers[player.uniqueId] = PlaybackData(track, System.currentTimeMillis())
+        musicPlayers[player.uniqueId] = PlaybackData(track, System.currentTimeMillis(), showTrackStatus)
 
         sendPlayingNotification(player)
     }
