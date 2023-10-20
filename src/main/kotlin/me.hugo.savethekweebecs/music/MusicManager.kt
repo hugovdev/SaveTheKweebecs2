@@ -23,14 +23,14 @@ class MusicManager : BukkitRunnable() {
     private val musicPlayers: ConcurrentMap<UUID, PlaybackData> = ConcurrentHashMap()
 
     override fun run() {
-        val notify = timeSinceNotification >= 20
+        val notify = timeSinceNotification >= 15
 
         musicPlayers.forEach { (uuid, playbackData) ->
             if (playbackData.showTrackStatus && notify) uuid.player()?.let { sendPlayingNotification(it) }
 
             if (playbackData.startTime + playbackData.track.duration.inWholeMilliseconds <= System.currentTimeMillis()) {
-                musicPlayers[uuid] = PlaybackData(playbackData.track, System.currentTimeMillis(), playbackData.showTrackStatus)
-
+                musicPlayers[uuid] =
+                    PlaybackData(playbackData.track, System.currentTimeMillis(), playbackData.showTrackStatus)
                 val player = uuid.player()
 
                 if (player != null) {
@@ -46,6 +46,9 @@ class MusicManager : BukkitRunnable() {
     }
 
     fun playTrack(track: MusicTrack, player: Player, showTrackStatus: Boolean = true) {
+        // Stop the current track before playing a new one!
+        stopTrack(player)
+
         player.playSound(track.sound)
         musicPlayers[player.uniqueId] = PlaybackData(track, System.currentTimeMillis(), showTrackStatus)
 
