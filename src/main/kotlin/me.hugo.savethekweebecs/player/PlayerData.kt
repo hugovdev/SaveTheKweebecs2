@@ -1,5 +1,6 @@
 package me.hugo.savethekweebecs.player
 
+import com.destroystokyo.paper.profile.ProfileProperty
 import fr.mrmicky.fastboard.adventure.FastBoard
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.clickableitems.ItemSetManager
@@ -17,7 +18,6 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import org.bukkit.profile.PlayerTextures
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
@@ -34,7 +34,7 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
     var currentTeam: TeamManager.Team? = null
     var lastAttack: PlayerAttack? = null
 
-    var playerSkin: PlayerTextures? = null
+    var playerSkin: TeamManager.SkinProperty? = null
     var fastBoard: FastBoard? = null
 
     var locale: String = LanguageManager.DEFAULT_LANGUAGE
@@ -106,15 +106,16 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
         )
 
         teamManager.teams.values.forEach {
-            newMenu.setItem(Icon(
-                ItemStack(Material.CARVED_PUMPKIN)
-                    .customModelData(it.defaultPlayerVisual.headCustomId)
-                    .nameTranslatable("menu.teamVisuals.icon.team.${it.id}.name", locale)
-                    .loreTranslatable("menu.teamVisuals.icon.team.${it.id}.lore", locale)
-            ).addClickAction { player, _ ->
-                teamVisualMenu[it]?.open(player)
-                player.playSound(Sound.BLOCK_CHEST_OPEN)
-            }, 0, it.transformationsMenuSlot
+            newMenu.setItem(
+                Icon(
+                    ItemStack(Material.CARVED_PUMPKIN)
+                        .customModelData(it.defaultPlayerVisual.headCustomId)
+                        .nameTranslatable("menu.teamVisuals.icon.team.${it.id}.name", locale)
+                        .loreTranslatable("menu.teamVisuals.icon.team.${it.id}.lore", locale)
+                ).addClickAction { player, _ ->
+                    teamVisualMenu[it]?.open(player)
+                    player.playSound(Sound.BLOCK_CHEST_OPEN)
+                }, 0, it.transformationsMenuSlot
             )
         }
 
@@ -158,7 +159,28 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
         fastBoard = FastBoard(player)
         fastBoard!!.updateTitle(player.translate("global.scoreboard.title"))
 
-        playerSkin = player.playerProfile.textures
+        val textures = player.playerProfile.properties.firstOrNull { it.name == "textures" }
+
+        if (textures == null) {
+            println("Could not find textures for player ${player.name}!")
+            return
+        }
+
+        playerSkin = TeamManager.SkinProperty(textures.value, textures.signature ?: "")
+    }
+
+    fun resetSkin() {
+        val skin = playerSkin ?: return
+        setSkin(skin)
+    }
+
+    fun setSkin(skin: TeamManager.SkinProperty) {
+        val player = uuid.player() ?: return
+
+        val profile = player.playerProfile
+        profile.setProperty(ProfileProperty("textures", skin.value, skin.signature))
+
+        player.playerProfile = profile
     }
 
     fun setLobbyBoard(player: Player) {

@@ -8,6 +8,7 @@ import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
@@ -65,6 +66,16 @@ fun Player.updateBoardTags(vararg tags: String) {
 fun Player.playerDataOrCreate(): PlayerData = playerManager.getOrCreatePlayerData(this)
 fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
 
+fun Player.showTitle(key: String, times: Title.Times) {
+    if (languageManager.isList(key)) {
+        val titles = getUnformattedList(key)
+
+        val title = titles.first()
+        val subtitle = titles.getOrNull(1)
+
+        showTitle(Title.title(translate(title), subtitle?.let { translate(it) } ?: Component.empty(), times))
+    } else showTitle(Title.title(translate(getUnformattedLine(key)), Component.empty(), times))
+}
 
 fun Player.playSound(sound: Sound) = playSound(location, sound, 1.0f, 1.0f)
 

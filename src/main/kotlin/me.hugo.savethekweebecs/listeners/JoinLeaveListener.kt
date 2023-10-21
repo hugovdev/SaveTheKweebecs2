@@ -55,7 +55,7 @@ class JoinLeaveListener : KoinComponent, Listener {
         event.quitMessage(null)
         val player = event.player
 
-        player.playerData()?.currentArena?.leave(player)
+        player.playerData()?.currentArena?.leave(player, false)
         playerManager.removePlayerData(player.uniqueId)
         onlinePlayers--
 

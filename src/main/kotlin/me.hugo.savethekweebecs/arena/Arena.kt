@@ -14,6 +14,7 @@ import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.api.trait.trait.Equipment
 import net.citizensnpcs.trait.CurrentLocation
 import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
@@ -138,7 +139,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         arenaPlayers().mapNotNull { it.player() }.forEach { it.updateBoardTags(*tags) }
     }
 
-    fun leave(player: Player) {
+    fun leave(player: Player, disconnect: Boolean = false) {
         val playerData = player.playerData() ?: return
 
         if (!hasStarted()) {
@@ -181,6 +182,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         newWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
         newWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false)
         newWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false)
+        newWorld.setGameRule(GameRule.DO_FIRE_TICK, false)
 
         world = newWorld
 
@@ -203,12 +205,16 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         npc.data().setPersistent(NPC.Metadata.NAMEPLATE_VISIBLE, false)
         npc.data().setPersistent("arena", arenaUUID.toString())
 
+        val visualToUse = attackerTeam.visuals.random()
+
         val skinTrait = npc.getOrAddTrait(SkinTrait::class.java)
         skinTrait.setSkinPersistent(
             attackerTeam.id,
-            attackerTeam.npcTemplate.signature,
-            attackerTeam.npcTemplate.value
+            visualToUse.skin.signature,
+            visualToUse.skin.value
         )
+
+        npc.getOrAddTrait(Equipment::class.java).set(Equipment.EquipmentSlot.HELMET, visualToUse.craftHead(null))
 
         npc.getOrAddTrait(CurrentLocation::class.java)
 

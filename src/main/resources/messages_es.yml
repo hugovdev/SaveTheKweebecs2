@@ -9,7 +9,7 @@ global.menu.nextPage.name: "<italic:false><green>Siguiente Página"
 
 global.sound.music.save_the_kweebecs.name: "Save The Kweebecs"
 global.sound.music.save_the_kweebecs.author: "Slamma"
-global.sound.music.now_playing: "<yellow>Sonando <green><track_name></green> por <aqua><track_author></aqua>"
+global.sound.music.now_playing: "<yellow>Sonando <#4cf005><track_name></#4cf005> por <aqua><track_author></aqua>"
 
 ##################################
 # CLICKABLE ITEMS
@@ -206,6 +206,9 @@ arena.finishing.second: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count>
 
 arena.death.self: "<yellow>¡<red><player></red> ha muerto!"
 arena.death.player: "<yellow>¡<red><player></red> fue asesinado por <red><killer></red>!"
+arena.kill.title:
+  - " "
+  - "<#5eab88>¡+10 de oro!</#5eab88>"
 
 arena.event.patch_up.name: "Bloques Trork"
 arena.event.patch_up.seconds: "<yellow>[<b>!</b>] ¡Los <dark_aqua>Trorks</dark_aqua> recibirán bloques de defensa en <red><count></red> segundos!"
@@ -229,6 +232,8 @@ arena.kweebec.saved: "<yellow>[<b>!</b>] ¡Un <gold>kweebec</gold> ha sido salva
 arena.npc.name.trork: "<red>Trork Secuestrado"
 arena.npc.action.trork: "<yellow><b>CLICK PARA SALVAR"
 arena.trork.saved: "<yellow>[<b>!</b>] ¡Un <dark_aqua>trork</dark_aqua> ha sido salvado por <dark_aqua><player></dark_aqua>! [<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>]"
+
+arena.start.title: "<#cc2500>¡BUENA SUERTE!</#cc2500>"
 
 arena.start.kweebec:
   - ""

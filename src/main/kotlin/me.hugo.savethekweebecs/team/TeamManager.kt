@@ -91,8 +91,8 @@ class TeamManager {
     data class SkinProperty(val value: String, val signature: String)
     data class TeamVisual(val key: String, val skin: SkinProperty, val headCustomId: Int) {
 
-        fun craftHead(teamPlayer: Player): ItemStack {
-            val locale = teamPlayer.playerDataOrCreate().locale
+        fun craftHead(teamPlayer: Player?): ItemStack {
+            val locale = teamPlayer?.playerDataOrCreate()?.locale ?: LanguageManager.DEFAULT_LANGUAGE
 
             return ItemStack(Material.CARVED_PUMPKIN)
                 .nameTranslatable("global.cosmetic.head.$key.hat_name", locale)

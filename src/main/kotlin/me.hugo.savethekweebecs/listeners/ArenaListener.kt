@@ -6,10 +6,12 @@ import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
+import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.util.InstantFirework
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -28,10 +30,13 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 class ArenaListener : KoinComponent, Listener {
 
     private val gameManager: GameManager by inject()
+    private val soundManager: SoundManager by inject()
 
     private companion object {
         private val BREAKABLE_ATTACKER_BLOCKS = MaterialSetTag(NamespacedKey("stk", "attacker_breakable"))
@@ -49,7 +54,7 @@ class ArenaListener : KoinComponent, Listener {
         if (arena.hasStarted()) return
         if (item.type != Material.RED_BED) return
 
-        arena.leave(player)
+        arena.leave(player, false)
     }
 
     @EventHandler
@@ -118,7 +123,19 @@ class ArenaListener : KoinComponent, Listener {
                     attackerData.kills++
                     attackerData.coins += 10
 
-                    attacker.playSound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP)
+                    soundManager.playSoundEffect("save_the_kweebecs.kill", attacker)
+
+                    player.world.playSound(player.location, Sound.ENTITY_GENERIC_HURT, 1.0f, 1.0f)
+                    player.world.playSound(player.location, Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f)
+
+                    attacker.showTitle(
+                        "arena.kill.title",
+                        Title.Times.times(
+                            0.5.seconds.toJavaDuration(),
+                            1.5.seconds.toJavaDuration(),
+                            0.5.seconds.toJavaDuration()
+                        )
+                    )
 
                     arena.announceTranslation(
                         "arena.death.player",
@@ -151,6 +168,8 @@ class ArenaListener : KoinComponent, Listener {
 
             npc.despawn()
             arena.remainingNPCs[npc] = true
+
+            soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
 
             arena.announceTranslation(
                 "arena.${attackerTeam.id}.saved",

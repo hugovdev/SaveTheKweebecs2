@@ -1,14 +1,14 @@
 package me.hugo.savethekweebecs.extension
 
-import com.destroystokyo.paper.profile.ProfileProperty
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.arena.GameManager
-import me.hugo.savethekweebecs.music.MusicManager
+import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.title.Title
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -16,10 +16,12 @@ import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Team
 import org.koin.java.KoinJavaComponent
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 
 private val gameManager: GameManager by KoinJavaComponent.inject(GameManager::class.java)
-private val musicManager: MusicManager by KoinJavaComponent.inject(MusicManager::class.java)
+private val soundManager: SoundManager by KoinJavaComponent.inject(SoundManager::class.java)
 
 fun Arena.start() {
     if (this.teamPlayers().size < arenaMap.minPlayers) {
@@ -44,20 +46,21 @@ fun Arena.start() {
             teamPlayer.teleport(spawnPoints!![spawnPointIndex].toLocation(world!!))
 
             teamPlayer.sendTranslated("arena.start.${team.id}")
+            teamPlayer.playSound(Sound.ENTITY_ENDER_DRAGON_GROWL)
+            teamPlayer.showTitle("arena.start.title", Title.Times.times(0.5.seconds.toJavaDuration(), 2.0.seconds.toJavaDuration(), 0.5.seconds.toJavaDuration()))
 
             team.giveItems(teamPlayer)
 
-            val selectedVisual = teamPlayer.playerDataOrCreate().selectedTeamVisuals[team] ?: team.defaultPlayerVisual
+            val playerData = teamPlayer.playerDataOrCreate()
+
+            val selectedVisual = playerData.selectedTeamVisuals[team] ?: team.defaultPlayerVisual
 
             teamPlayer.inventory.helmet = selectedVisual.craftHead(teamPlayer)
             loadTeamColors(teamPlayer)
 
-            val profile = teamPlayer.playerProfile
-            profile.setProperty(ProfileProperty("textures", selectedVisual.skin.value, selectedVisual.skin.signature))
+            playerData.setSkin(selectedVisual.skin)
 
-            teamPlayer.playerProfile = profile
-
-            musicManager.playTrack(musicManager.inGameMusic, teamPlayer)
+            soundManager.playTrack(soundManager.inGameMusic, teamPlayer)
             spawnPointIndex = if (spawnPointIndex == spawnPoints.size - 1) 0 else spawnPointIndex + 1
         }
     }
@@ -71,11 +74,10 @@ fun Arena.end(winnerTeam: TeamManager.Team) {
         players.mapNotNull { it.player() }.forEach { teamPlayer ->
             teamPlayer.reset(GameMode.ADVENTURE)
 
-            val profile = teamPlayer.playerProfile
-            profile.setTextures(null)
+            soundManager.stopTrack(teamPlayer)
 
-            teamPlayer.playerProfile = profile
-            musicManager.stopTrack(teamPlayer)
+            val playerData = teamPlayer.playerData() ?: return
+            playerData.resetSkin()
         }
     }
 

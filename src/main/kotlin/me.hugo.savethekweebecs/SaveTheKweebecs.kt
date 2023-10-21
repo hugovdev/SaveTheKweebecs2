@@ -10,7 +10,7 @@ import me.hugo.savethekweebecs.dependencyinjection.SaveTheKweebecsModules
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.listeners.ArenaListener
 import me.hugo.savethekweebecs.listeners.JoinLeaveListener
-import me.hugo.savethekweebecs.music.MusicManager
+import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
 import me.hugo.savethekweebecs.util.menus.MenuRegistry
@@ -34,7 +34,7 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
     private val languageManager: LanguageManager by inject()
     private val scoreboardManager: ScoreboardTemplateManager by inject()
 
-    private val musicManager: MusicManager by inject()
+    private val soundManager: SoundManager by inject()
 
     private val menuRegistry: MenuRegistry by inject()
     private val itemManager: ItemSetManager by inject()
@@ -105,7 +105,7 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         pluginManager.registerEvents(itemManager, this)
         pluginManager.registerEvents(ArenaListener(), this)
 
-        musicManager.runTaskTimer(getInstance(), 0L, 1L)
+        soundManager.runTaskTimer(getInstance(), 0L, 1L)
 
         println("Starting Game Manager... Maps: ${gameManager.maps.size}")
     }

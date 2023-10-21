@@ -15,7 +15,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @Single
-class MusicManager : BukkitRunnable() {
+class SoundManager : BukkitRunnable() {
 
     val inGameMusic = MusicTrack("music.save_the_kweebecs", 51.seconds)
 
@@ -53,6 +53,10 @@ class MusicManager : BukkitRunnable() {
         musicPlayers[player.uniqueId] = PlaybackData(track, System.currentTimeMillis(), showTrackStatus)
 
         sendPlayingNotification(player)
+    }
+
+    fun playSoundEffect(name: String, player: Player) {
+        player.playSound(Sound.sound(Key.key(name), Sound.Source.AMBIENT, 1.0f, 1.0f))
     }
 
     private fun sendPlayingNotification(player: Player) {

@@ -6,7 +6,7 @@ import me.hugo.savethekweebecs.arena.map.MapPoint
 import me.hugo.savethekweebecs.clickableitems.ItemSetManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
-import me.hugo.savethekweebecs.music.MusicManager
+import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.task.GameControllerTask
 import me.hugo.savethekweebecs.util.menus.Icon
 import me.hugo.savethekweebecs.util.menus.PaginatedMenu
@@ -30,7 +30,7 @@ class GameManager : KoinComponent {
     private val main: SaveTheKweebecs = SaveTheKweebecs.getInstance()
     private val itemManager: ItemSetManager by inject()
     private val languageManager: LanguageManager by inject()
-    private val musicManager: MusicManager by inject()
+    private val soundManager: SoundManager by inject()
 
     private val hubLocation: Location? = Bukkit.getWorld("world")
         ?.let { MapPoint.deserializeFromConfig("hubLocation")?.toLocation(it) }
@@ -99,7 +99,7 @@ class GameManager : KoinComponent {
         playerData.deaths = 0
         playerData.coins = 0
 
-        musicManager.stopTrack(player)
+        soundManager.stopTrack(player)
 
         itemManager.getSet("lobby")?.forEach { it.give(player) }
     }
