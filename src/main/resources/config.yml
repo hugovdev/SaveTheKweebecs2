@@ -42,6 +42,8 @@ item-sets:
       command: "stk transformations"
 teams:
   trork:
+    team-icon: "\uD001"
+    chat-icon: "\uD002"
     transformations-menu-slot: 12
     player-visuals:
       trork-shaman:
@@ -64,6 +66,8 @@ teams:
     npc-skin-texture: "ewogICJ0aW1lc3RhbXAiIDogMTYzNTA4NjQ0NDI5OCwKICAicHJvZmlsZUlkIiA6ICJhYzYxZjQwZGJhNDE0YzkwOWU0NWJkMTgwMmY5MTYxYyIsCiAgInByb2ZpbGVOYW1lIiA6ICJBbmlmYW5pIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VhNGY3NzhjZDhjOGI4YmYzOTFlMzk0MzQwOWY4OGFmYjQxYWUzZDcwYTkzZWE3NGFjZDJmMTAxMjNiN2RlNDYiCiAgICB9CiAgfQp9"
     npc-skin-signature: "RqzeC3kSFcCR6D4FtYvg0cL+xbRuuxc7edBACdeYbEfyUdRzBJ0AzoelnHwX9O2zkHTe/QduNI7o2HZLbo5VuAsaZItpLpcx9+GrxP64rEwwjcNVUXqXTKnBagZABsXYYyxEDTl8tKBYtciMmQJf4FcOjlhaZR8xjph/RAI26YWYnNQJE5FATfC6YDJH0mkCY80zk2t+aEJOAmYhWJPb5HkQFzM8JbsaeteFKy4ivyw4uFBjqJQrC8Eu0whowi/2m2pVbUxW4rlrvTKZ9RiW3qVUkxkiixKU610qRfj0rMf9IJfeeSu9O4hHTV6XSfTxSpUSOADUX+6UwS6tF7YxvSJ8FjuPLkuOdjQxpqr1ClzF6b0CtkKxYBlOxnzyw098gnH+jhCTkCzZ1z7g0JRG9V07gz5vDvSBXQV3i4DIuHMHAMdajPbi4AXL6bJSt99CA3FASMeYc3Mn/emyoD0ygx7qEQFeOQyU0O0CR735yHvTKyttB65C6ToMuj4Nb5Boey1+rOQ9nlr4Sc/ok74AJi4mkUDUpCJ6jFRkFiH1PH+XhdOFaqVnyMo9zWaFSABiowzpbNc6ZkU1ah70tumMTunT8SQxJoFKYgP9FUVAKaDpBEQC58BlCaWRxAwvG/qqQz+MWnKLKxoqPWzgZ+LT9zSr6LqgMSiCgHEopv4/qPw="
   kweebec:
+    team-icon: "\uF001"
+    chat-icon: "\uF002"
     transformations-menu-slot: 14
     player-visuals:
       kweebec-seedling:

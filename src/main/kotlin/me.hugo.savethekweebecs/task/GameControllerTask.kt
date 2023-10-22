@@ -4,9 +4,6 @@ import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
 import org.bukkit.GameMode
@@ -86,19 +83,26 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
                         val selectedVisual =
                             playerData.selectedTeamVisuals[team] ?: team.defaultPlayerVisual
                         player.inventory.helmet = selectedVisual.craftHead(player)
-                    }
-                } else {
-                    player.showTitle(
-                        Title.title(
-                            Component.text(newTime, NamedTextColor.RED).decorate(TextDecoration.BOLD),
-                            Component.empty(),
-                            Title.Times.times(
-                                0.25.seconds.toJavaDuration(),
-                                0.5.seconds.toJavaDuration(),
+
+                        player.showTitle(
+                            "arena.respawned.title", Title.Times.times(
+                                0.seconds.toJavaDuration(),
+                                1.5.seconds.toJavaDuration(),
                                 0.25.seconds.toJavaDuration()
                             )
                         )
+
+                        player.playSound(Sound.ENTITY_ENDERMAN_TELEPORT)
+                    }
+                } else {
+                    player.showTitle(
+                        "arena.respawning.title", Title.Times.times(
+                            0.seconds.toJavaDuration(),
+                            1.0.seconds.toJavaDuration(),
+                            0.25.seconds.toJavaDuration()
+                        ), Placeholder.unparsed("respawn_time", newTime.toString())
                     )
+
                     player.playSound(Sound.BLOCK_NOTE_BLOCK_HAT)
                 }
             }

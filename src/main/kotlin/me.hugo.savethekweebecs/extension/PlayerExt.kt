@@ -66,15 +66,19 @@ fun Player.updateBoardTags(vararg tags: String) {
 fun Player.playerDataOrCreate(): PlayerData = playerManager.getOrCreatePlayerData(this)
 fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
 
-fun Player.showTitle(key: String, times: Title.Times) {
+fun Player.showTitle(key: String, times: Title.Times, vararg tagResolver: TagResolver) {
     if (languageManager.isList(key)) {
         val titles = getUnformattedList(key)
 
         val title = titles.first()
         val subtitle = titles.getOrNull(1)
 
-        showTitle(Title.title(translate(title), subtitle?.let { translate(it) } ?: Component.empty(), times))
-    } else showTitle(Title.title(translate(getUnformattedLine(key)), Component.empty(), times))
+        showTitle(
+            Title.title(
+                translate(title, *tagResolver),
+                subtitle?.let { translate(it, *tagResolver) } ?: Component.empty(),
+                times))
+    } else showTitle(Title.title(translate(getUnformattedLine(key), *tagResolver), Component.empty(), times))
 }
 
 fun Player.playSound(sound: Sound) = playSound(location, sound, 1.0f, 1.0f)

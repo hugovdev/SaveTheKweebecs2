@@ -59,6 +59,8 @@ class TeamManager {
                     it,
                     playerVisuals,
                     defaultPlayerVisual!!,
+                    config.getString("$configPath.chat-icon", "no-icon")!!,
+                    config.getString("$configPath.team-icon", "no-icon")!!,
                     config.getInt("$configPath.transformations-menu-slot", 0),
                     npcSkin,
                     config.getConfigurationSection("$configPath.items")?.getKeys(false)
@@ -72,6 +74,8 @@ class TeamManager {
         val id: String,
         val visuals: List<TeamVisual>,
         val defaultPlayerVisual: TeamVisual,
+        val chatIcon: String,
+        val teamIcon: String,
         val transformationsMenuSlot: Int = 0,
         val npcTemplate: SkinProperty,
         var items: Map<Int, ItemStack> = mapOf()

@@ -3,6 +3,7 @@ package me.hugo.savethekweebecs.listeners
 import com.destroystokyo.paper.MaterialSetTag
 import com.destroystokyo.paper.MaterialTags
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent
+import io.papermc.paper.event.player.AsyncChatEvent
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
@@ -10,6 +11,8 @@ import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.player.PlayerData
 import me.hugo.savethekweebecs.util.InstantFirework
 import net.citizensnpcs.api.event.NPCRightClickEvent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
 import org.bukkit.*
@@ -237,6 +240,53 @@ class ArenaListener : KoinComponent, Listener {
         if (arena == null || !arena.isInGame()) {
             event.isCancelled = true
         }
+    }
+
+    @EventHandler
+    fun onPlayerChat(event: AsyncChatEvent) {
+        val player = event.player
+        val arena = player.arena()
+
+        event.isCancelled = true
+
+        if (arena == null) {
+            val isAdmin = player.hasPermission("stk.admin")
+
+            Bukkit.getOnlinePlayers().filter { it.arena() == null }.forEach {
+                it.sendTranslated(
+                    "global.chat.lobby", Placeholder.component(
+                        "player_name", Component.text(
+                            if (isAdmin) "[ADMIN] ${player.name}" else player.name,
+                            if (isAdmin) NamedTextColor.RED else NamedTextColor.GRAY
+                        )
+                    ),
+                    Placeholder.component(
+                        "message",
+                        event.message()
+                            .color(if (isAdmin) NamedTextColor.WHITE else NamedTextColor.GRAY)
+                    )
+                )
+            }
+
+            return
+        }
+
+        val team = player.playerData()?.currentTeam
+
+        if (team == null) {
+            player.sendTranslated("global.chat.cant_speak")
+            return
+        }
+
+        arena.arenaPlayers().forEach {
+            it.player()?.sendTranslated(
+                "global.chat.in_game",
+                Placeholder.unparsed("team_icon", team.chatIcon),
+                Placeholder.component("player_name", Component.text(player.name, NamedTextColor.GRAY)),
+                Placeholder.component("message", event.message().color(NamedTextColor.WHITE))
+            )
+        }
+
     }
 
     @EventHandler

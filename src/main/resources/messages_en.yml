@@ -1,11 +1,15 @@
 ##################################
 # GLOBAL STUFF
 ##################################
-global.scoreboard.title: "<aqua><b>THANKMAS 2023"
+global.scoreboard.title: "<#00f5ed><b>THANKMAS 2023"
 global.menu.close.name: "<italic:false><green>Close"
 global.menu.back.name: "<italic:false><green>Go Back"
 global.menu.previousPage.name: "<italic:false><green>Previous Page"
 global.menu.nextPage.name: "<italic:false><green>Next Page"
+
+global.chat.lobby: "<player_name> <dark_gray>»</dark_gray> <message>"
+global.chat.in_game: "<team_icon> <player_name> <dark_gray>»</dark_gray> <message>"
+global.chat.cant_speak: "<red>You can't speak in chat right now!</red>"
 
 global.sound.music.save_the_kweebecs.name: "Save The Kweebecs"
 global.sound.music.save_the_kweebecs.author: "Slamma"
@@ -234,6 +238,12 @@ arena.npc.action.trork: "<yellow><b>CLICK TO SAVE"
 arena.trork.saved: "<yellow>[<b>!</b>] A <dark_aqua>trork</dark_aqua> has been saved by <dark_aqua><player></dark_aqua>! [<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>]"
 
 arena.start.title: "<#cc2500>GOOD LUCK!</#cc2500>"
+arena.respawning.title:
+  - "<#ab1b11>Respawning...</#ab1b11>"
+  - "<#44c261><respawn_time></#44c261>"
+arena.respawned.title:
+  - "<#ab1b11>Respawned!</#ab1b11>"
+  - " "
 
 arena.start.kweebec:
   - ""

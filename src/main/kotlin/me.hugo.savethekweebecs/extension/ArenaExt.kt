@@ -47,7 +47,14 @@ fun Arena.start() {
 
             teamPlayer.sendTranslated("arena.start.${team.id}")
             teamPlayer.playSound(Sound.ENTITY_ENDER_DRAGON_GROWL)
-            teamPlayer.showTitle("arena.start.title", Title.Times.times(0.5.seconds.toJavaDuration(), 2.0.seconds.toJavaDuration(), 0.5.seconds.toJavaDuration()))
+            teamPlayer.showTitle(
+                "arena.start.title",
+                Title.Times.times(
+                    0.5.seconds.toJavaDuration(),
+                    2.0.seconds.toJavaDuration(),
+                    0.5.seconds.toJavaDuration()
+                )
+            )
 
             team.giveItems(teamPlayer)
 
@@ -100,14 +107,23 @@ fun Arena.reset() {
 
 fun Arena.loadTeamColors(player: Player) {
     val scoreboard = player.scoreboard
-    var ownTeam: Team? = scoreboard.getTeam("own")
-    var enemyTeam: Team? = scoreboard.getTeam("enemy")
 
-    if (ownTeam == null) ownTeam = scoreboard.registerNewTeam("own")
-    if (enemyTeam == null) enemyTeam = scoreboard.registerNewTeam("enemy")
+    val ownTeam: Team = scoreboard.getTeam("own") ?: scoreboard.registerNewTeam("own")
+    val enemyTeam: Team = scoreboard.getTeam("enemy") ?: scoreboard.registerNewTeam("enemy")
+
+    val attackerTeam = arenaMap.attackerTeam
+    val defenderTeam = arenaMap.defenderTeam
+
+    val playerTeam = player.playerDataOrCreate().currentTeam
+
+    val hisTeam = if (attackerTeam == playerTeam) attackerTeam else defenderTeam
+    val otherTeam = if (attackerTeam != playerTeam) attackerTeam else defenderTeam
 
     ownTeam.color(NamedTextColor.GREEN)
+    ownTeam.suffix(Component.text(" ${hisTeam.teamIcon}").color(NamedTextColor.WHITE))
+
     enemyTeam.color(NamedTextColor.RED)
+    enemyTeam.suffix(Component.text(" ${otherTeam.teamIcon}").color(NamedTextColor.WHITE))
 
     val health = scoreboard.getObjective("showHealth") ?: scoreboard.registerNewObjective(
         "showHealth",
