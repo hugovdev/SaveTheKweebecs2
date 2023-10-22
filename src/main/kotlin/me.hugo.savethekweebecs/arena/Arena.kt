@@ -153,8 +153,21 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             )
         } else {
             player.damage(player.health)
-            playerData.currentTeam?.let { removePlayerFrom(player, it) }
             deadPlayers.remove(player)
+
+            if (!disconnect) playerData.resetSkin()
+
+            teamPlayers().filter { it != player.uniqueId }.forEach {
+                it.player()?.scoreboard?.getTeam(
+                    if (it.playerData()?.currentTeam == playerData.currentTeam) "own" else "enemy"
+                )?.removeEntry(player.name)
+            }
+
+            playerData.currentTeam?.let { removePlayerFrom(player, it) }
+
+            val teamsWithPlayers = playersPerTeam.filter { it.value.isNotEmpty() }.map { it.key }
+
+            if (teamsWithPlayers.size == 1) this.end(teamsWithPlayers.first())
         }
 
         playerData.currentArena = null

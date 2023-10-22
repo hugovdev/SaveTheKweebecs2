@@ -208,8 +208,8 @@ arena.starting.second: "<yellow>[<b>!</b>] ¡La partida comienza en <gold><count
 arena.finishing.seconds: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundos!"
 arena.finishing.second: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundo!"
 
-arena.death.self: "<yellow>¡<red><player></red> ha muerto!"
-arena.death.player: "<yellow>¡<red><player></red> fue asesinado por <red><killer></red>!"
+arena.death.self: "<yellow>¡<white><player_team_icon></white> <gray><player></gray> ha muerto!"
+arena.death.player: "<yellow>¡<white><player_team_icon></white> <gray><player></gray> fue asesinado por <white><killer_team_icon></white> <gray><killer></gray>!"
 arena.kill.title:
   - " "
   - "<#5eab88>¡+10 de oro!</#5eab88>"

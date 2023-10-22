@@ -4,6 +4,7 @@ import com.destroystokyo.paper.MaterialSetTag
 import com.destroystokyo.paper.MaterialTags
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent
 import io.papermc.paper.event.player.AsyncChatEvent
+import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
@@ -27,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.weather.WeatherChangeEvent
@@ -35,6 +37,7 @@ import org.koin.core.component.inject
 import java.util.*
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
+
 
 class ArenaListener : KoinComponent, Listener {
 
@@ -119,7 +122,11 @@ class ArenaListener : KoinComponent, Listener {
                 // If there is no last attack, it was too long ago or the attacker has disconnected, player died
                 // by themselves!
                 if (lastAttack == null || lastAttack.time < System.currentTimeMillis() - (10000) || attacker == null) {
-                    arena.announceTranslation("arena.death.self", Placeholder.unparsed("player", player.name))
+                    arena.announceTranslation(
+                        "arena.death.self",
+                        Placeholder.unparsed("player_team_icon", playerData.currentTeam?.chatIcon ?: ""),
+                        Placeholder.unparsed("player", player.name)
+                    )
                 } else {
                     val attackerData = attacker.playerDataOrCreate()
 
@@ -143,6 +150,8 @@ class ArenaListener : KoinComponent, Listener {
                     arena.announceTranslation(
                         "arena.death.player",
                         Placeholder.unparsed("player", player.name),
+                        Placeholder.unparsed("player_team_icon", playerData.currentTeam?.chatIcon ?: ""),
+                        Placeholder.unparsed("killer_team_icon", attackerData.currentTeam?.chatIcon ?: ""),
                         Placeholder.unparsed("killer", attacker.name)
                     )
                 }
@@ -247,25 +256,30 @@ class ArenaListener : KoinComponent, Listener {
         val player = event.player
         val arena = player.arena()
 
-        event.isCancelled = true
+        event.viewers().clear()
+        event.viewers().add(Bukkit.getConsoleSender())
 
-        if (arena == null) {
+        if (arena == null || !arena.hasStarted()) {
             val isAdmin = player.hasPermission("stk.admin")
 
-            Bukkit.getOnlinePlayers().filter { it.arena() == null }.forEach {
-                it.sendTranslated(
-                    "global.chat.lobby", Placeholder.component(
-                        "player_name", Component.text(
-                            if (isAdmin) "[ADMIN] ${player.name}" else player.name,
-                            if (isAdmin) NamedTextColor.RED else NamedTextColor.GRAY
+            event.viewers().addAll(arena?.arenaPlayers()?.mapNotNull { it.player() } ?: Bukkit.getOnlinePlayers().filter { it.arena() == null })
+
+            event.renderer { source, _, message, viewer ->
+                if (viewer is Player) {
+                    viewer.translate(
+                        "global.chat.lobby", Placeholder.component(
+                            "player_name", Component.text(
+                                if (isAdmin) "[ADMIN] ${source.name}" else source.name,
+                                if (isAdmin) NamedTextColor.RED else NamedTextColor.GRAY
+                            )
+                        ),
+                        Placeholder.component(
+                            "message",
+                            event.message()
+                                .color(if (isAdmin) NamedTextColor.WHITE else NamedTextColor.GRAY)
                         )
-                    ),
-                    Placeholder.component(
-                        "message",
-                        event.message()
-                            .color(if (isAdmin) NamedTextColor.WHITE else NamedTextColor.GRAY)
                     )
-                )
+                } else Component.text("${source.name} -> ").append(message)
             }
 
             return
@@ -275,18 +289,42 @@ class ArenaListener : KoinComponent, Listener {
 
         if (team == null) {
             player.sendTranslated("global.chat.cant_speak")
+            event.isCancelled = true
+
             return
         }
 
-        arena.arenaPlayers().forEach {
-            it.player()?.sendTranslated(
-                "global.chat.in_game",
-                Placeholder.unparsed("team_icon", team.chatIcon),
-                Placeholder.component("player_name", Component.text(player.name, NamedTextColor.GRAY)),
-                Placeholder.component("message", event.message().color(NamedTextColor.WHITE))
-            )
+        event.viewers().addAll(arena.arenaPlayers().mapNotNull { it.player() })
+
+        event.renderer { source, _, message, viewer ->
+            if (viewer is Player) {
+                viewer.translate(
+                    "global.chat.in_game",
+                    Placeholder.unparsed("team_icon", team.chatIcon),
+                    Placeholder.component("player_name", Component.text(player.name, NamedTextColor.GRAY)),
+                    Placeholder.component("message", event.message().color(NamedTextColor.WHITE))
+                )
+            } else Component.text("${source.name} -> ").append(message)
+        }
+    }
+
+    @EventHandler
+    fun onWorldChange(event: PlayerChangedWorldEvent) {
+        val player = event.player
+        val world = player.world
+        val worldFrom = event.from
+
+        val main = SaveTheKweebecs.getInstance()
+
+        world.players.forEach {
+            it.showPlayer(main, player)
+            player.showPlayer(main, it)
         }
 
+        worldFrom.players.forEach {
+            it.hidePlayer(main, player)
+            player.hidePlayer(main, it)
+        }
     }
 
     @EventHandler

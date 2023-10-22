@@ -208,8 +208,8 @@ arena.starting.second: "<yellow>[<b>!</b>] Game starting in <gold><count></gold>
 arena.finishing.seconds: "<yellow>[<b>!</b>] Teleporting to lobby in <red><count></red> seconds!"
 arena.finishing.second: "<yellow>[<b>!</b>] Teleporting to lobby in <red><count></red> second!"
 
-arena.death.self: "<yellow><red><player></red> died by themselves!"
-arena.death.player: "<yellow><red><player></red> was killed by <red><killer></red>!"
+arena.death.self: "<yellow><white><player_team_icon></white> <gray><player></gray> died by themselves!"
+arena.death.player: "<yellow><white><player_team_icon></white> <gray><player></gray> was killed by <white><killer_team_icon></white> <gray><killer></gray>!"
 arena.kill.title:
   - " "
   - "<#5eab88>+10 gold!</#5eab88>"
