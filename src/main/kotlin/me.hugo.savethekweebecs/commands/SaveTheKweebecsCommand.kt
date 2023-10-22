@@ -14,6 +14,7 @@ import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.title.Title
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
@@ -21,6 +22,8 @@ import org.koin.core.component.inject
 import revxrsal.commands.annotation.*
 import revxrsal.commands.bukkit.annotation.CommandPermission
 import java.util.*
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 @Command("savethekweebecs", "stk")
 @Description("Main SaveTheKweebecs command.")
@@ -406,7 +409,7 @@ class SaveTheKweebecsCommand : KoinComponent {
         sender.sendTranslated("system.lang.reloaded")
     }
 
-    @Subcommand("admin lang testmessage")
+    @Subcommand("admin lang testMessage")
     @Description("Test messages in the language system.")
     @CommandPermission("savethekweebecs.admin")
     @AutoComplete("@locale")
@@ -419,6 +422,27 @@ class SaveTheKweebecsCommand : KoinComponent {
             languageManager.getLangStringList(messageKey, locale).map { sender.toComponent(it) }
                 .forEach { sender.sendMessage(it) }
         else sender.sendMessage(sender.toComponent(languageManager.getLangString(messageKey, locale)))
+    }
+
+    @Subcommand("admin lang testTitle")
+    @Description("Test titles in the language system.")
+    @CommandPermission("savethekweebecs.admin")
+    @AutoComplete("@locale")
+    private fun testTitle(
+        sender: Player,
+        locale: String,
+        messageKey: String,
+        @Default("0.5") fadeIn: Double,
+        @Default("1.5") stay: Double,
+        @Default("0.5") fadeOut: Double
+    ) {
+        sender.showTitle(messageKey,
+            Title.Times.times(
+                fadeIn.seconds.toJavaDuration(),
+                stay.seconds.toJavaDuration(),
+                fadeOut.seconds.toJavaDuration()
+            )
+        )
     }
 
     @Subcommand("admin lang setlocale")

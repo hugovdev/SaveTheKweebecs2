@@ -83,6 +83,16 @@ fun Arena.end(winnerTeam: TeamManager.Team) {
 
             soundManager.stopTrack(teamPlayer)
 
+            teamPlayer.showTitle(
+                if (winnerTeam == teamPlayer.playerData()?.currentTeam) "arena.win.title"
+                else "arena.lost.title",
+                Title.Times.times(
+                    0.2.seconds.toJavaDuration(),
+                    3.5.seconds.toJavaDuration(),
+                    0.2.seconds.toJavaDuration()
+                )
+            )
+
             val playerData = teamPlayer.playerData() ?: return
             playerData.resetSkin()
         }

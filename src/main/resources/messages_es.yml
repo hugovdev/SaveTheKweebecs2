@@ -97,10 +97,8 @@ scoreboard.in_game.lines:
   - "Siguiente Evento:"
   - "<green><next_event> <time>"
   - ""
-  - "Bajas: <green><kills>"
-  - "Monedas: <yellow><coins> ⛃"
-  - ""
-  - "Salvados: <green><npcs_saved>/<total_npcs>"
+  - "Estadísticas:"
+  - "\uB001 <kills> <dark_gray>|</dark_gray> ⛃ <coins> <dark_gray>|</dark_gray> \uF002 <npcs_saved>/<total_npcs>"
   - ""
   - "Mapa: <green><map_name>"
   - "<gray>(<display_name>)"
@@ -208,11 +206,11 @@ arena.starting.second: "<yellow>[<b>!</b>] ¡La partida comienza en <gold><count
 arena.finishing.seconds: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundos!"
 arena.finishing.second: "<yellow>[<b>!</b>] ¡Volviendo al lobby en <red><count></red> segundo!"
 
-arena.death.self: "<yellow>¡<white><player_team_icon></white> <gray><player></gray> ha muerto!"
-arena.death.player: "<yellow>¡<white><player_team_icon></white> <gray><player></gray> fue asesinado por <white><killer_team_icon></white> <gray><killer></gray>!"
+arena.death.self: "<gray>(<#d6d6d6>\uB001</#d6d6d6>)</gray> <yellow><white><player_team_icon></white> <gray><player></gray> ha muerto."
+arena.death.player: "<gray>(<#d6d6d6>\uB001</#d6d6d6>)</gray> <yellow><white><player_team_icon></white> <gray><player></gray> fue asesinado por <white><killer_team_icon></white> <gray><killer></gray>."
 arena.kill.title:
   - " "
-  - "<#5eab88>¡+10 de oro!</#5eab88>"
+  - "<#d6d6d6>\uB001</#d6d6d6> <#5eab88>¡+10 de oro!</#5eab88>"
 
 arena.event.patch_up.name: "Bloques Trork"
 arena.event.patch_up.seconds: "<yellow>[<b>!</b>] ¡Los <dark_aqua>Trorks</dark_aqua> recibirán bloques de defensa en <red><count></red> segundos!"
@@ -229,6 +227,14 @@ arena.event.trorks_win.second: "<yellow>[<b>!</b>] ¡Los <dark_aqua>Trorks</dark
 
 arena.win.kweebec: "<yellow>¡Los <gold>Kweebecs</gold> han ganado!"
 arena.win.trork: "<yellow>¡Los <dark_aqua>Trorks</dark_aqua> han ganado!"
+
+arena.win.title:
+  - "<#b07b2a>\uB003</#b07b2a>"
+  - "<#ffa514><b>¡VICTORIA!<b></#ffa514>"
+
+arena.lost.title:
+  - "¡Perdiste!"
+  - "L"
 
 arena.npc.name.kweebec: "<red>Kweebec Secuestrado"
 arena.npc.action.kweebec: "<yellow><b>CLICK PARA SALVAR"

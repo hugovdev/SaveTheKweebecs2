@@ -50,7 +50,7 @@ dependencies {
     implementation 'fr.mrmicky:fastboard:2.0.1'
 
     // Citizens API
-    compileOnly("net.citizensnpcs:citizens-main:2.0.32-SNAPSHOT") {
+    compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT") {
         exclude group: '*', module: '*'
     }
 }

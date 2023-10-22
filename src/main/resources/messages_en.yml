@@ -97,10 +97,8 @@ scoreboard.in_game.lines:
   - "Next Event:"
   - "<green><next_event> <time>"
   - ""
-  - "Kills: <green><kills>"
-  - "Coins: <yellow><coins> ⛃"
-  - ""
-  - "Saved: <green><npcs_saved>/<total_npcs>"
+  - "Game Stats:"
+  - "\uB001 <kills> <dark_gray>|</dark_gray> ⛃ <coins> <dark_gray>|</dark_gray> \uF002 <npcs_saved>/<total_npcs>"
   - ""
   - "Map: <green><map_name>"
   - "<gray>(<display_name>)"
@@ -208,11 +206,11 @@ arena.starting.second: "<yellow>[<b>!</b>] Game starting in <gold><count></gold>
 arena.finishing.seconds: "<yellow>[<b>!</b>] Teleporting to lobby in <red><count></red> seconds!"
 arena.finishing.second: "<yellow>[<b>!</b>] Teleporting to lobby in <red><count></red> second!"
 
-arena.death.self: "<yellow><white><player_team_icon></white> <gray><player></gray> died by themselves!"
-arena.death.player: "<yellow><white><player_team_icon></white> <gray><player></gray> was killed by <white><killer_team_icon></white> <gray><killer></gray>!"
+arena.death.self: "<gray>(<#d6d6d6>\uB001</#d6d6d6>)</gray> <yellow><white><player_team_icon></white> <gray><player></gray> died by themselves!"
+arena.death.player: "<gray>(<#d6d6d6>\uB001</#d6d6d6>)</gray> <yellow><white><player_team_icon></white> <gray><player></gray> was killed by <white><killer_team_icon></white> <gray><killer></gray>!"
 arena.kill.title:
   - " "
-  - "<#5eab88>+10 gold!</#5eab88>"
+  - "<#d6d6d6>\uB001</#d6d6d6> <#5eab88>+10 gold!</#5eab88>"
 
 arena.event.patch_up.name: "Patch Up"
 arena.event.patch_up.seconds: "<yellow>[<b>!</b>] <dark_aqua>Trorks</dark_aqua> are receiving defensive blocks in <red><count></red> seconds!"
@@ -229,6 +227,14 @@ arena.event.trorks_win.second: "<yellow>[<b>!</b>] <dark_aqua>Trorks</dark_aqua>
 
 arena.win.kweebec: "<yellow><gold>Kweebecs</gold> won this game!"
 arena.win.trork: "<yellow><dark_aqua>Trorks</dark_aqua> won this game!"
+
+arena.win.title:
+  - "<#b07b2a>\uB003</#b07b2a>"
+  - "<#ffa514><b>VICTORY!<b></#ffa514>"
+
+arena.lost.title:
+  - "You lost!"
+  - "L"
 
 arena.npc.name.kweebec: "<red>Kidnaped Kweebec"
 arena.npc.action.kweebec: "<yellow><b>CLICK TO SAVE"
@@ -327,7 +333,8 @@ system.lang.help:
   - ""
   - "<gold>Save The Kweebecs Language System"
   - "<aqua>/stk admin lang reload</aqua> <gray>- Reloads the language file."
-  - "<aqua>/stk admin lang testmessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang testMessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang testTitle <gold>[locale] [key] [durations]</gold></aqua> <gray>- Sends you a translated title."
   - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sends you a translated message."
   - ""
 system.lang.changed: "<green>We detected a language change to: <aqua><language></aqua>!"

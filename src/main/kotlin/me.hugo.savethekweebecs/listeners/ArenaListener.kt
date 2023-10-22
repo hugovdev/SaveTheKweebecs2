@@ -262,7 +262,8 @@ class ArenaListener : KoinComponent, Listener {
         if (arena == null || !arena.hasStarted()) {
             val isAdmin = player.hasPermission("stk.admin")
 
-            event.viewers().addAll(arena?.arenaPlayers()?.mapNotNull { it.player() } ?: Bukkit.getOnlinePlayers().filter { it.arena() == null })
+            event.viewers().addAll(arena?.arenaPlayers()?.mapNotNull { it.player() } ?: Bukkit.getOnlinePlayers()
+                .filter { it.arena() == null })
 
             event.renderer { source, _, message, viewer ->
                 if (viewer is Player) {
@@ -279,7 +280,8 @@ class ArenaListener : KoinComponent, Listener {
                                 .color(if (isAdmin) NamedTextColor.WHITE else NamedTextColor.GRAY)
                         )
                     )
-                } else Component.text("${source.name} -> ").append(message)
+                } else Component.text((if (arena == null) "[LOBBY]" else "[${arena.displayName}]") + " ${source.name} -> ")
+                    .append(message)
             }
 
             return
@@ -304,7 +306,7 @@ class ArenaListener : KoinComponent, Listener {
                     Placeholder.component("player_name", Component.text(player.name, NamedTextColor.GRAY)),
                     Placeholder.component("message", event.message().color(NamedTextColor.WHITE))
                 )
-            } else Component.text("${source.name} -> ").append(message)
+            } else Component.text("[${arena.displayName}] ${source.name} -> ").append(message)
         }
     }
 

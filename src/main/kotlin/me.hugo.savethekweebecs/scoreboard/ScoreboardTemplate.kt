@@ -21,6 +21,9 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
     private val tagLocations: MutableMap<String, MutableMap<String, List<Int>>> = mutableMapOf()
     private val usedResolvers: MutableMap<String, (player: Player) -> String> = mutableMapOf()
 
+    // langKey [line -> tags]
+    private val inversedTagLocations: MutableMap<String, MutableMap<Int, MutableList<String>>> = mutableMapOf()
+
     init {
         languageManager.availableLanguages.forEach { language ->
             val lines = languageManager.getLangStringList(key, language)
@@ -31,6 +34,8 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
 
                 lines.forEachIndexed { index, line ->
                     if (line.contains("<$tag>")) locations.add(index)
+                    inversedTagLocations.computeIfAbsent(language) { mutableMapOf() }
+                        .computeIfAbsent(index) { mutableListOf() }.add(tag)
                 }
 
                 if (locations.isNotEmpty()) {
@@ -65,21 +70,20 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
         else LanguageManager.DEFAULT_LANGUAGE
 
         tags.forEach {
-            tagLocations[language]!![it]
-                ?.let { newLocations ->
-                    locations.addAll(
-                        newLocations
-                    )
-                }
+            tagLocations[language]!![it]?.let { newLocations -> locations.addAll(newLocations) }
         }
 
         val boardLines = boardLines[language]!!
 
         locations.toSet().forEach {
             playerData.fastBoard?.updateLine(
-                it, player.toComponent(boardLines[it],
-                    *tags.map { tag -> Placeholder.unparsed(tag, usedResolvers[tag]?.invoke(player) ?: tag) }
-                        .toTypedArray()))
+                it, player.toComponent(
+                    boardLines[it],
+                    *inversedTagLocations[language]!![it]?.map { tag ->
+                        Placeholder.unparsed(tag, usedResolvers[tag]?.invoke(player) ?: tag)
+                    }?.toTypedArray() ?: arrayOf()
+                )
+            )
         }
     }
 }
