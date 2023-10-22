@@ -236,7 +236,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
         val hologramTrait = npc.getOrAddTrait(HologramTrait::class.java)
         hologramTrait.lineHeight = -0.28
-        hologramTrait.setUseDisplayEntities(true)
+        // hologramTrait.setUseDisplayEntities(true)
 
         hologramTrait.addLine(
             LegacyComponentSerializer.legacySection().serialize(
@@ -252,7 +252,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             )
         )
 
-        hologramTrait.setMargin(0, "bottom", -0.15)
+        hologramTrait.setMargin(0, "bottom", 0.3)
 
         npc.spawn(mapPoint.toLocation(world!!))
 
