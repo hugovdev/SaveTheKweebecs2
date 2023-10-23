@@ -7,6 +7,7 @@ import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.team.TeamManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.title.Title
 import org.bukkit.GameMode
@@ -45,8 +46,12 @@ fun Arena.start() {
             println("${spawnPoints?.size} spawns! [${team.id}] - $spawnPointIndex")
             teamPlayer.teleport(spawnPoints!![spawnPointIndex].toLocation(world!!))
 
-            teamPlayer.sendTranslated("arena.start.${team.id}")
-            teamPlayer.playSound(Sound.ENTITY_ENDER_DRAGON_GROWL)
+            teamPlayer.sendTranslated(
+                "arena.start.${team.id}",
+                Placeholder.unparsed("team_icon", team.chatIcon)
+            )
+
+            teamPlayer.playSound(Sound.ENTITY_ENDERMAN_TELEPORT)
             teamPlayer.showTitle(
                 "arena.start.title",
                 Title.Times.times(
@@ -74,14 +79,16 @@ fun Arena.start() {
 }
 
 fun Arena.end(winnerTeam: TeamManager.Team) {
-    arenaTime = 10
-    arenaState = ArenaState.FINISHING
+    this.winnerTeam = winnerTeam
+    this.arenaTime = 10
+    this.arenaState = ArenaState.FINISHING
 
     playersPerTeam.forEach { (_, players) ->
         players.mapNotNull { it.player() }.forEach { teamPlayer ->
             teamPlayer.reset(GameMode.ADVENTURE)
 
             soundManager.stopTrack(teamPlayer)
+            soundManager.playSoundEffect("save_the_kweebecs.victory", teamPlayer)
 
             teamPlayer.showTitle(
                 if (winnerTeam == teamPlayer.playerData()?.currentTeam) "arena.win.title"
@@ -98,7 +105,10 @@ fun Arena.end(winnerTeam: TeamManager.Team) {
         }
     }
 
-    announceTranslation("arena.win.${winnerTeam.id}")
+    announceTranslation(
+        "arena.win.${winnerTeam.id}",
+        Placeholder.unparsed("team_icon", winnerTeam.chatIcon)
+    )
 }
 
 fun Arena.reset() {

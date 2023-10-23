@@ -60,6 +60,8 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             gameManager.refreshArenaIcon(this)
         }
 
+    var winnerTeam: TeamManager.Team? = null
+
     var arenaTime: Int = arenaMap.defaultCountdown
     var eventIndex: Int = 0
         set(value) {
@@ -207,6 +209,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
         arenaState = ArenaState.WAITING
         arenaTime = arenaMap.defaultCountdown
+        winnerTeam = null
         eventIndex = 0
     }
 

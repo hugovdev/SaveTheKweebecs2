@@ -222,11 +222,11 @@ arena.event.patch_up.blocksLore:
   - "<italic:false><gray>proteger tu base y tus Kweebecs."
 
 arena.event.trorks_win.name: "Trorks Ganan"
-arena.event.trorks_win.seconds: "<yellow>[<b>!</b>] ¡Los <dark_aqua>Trorks</dark_aqua> ganarán en <red><count></red> segundos!"
-arena.event.trorks_win.second: "<yellow>[<b>!</b>] ¡Los <dark_aqua>Trorks</dark_aqua> ganarán en <red><count></red> segundo!"
+arena.event.trorks_win.seconds: "<gray>(<white>\uD002</white>)</gray> <yellow>¡Los <dark_aqua>Trorks</dark_aqua> ganarán en <red><count></red> segundos!"
+arena.event.trorks_win.second: "<gray>(<white>\uD002</white>)</gray> <yellow>¡Los <dark_aqua>Trorks</dark_aqua> ganarán en <red><count></red> segundo!"
 
-arena.win.kweebec: "<yellow>¡Los <gold>Kweebecs</gold> han ganado!"
-arena.win.trork: "<yellow>¡Los <dark_aqua>Trorks</dark_aqua> han ganado!"
+arena.win.kweebec: "<gray>(<white><team_icon></white>)</gray> <yellow>¡Los <gold>Kweebecs</gold> han ganado!"
+arena.win.trork: "<gray>(<white><team_icon></white>)</gray> <yellow>¡Los <dark_aqua>Trorks</dark_aqua> han ganado!"
 
 arena.win.title:
   - "<#b07b2a>\uB003</#b07b2a>"
@@ -238,10 +238,10 @@ arena.lost.title:
 
 arena.npc.name.kweebec: "<red>Kweebec Secuestrado"
 arena.npc.action.kweebec: "<yellow><b>CLICK PARA SALVAR"
-arena.kweebec.saved: "<yellow>[<b>!</b>] ¡Un <gold>kweebec</gold> ha sido salvado por <gold><player></gold>! [<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>]"
+arena.kweebec.saved: "<gray>(<white><player_team_icon></white>)</gray> <yellow>¡<gray><player></gray> ha salvado un <gold>kweebec</gold>! (<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>)"
 arena.npc.name.trork: "<red>Trork Secuestrado"
 arena.npc.action.trork: "<yellow><b>CLICK PARA SALVAR"
-arena.trork.saved: "<yellow>[<b>!</b>] ¡Un <dark_aqua>trork</dark_aqua> ha sido salvado por <dark_aqua><player></dark_aqua>! [<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>]"
+arena.trork.saved: "<gray>(<white><player_team_icon></white>)</gray> <yellow>¡<gray><player></gray> ha salvado un <dark_aqua>trork</dark_aqua>! (<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>)"
 
 arena.start.title: "<#cc2500>¡BUENA SUERTE!</#cc2500>"
 arena.respawning.title:
@@ -253,7 +253,7 @@ arena.respawned.title:
 
 arena.start.kweebec:
   - ""
-  - "<gold><b>¡La partida ha comenzado!</b> <yellow>¡Eres un <gold>Kweebec</gold>!"
+  - "<gold><b>¡La partida ha comenzado!</b> <yellow>¡Eres un <gold>Kweebec</gold>! <white><team_icon></white>"
   - ""
   - "[<b>!</b>] <yellow>¡Tu <green>objetivo</green> es salvar a los Kweebecs de los <dark_aqua>trorks</dark_aqua>!"
   - "[<b>!</b>] <yellow>Salva <red>Kweebecs Secuestrados</red> y compra objetos y habilidades especiales."
@@ -261,7 +261,7 @@ arena.start.kweebec:
   - ""
 arena.start.trork:
   - ""
-  - "<gold><b>¡La partida ha comenzado!</b> <yellow>¡Eres un <dark_aqua>Trork</dark_aqua>!"
+  - "<gold><b>¡La partida ha comenzado!</b> <yellow>¡Eres un <dark_aqua>Trork</dark_aqua>! <white><team_icon></white>"
   - ""
   - "[<b>!</b>] <yellow>¡Tu <green>objetivo</green> es defender tu base de los <gold>kweebecs</gold>!"
   - "[<b>!</b>] <yellow>¡Protege los <red>Kweebecs Secuestrados</red> y compra mejoras de base!"

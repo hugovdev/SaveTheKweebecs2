@@ -4,8 +4,11 @@ import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
+import me.hugo.savethekweebecs.util.InstantFirework
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
+import org.bukkit.Color
+import org.bukkit.FireworkEffect
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.scheduler.BukkitRunnable
@@ -47,6 +50,15 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
                 }
             } else {
                 arena.updateBoard("next_event", if (arenaState == ArenaState.IN_GAME) "time" else "count")
+
+                if (arenaState == ArenaState.FINISHING) {
+                    arena.playersPerTeam[arena.winnerTeam]?.mapNotNull { it.player() }?.randomOrNull()?.let {
+                        InstantFirework(
+                            FireworkEffect.builder().withColor(Color.ORANGE, Color.YELLOW).trail(true)
+                                .withFade(Color.RED, Color.ORANGE).build(), it.location
+                        )
+                    }
+                }
 
                 if (time <= 60 && (time % 10 == 0 || time <= 5)) {
                     val translationName = if (arenaState != ArenaState.IN_GAME) arenaState.name.lowercase()

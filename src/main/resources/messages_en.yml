@@ -222,11 +222,11 @@ arena.event.patch_up.blocksLore:
   - "<italic:false><gray>your base and Kweebecs."
 
 arena.event.trorks_win.name: "Trorks Win"
-arena.event.trorks_win.seconds: "<yellow>[<b>!</b>] <dark_aqua>Trorks</dark_aqua> win in <red><count></red> seconds!"
-arena.event.trorks_win.second: "<yellow>[<b>!</b>] <dark_aqua>Trorks</dark_aqua> win in <red><count></red> second!"
+arena.event.trorks_win.seconds: "<gray>(<white>\uD002</white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> win in <red><count></red> seconds!"
+arena.event.trorks_win.second: "<gray>(<white>\uD002</white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> win in <red><count></red> second!"
 
-arena.win.kweebec: "<yellow><gold>Kweebecs</gold> won this game!"
-arena.win.trork: "<yellow><dark_aqua>Trorks</dark_aqua> won this game!"
+arena.win.kweebec: "<gray>(<white><team_icon></white>)</gray> <yellow><gold>Kweebecs</gold> won this game!"
+arena.win.trork: "<gray>(<white><team_icon></white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> won this game!"
 
 arena.win.title:
   - "<#b07b2a>\uB003</#b07b2a>"
@@ -238,22 +238,20 @@ arena.lost.title:
 
 arena.npc.name.kweebec: "<red>Kidnaped Kweebec"
 arena.npc.action.kweebec: "<yellow><b>CLICK TO SAVE"
-arena.kweebec.saved: "<yellow>[<b>!</b>] A <gold>kweebec</gold> has been saved by <gold><player></gold>! [<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>]"
+arena.kweebec.saved: "<gray>(<white><player_team_icon></white>)</gray> <gray><player></gray> <yellow>saved a <gold>kweebec</gold>! (<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>)"
 arena.npc.name.trork: "<red>Kidnaped Trork"
 arena.npc.action.trork: "<yellow><b>CLICK TO SAVE"
-arena.trork.saved: "<yellow>[<b>!</b>] A <dark_aqua>trork</dark_aqua> has been saved by <dark_aqua><player></dark_aqua>! [<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>]"
+arena.trork.saved: "<gray>(<white><player_team_icon></white>)</gray> <gray><player></gray> <yellow>saved a <dark_aqua>trork</dark_aqua>! (<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>)"
 
 arena.start.title: "<#cc2500>GOOD LUCK!</#cc2500>"
 arena.respawning.title:
   - "<#ab1b11>Respawning...</#ab1b11>"
   - "<#44c261><respawn_time></#44c261>"
-arena.respawned.title:
-  - "<#ab1b11>Respawned!</#ab1b11>"
-  - " "
+arena.respawned.title: "<#ab1b11>Respawned!</#ab1b11>"
 
 arena.start.kweebec:
   - ""
-  - "<gold><b>Game has started!</b> <yellow>You're a <gold>Kweebec</gold>!"
+  - "<gold><b>Game has started!</b> <yellow>You're a <gold>Kweebec</gold>! <white><team_icon></white>"
   - ""
   - "[<b>!</b>] <yellow>Your <green>objective</green> is save the kweebecs from the <dark_aqua>trorks</dark_aqua>!"
   - "[<b>!</b>] <yellow>Save <red>Kidnaped Kweebecs</red> and buy special items and abilities."
@@ -261,7 +259,7 @@ arena.start.kweebec:
   - ""
 arena.start.trork:
   - ""
-  - "<gold><b>Game has started!</b> <yellow>You're a <dark_aqua>Trork</dark_aqua>!"
+  - "<gold><b>Game has started!</b> <yellow>You're a <dark_aqua>Trork</dark_aqua>! <white><team_icon></white>"
   - ""
   - "[<b>!</b>] <yellow>Your <green>objective</green> is to defend your base from the <gold>kweebecs</gold>!"
   - "[<b>!</b>] <yellow>Protect the <red>Kidnaped Kweebecs</red> and buy base upgrades."
@@ -351,6 +349,7 @@ system.map.help:
   - "<aqua>/stk admin map setminplayers <gold>[number]</gold></aqua> <gray>- Sets the minimum players."
   - "<aqua>/stk admin map setmaxplayers <gold>[number]</gold></aqua> <gray>- Sets the maximum players."
   - "<aqua>/stk admin map setcountdown <gold>[number]</gold></aqua> <gray>- Sets the default countdown."
+  - ""
   - ""
   - "<aqua>/stk admin map save</aqua> <gray>- Saves the configured map into the config file."
   - ""

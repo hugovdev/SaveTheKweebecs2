@@ -181,11 +181,14 @@ class ArenaListener : KoinComponent, Listener {
             npc.despawn()
             arena.remainingNPCs[npc] = true
 
-            soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
+            if (arena.remainingNPCs.any { !it.value }) {
+                soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
+            }
 
             arena.announceTranslation(
                 "arena.${attackerTeam.id}.saved",
                 Placeholder.unparsed("player", player.name),
+                Placeholder.unparsed("player_team_icon", attackerTeam.chatIcon),
                 Placeholder.unparsed("npcs_saved", arena.remainingNPCs.count { it.value }.toString()),
                 Placeholder.unparsed("total_npcs", arena.remainingNPCs.size.toString())
             )
