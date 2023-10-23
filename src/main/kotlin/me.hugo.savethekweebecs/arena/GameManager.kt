@@ -97,7 +97,7 @@ class GameManager : KoinComponent {
 
         playerData.kills = 0
         playerData.deaths = 0
-        playerData.coins = 0
+        playerData.resetCoins()
 
         soundManager.stopTrack(player)
 

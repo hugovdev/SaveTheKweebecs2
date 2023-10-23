@@ -56,7 +56,7 @@ class ScoreboardTemplateManager : KoinComponent {
             it.getUnformattedLine("arena.event.${it.arena()?.currentEvent?.name?.lowercase() ?: "unknown"}.name")
         }
 
-        registerTag("coins") { it.playerDataOrCreate().coins.toString() }
+        registerTag("coins") { it.playerDataOrCreate().getCoins().toString() }
 
         registerTag("kills") { it.playerDataOrCreate().kills.toString() }
 

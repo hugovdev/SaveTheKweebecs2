@@ -213,8 +213,8 @@ arena.kill.title:
   - "<#d6d6d6>\uB001</#d6d6d6> <#5eab88>+10 gold!</#5eab88>"
 
 arena.event.patch_up.name: "Patch Up"
-arena.event.patch_up.seconds: "<yellow>[<b>!</b>] <dark_aqua>Trorks</dark_aqua> are receiving defensive blocks in <red><count></red> seconds!"
-arena.event.patch_up.second: "<yellow>[<b>!</b>] <dark_aqua>Trorks</dark_aqua> are receiving defensive blocks in <red><count></red> second!"
+arena.event.patch_up.seconds: "<gray>(<white>\uD002</white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> are receiving defensive blocks in <red><count></red> seconds!"
+arena.event.patch_up.second: "<gray>(<white>\uD002</white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> are receiving defensive blocks in <red><count></red> second!"
 arena.event.patch_up.receive: "<yellow>You received <aqua>x2</aqua> <gold><b>Weak Blocks</b></gold> to defend your base!"
 arena.event.patch_up.blocksName: "<italic:false><gold><b>Weak Blocks"
 arena.event.patch_up.blocksLore:
@@ -224,6 +224,12 @@ arena.event.patch_up.blocksLore:
 arena.event.trorks_win.name: "Trorks Win"
 arena.event.trorks_win.seconds: "<gray>(<white>\uD002</white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> win in <red><count></red> seconds!"
 arena.event.trorks_win.second: "<gray>(<white>\uD002</white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> win in <red><count></red> second!"
+
+arena.gold.reason.kill: "Elimination"
+arena.gold.reason.saved_kweebec: "Saved Kweebec"
+
+arena.gold.plus: "      ➥ <yellow>+<amount></yellow> ⛃ <gray>(<reason>)</gray>"
+arena.gold.minus: "      ➥ <yellow>-<amount></yellow> ⛃ <gray>(<reason>)</gray>"
 
 arena.win.kweebec: "<gray>(<white><team_icon></white>)</gray> <yellow><gold>Kweebecs</gold> won this game!"
 arena.win.trork: "<gray>(<white><team_icon></white>)</gray> <yellow><dark_aqua>Trorks</dark_aqua> won this game!"

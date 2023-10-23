@@ -81,11 +81,31 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
             uuid.player()?.updateBoardTags("deaths")
         }
 
-    var coins: Int = 0
-        set(value) {
-            field = value
-            uuid.player()?.updateBoardTags("coins")
+    private var coins: Int = 0
+
+    fun getCoins(): Int {
+        return coins
+    }
+
+    fun resetCoins() {
+        coins = 0
+    }
+
+    fun addCoins(amount: Int, reason: String) {
+        coins += amount
+
+        val isNegative = amount < 0
+        val displayedAmount = if (isNegative) amount * -1 else amount
+
+        uuid.player()?.let {
+            it.updateBoardTags("coins")
+            it.sendTranslated(
+                if (isNegative) "arena.gold.minus" else "arena.gold.plus",
+                Placeholder.unparsed("amount", displayedAmount.toString()),
+                Placeholder.component("reason", uuid.translate("arena.gold.reason.$reason"))
+            )
         }
+    }
 
     private fun createTransformationsMenu(): PaginatedMenu {
         transformationsMenu?.let { it.pages.forEach { menuRegistry.unregisterMenu(it) } }

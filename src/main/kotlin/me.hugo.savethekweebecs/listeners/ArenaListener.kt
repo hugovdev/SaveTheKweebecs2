@@ -131,7 +131,6 @@ class ArenaListener : KoinComponent, Listener {
                     val attackerData = attacker.playerDataOrCreate()
 
                     attackerData.kills++
-                    attackerData.coins += 10
 
                     soundManager.playSoundEffect("save_the_kweebecs.kill", attacker)
 
@@ -154,6 +153,8 @@ class ArenaListener : KoinComponent, Listener {
                         Placeholder.unparsed("killer_team_icon", attackerData.currentTeam?.chatIcon ?: ""),
                         Placeholder.unparsed("killer", attacker.name)
                     )
+
+                    attackerData.addCoins(10, "kill")
                 }
             }
 
@@ -192,6 +193,8 @@ class ArenaListener : KoinComponent, Listener {
                 Placeholder.unparsed("npcs_saved", arena.remainingNPCs.count { it.value }.toString()),
                 Placeholder.unparsed("total_npcs", arena.remainingNPCs.size.toString())
             )
+
+            player.playerData()?.addCoins(15, "saved_${attackerTeam.id}")
 
             InstantFirework(
                 FireworkEffect.builder().withColor(Color.GREEN, Color.ORANGE).flicker(true)
