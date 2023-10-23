@@ -76,5 +76,7 @@ class JoinLeaveListener : KoinComponent, Listener {
 
         Bukkit.getOnlinePlayers().filter { it != player }.filter { it.arena() == null }
             .forEach { it.updateBoardTags("all_players") }
+
+        player.scoreboard
     }
 }

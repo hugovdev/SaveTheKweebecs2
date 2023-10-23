@@ -10,13 +10,14 @@ import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.task.GameControllerTask
 import me.hugo.savethekweebecs.util.menus.Icon
 import me.hugo.savethekweebecs.util.menus.PaginatedMenu
+import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scoreboard.DisplaySlot
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -107,9 +108,26 @@ class GameManager : KoinComponent {
     private fun removeScoreboardEntries(player: Player) {
         val scoreboard = player.scoreboard
 
-        scoreboard.getTeam("own")?.let { team -> team.removeEntries(team.entries) }
-        scoreboard.getTeam("enemy")?.let { team -> team.removeEntries(team.entries) }
+        scoreboard.getTeam("own")?.let { team ->
+            team.removeEntries(team.entries)
+            team.unregister()
+        }
 
-        scoreboard.clearSlot(DisplaySlot.BELOW_NAME)
+        scoreboard.getTeam("enemy")?.let { team ->
+            team.removeEntries(team.entries)
+            team.unregister()
+        }
+
+        val serverPlayer = (player as CraftPlayer).handle
+        val healthObjective = player.playerData()?.healthObjective
+
+        if (healthObjective != null) {
+            serverPlayer.connection.send(
+                ClientboundSetObjectivePacket(
+                    healthObjective,
+                    ClientboundSetObjectivePacket.METHOD_REMOVE
+                )
+            )
+        }
     }
 }

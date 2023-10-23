@@ -218,44 +218,46 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         val npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "")
 
         npc.data().setPersistent(NPC.Metadata.SHOULD_SAVE, false)
+        npc.data().setPersistent(NPC.Metadata.SCOREBOARD_FAKE_TEAM_NAME, "npcTeam")
         npc.data().setPersistent(NPC.Metadata.NAMEPLATE_VISIBLE, false)
+        npc.data().setPersistent(NPC.Metadata.SCOREBOARD_FAKE_TEAM_NAME, "npcTeam")
+
         npc.data().setPersistent("arena", arenaUUID.toString())
 
         val visualToUse = attackerTeam.visuals.random()
 
-        val skinTrait = npc.getOrAddTrait(SkinTrait::class.java)
-        skinTrait.setSkinPersistent(
-            attackerTeam.id,
-            visualToUse.skin.signature,
-            visualToUse.skin.value
-        )
+        npc.getOrAddTrait(SkinTrait::class.java)?.apply {
+            setSkinPersistent(
+                attackerTeam.id,
+                visualToUse.skin.signature,
+                visualToUse.skin.value
+            )
+        }
 
         npc.getOrAddTrait(Equipment::class.java).set(Equipment.EquipmentSlot.HELMET, visualToUse.craftHead(null))
-
         npc.getOrAddTrait(CurrentLocation::class.java)
 
-        val lookClose = npc.getOrAddTrait(LookClose::class.java)
-        lookClose.lookClose(true)
+        npc.getOrAddTrait(LookClose::class.java)?.apply { lookClose(true) }
 
-        val hologramTrait = npc.getOrAddTrait(HologramTrait::class.java)
-        hologramTrait.lineHeight = -0.28
-        // hologramTrait.setUseDisplayEntities(true)
+        npc.getOrAddTrait(HologramTrait::class.java)?.apply {
+            lineHeight = -0.28
 
-        hologramTrait.addLine(
-            LegacyComponentSerializer.legacySection().serialize(
-                MiniMessage.miniMessage()
-                    .deserialize(languageManager.getLangString("arena.npc.name.${attackerTeam.id}"))
+            addLine(
+                LegacyComponentSerializer.legacySection().serialize(
+                    MiniMessage.miniMessage()
+                        .deserialize(languageManager.getLangString("arena.npc.name.${attackerTeam.id}"))
+                )
             )
-        )
 
-        hologramTrait.addLine(
-            LegacyComponentSerializer.legacySection().serialize(
-                MiniMessage.miniMessage()
-                    .deserialize(languageManager.getLangString("arena.npc.action.${attackerTeam.id}"))
+            addLine(
+                LegacyComponentSerializer.legacySection().serialize(
+                    MiniMessage.miniMessage()
+                        .deserialize(languageManager.getLangString("arena.npc.action.${attackerTeam.id}"))
+                )
             )
-        )
 
-        hologramTrait.setMargin(0, "bottom", 0.3)
+            setMargin(0, "bottom", 0.3)
+        }
 
         npc.spawn(mapPoint.toLocation(world!!))
 

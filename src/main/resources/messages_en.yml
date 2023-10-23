@@ -249,6 +249,8 @@ arena.npc.name.trork: "<red>Kidnaped Trork"
 arena.npc.action.trork: "<yellow><b>CLICK TO SAVE"
 arena.trork.saved: "<gray>(<white><player_team_icon></white>)</gray> <gray><player></gray> <yellow>saved a <dark_aqua>trork</dark_aqua>! (<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>)"
 
+arena.popup.saved: "<#dbc9c8>Saved!</#dbc9c8>"
+
 arena.start.title: "<#cc2500>GOOD LUCK!</#cc2500>"
 arena.respawning.title:
   - "<#ab1b11>Respawning...</#ab1b11>"

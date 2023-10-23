@@ -13,6 +13,7 @@ import me.hugo.savethekweebecs.listeners.JoinLeaveListener
 import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
+import me.hugo.savethekweebecs.text.TextPopUpManager
 import me.hugo.savethekweebecs.util.menus.MenuRegistry
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
@@ -26,15 +27,16 @@ import revxrsal.commands.command.CommandActor
 import revxrsal.commands.command.CommandParameter
 import revxrsal.commands.exception.CommandErrorException
 
-
 class SaveTheKweebecs : KoinComponent, JavaPlugin() {
 
     private val gameManager: GameManager by inject()
     private val teamManager: TeamManager by inject()
+
     private val languageManager: LanguageManager by inject()
     private val scoreboardManager: ScoreboardTemplateManager by inject()
 
     private val soundManager: SoundManager by inject()
+    private val textPopUp: TextPopUpManager by inject()
 
     private val menuRegistry: MenuRegistry by inject()
     private val itemManager: ItemSetManager by inject()
@@ -105,13 +107,20 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         pluginManager.registerEvents(itemManager, this)
         pluginManager.registerEvents(ArenaListener(), this)
 
-        soundManager.runTaskTimer(getInstance(), 0L, 1L)
+        soundManager.runTaskTimer(getInstance(), 0L, 2L)
+        textPopUp.runTaskTimer(getInstance(), 0L, 5L)
+
+        Bukkit.getScoreboardManager().mainScoreboard.teams.forEach { it.unregister() }
+        Bukkit.getScoreboardManager().mainScoreboard.objectives.forEach { it.unregister() }
 
         println("Starting Game Manager... Maps: ${gameManager.maps.size}")
     }
 
     override fun onDisable() {
         commandHandler.unregisterAllCommands()
+
+        Bukkit.getScoreboardManager().mainScoreboard.teams.forEach { it.unregister() }
+        Bukkit.getScoreboardManager().mainScoreboard.objectives.forEach { it.unregister() }
     }
 
 

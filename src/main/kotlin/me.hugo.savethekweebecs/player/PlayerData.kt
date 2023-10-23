@@ -12,6 +12,7 @@ import me.hugo.savethekweebecs.util.menus.Icon
 import me.hugo.savethekweebecs.util.menus.MenuRegistry
 import me.hugo.savethekweebecs.util.menus.PaginatedMenu
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.minecraft.world.scores.Objective
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -35,7 +36,9 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
     var lastAttack: PlayerAttack? = null
 
     var playerSkin: TeamManager.SkinProperty? = null
+
     var fastBoard: FastBoard? = null
+    var healthObjective: Objective? = null
 
     var locale: String = LanguageManager.DEFAULT_LANGUAGE
         set(newLanguage) {

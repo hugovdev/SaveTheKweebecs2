@@ -9,10 +9,13 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.title.Title
+import net.minecraft.network.protocol.game.ClientboundSetScorePacket
+import net.minecraft.server.ServerScoreboard
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.koin.java.KoinJavaComponent.inject
 import java.util.*
@@ -66,6 +69,17 @@ fun Player.updateBoardTags(vararg tags: String) {
 fun Player.playerDataOrCreate(): PlayerData = playerManager.getOrCreatePlayerData(this)
 fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
 
+fun Player.updateHealth(health: Int) {
+    val arena = arena() ?: return
+
+    arena.arenaPlayers().mapNotNull { it.player() }
+        .forEach {
+            (it as CraftPlayer).handle.connection.send(
+                ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, "showHealth", name, health)
+            )
+        }
+}
+
 fun Player.showTitle(key: String, times: Title.Times, vararg tagResolver: TagResolver) {
     if (languageManager.isList(key)) {
         val titles = getUnformattedList(key)
@@ -97,4 +111,5 @@ fun Player.reset(gameMode: GameMode) {
     inventory.setArmorContents(null)
 
     inventory.heldItemSlot = 0
+    updateHealth(health.toInt())
 }

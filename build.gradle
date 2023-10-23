@@ -1,5 +1,6 @@
 plugins {
     id("idea")
+    id("io.papermc.paperweight.userdev") version "1.5.5"
     id("org.jetbrains.kotlin.jvm") version "1.9.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id "com.google.devtools.ksp" version "1.9.10-1.0.13"
@@ -48,6 +49,8 @@ dependencies {
 
     // Scoreboard API
     implementation 'fr.mrmicky:fastboard:2.0.1'
+
+    paperweight.paperDevBundle("1.20.2-R0.1-SNAPSHOT")
 
     // Citizens API
     compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT") {

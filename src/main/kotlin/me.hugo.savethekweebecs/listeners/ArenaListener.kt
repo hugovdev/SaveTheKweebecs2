@@ -10,23 +10,21 @@ import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.player.PlayerData
-import me.hugo.savethekweebecs.util.InstantFirework
+import me.hugo.savethekweebecs.text.TextPopUpManager
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
 import org.bukkit.*
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.entity.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -35,6 +33,8 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -43,6 +43,7 @@ class ArenaListener : KoinComponent, Listener {
 
     private val gameManager: GameManager by inject()
     private val soundManager: SoundManager by inject()
+    private val textPopUpManager: TextPopUpManager by inject()
 
     private companion object {
         private val BREAKABLE_ATTACKER_BLOCKS = MaterialSetTag(NamespacedKey("stk", "attacker_breakable"))
@@ -82,6 +83,10 @@ class ArenaListener : KoinComponent, Listener {
         val arena: Arena? = player.arena()
 
         if (arena?.isInGame() == true && player.gameMode != GameMode.SPECTATOR) {
+            val finalHealth = max(0.0, player.health - event.finalDamage)
+
+            player.updateHealth(finalHealth.toInt())
+
             if (event is EntityDamageByEntityEvent) {
                 val attacker = event.damager
 
@@ -100,14 +105,14 @@ class ArenaListener : KoinComponent, Listener {
                 playerSource?.let { playerData.lastAttack = PlayerData.PlayerAttack(it.uniqueId) }
             }
 
-            if (player.health - event.finalDamage <= 0) {
+            if (finalHealth <= 0) {
                 event.isCancelled = true
 
                 val deathLocation = player.location
 
                 playerData.deaths++
                 player.gameMode = GameMode.SPECTATOR
-                arena.deadPlayers[player] = 5
+                arena.deadPlayers[player] = 8
 
                 deathLocation.world.playEffect(deathLocation, Effect.STEP_SOUND, Material.REDSTONE_BLOCK)
                 deathLocation.world.playEffect(
@@ -165,6 +170,21 @@ class ArenaListener : KoinComponent, Listener {
     }
 
     @EventHandler
+    fun onHealthRegain(event: EntityRegainHealthEvent) {
+        val player = event.entity
+
+        if (player !is Player) return
+        val arena: Arena? = player.arena()
+
+        if (arena?.isInGame() == true && player.gameMode != GameMode.SPECTATOR) {
+            val finalHealth =
+                min(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue ?: 20.0, player.health + event.amount)
+
+            player.updateHealth(finalHealth.toInt())
+        }
+    }
+
+    @EventHandler
     fun onNPCClick(event: NPCRightClickEvent) {
         val npc = event.npc
 
@@ -182,9 +202,21 @@ class ArenaListener : KoinComponent, Listener {
             npc.despawn()
             arena.remainingNPCs[npc] = true
 
+            val location = npc.storedLocation
+
             if (arena.remainingNPCs.any { !it.value }) {
                 soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
+                textPopUpManager.createPopUp(
+                    player,
+                    "arena.popup.saved",
+                    location.clone().add(0.0, 1.5, 0.0),
+                    1.55f,
+                    2.5.seconds,
+                    0.25.seconds
+                )
             }
+
+            if (location.block.type == Material.FIRE) location.block.type = Material.AIR
 
             arena.announceTranslation(
                 "arena.${attackerTeam.id}.saved",
@@ -196,10 +228,7 @@ class ArenaListener : KoinComponent, Listener {
 
             player.playerData()?.addCoins(15, "saved_${attackerTeam.id}")
 
-            InstantFirework(
-                FireworkEffect.builder().withColor(Color.GREEN, Color.ORANGE).flicker(true)
-                    .trail(true).withFade(Color.RED).build(), npc.storedLocation
-            )
+            location.world.spawnParticle(Particle.CLOUD, location.clone().add(0.0, 1.0, 0.0), 5, 0.2, 1.0, 0.2, 0.1)
 
             if (arena.remainingNPCs.all { it.value }) arena.end(attackerTeam)
             else arena.updateBoard("npcs_saved", "total_npcs")
