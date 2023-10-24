@@ -18,26 +18,33 @@ import java.util.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
+data class PopupTimes(val popupDuration: Duration, val popupTime: Duration)
+data class PopupTransformation(val startingScale: Float = 0.0f, val scale: Float = 1.0f)
+
 class TextPopUp(
-    private val textKey: String,
-    val location: Location,
     viewers: List<Player>,
-    duration: Duration = 1.5.seconds,
-    popupTime: Duration = 0.5.seconds,
-    scale: Float = 1.0f,
-    startingScale: Float = 0.2f,
+    textKey: String,
+    var location: Location,
+    times: PopupTimes = PopupTimes(1.5.seconds, 0.5.seconds),
+    transformations: PopupTransformation = PopupTransformation()
 ) {
 
-    private val popupMilliseconds = popupTime.inWholeMilliseconds
-    val millisecondDuration = duration.inWholeMilliseconds
+    private val popupMilliseconds = times.popupTime.inWholeMilliseconds
+    val millisecondDuration = times.popupDuration.inWholeMilliseconds
 
     val entities: Map<UUID, TextDisplay>
 
     init {
+        location = location.clone().add(0.0, transformations.scale.toDouble() / 2, 0.0)
+
         entities = viewers.map { it.uniqueId }.associateWith {
             val player = it.player()
             val textDisplay =
-                location.world.spawnEntity(location.clone().subtract(0.0, 0.25, 0.0), EntityType.TEXT_DISPLAY, CreatureSpawnEvent.SpawnReason.CUSTOM)
+                location.world.spawnEntity(
+                    location,
+                    EntityType.TEXT_DISPLAY,
+                    CreatureSpawnEvent.SpawnReason.CUSTOM
+                )
                 { entity ->
                     entity as TextDisplay
 
@@ -50,7 +57,12 @@ class TextPopUp(
                     entity.text(it.translate(textKey))
                     entity.brightness = Display.Brightness(15, 15)
 
-                    entity.transformation = Transformation(Vector3f(), AxisAngle4f(), Vector3f(startingScale), AxisAngle4f())
+                    entity.transformation = Transformation(
+                        Vector3f(),
+                        AxisAngle4f(),
+                        Vector3f(transformations.startingScale),
+                        AxisAngle4f()
+                    )
                     entity.interpolationDuration = (popupMilliseconds * 0.02).toInt()
                     entity.teleportDuration = (popupMilliseconds * 0.02).toInt()
                     entity.interpolationDelay = -1
@@ -61,11 +73,18 @@ class TextPopUp(
             textDisplay
         }
 
+        // Wait 2 ticks to ensure the entity tracker has registered this entity and transformations
+        // will happen in the
         object : BukkitRunnable() {
             override fun run() {
                 entities.values.forEach {
-                    it.transformation = Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f())
-                    it.teleport(location)
+                    it.transformation =
+                        Transformation(
+                            Vector3f(0.0f, (transformations.scale / 2) * -1, 0.0f),
+                            AxisAngle4f(),
+                            Vector3f(transformations.scale),
+                            AxisAngle4f()
+                        )
                 }
             }
         }.runTaskLater(SaveTheKweebecs.getInstance(), 2L)

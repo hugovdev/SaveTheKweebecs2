@@ -10,6 +10,8 @@ import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.player.PlayerData
+import me.hugo.savethekweebecs.text.PopupTimes
+import me.hugo.savethekweebecs.text.PopupTransformation
 import me.hugo.savethekweebecs.text.TextPopUpManager
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.kyori.adventure.text.Component
@@ -187,14 +189,15 @@ class ArenaListener : KoinComponent, Listener {
 
             if (arena.remainingNPCs.any { !it.value }) {
                 soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
+
+                val popupLocation = location.clone().add(0.0, 1.2, 0.0)
+
                 textPopUpManager.createPopUp(
                     player,
                     "arena.popup.saved",
-                    location.clone().add(0.0, 1.5, 0.0),
-                    0.0f,
-                    1.55f,
-                    2.5.seconds,
-                    0.2.seconds
+                    popupLocation,
+                    PopupTimes(2.8.seconds, 0.25.seconds),
+                    PopupTransformation(scale = 1.55f)
                 )
             }
 
@@ -210,7 +213,7 @@ class ArenaListener : KoinComponent, Listener {
 
             player.playerData()?.addCoins(15, "saved_${attackerTeam.id}")
 
-            location.world.spawnParticle(Particle.CLOUD, location.clone().add(0.0, 1.0, 0.0), 5, 0.2, 1.0, 0.2, 0.1)
+            location.world.spawnParticle(Particle.CLOUD, location.clone().add(0.0, 0.55, 0.0), 5, 0.05, 0.1, 0.05, 0.02)
 
             if (arena.remainingNPCs.all { it.value }) arena.end(attackerTeam)
             else arena.updateBoard("npcs_saved", "total_npcs")

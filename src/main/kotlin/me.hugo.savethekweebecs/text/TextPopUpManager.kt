@@ -6,7 +6,6 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.koin.core.annotation.Single
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @Single
@@ -26,23 +25,20 @@ class TextPopUpManager : BukkitRunnable() {
         viewers: List<Player>,
         textKey: String,
         location: Location,
-        scale: Float = 1.0f,
-        duration: Duration = 1.5.seconds,
-        popupTime: Duration = 0.5.seconds
+        times: PopupTimes = PopupTimes(1.5.seconds, 0.5.seconds),
+        transformations: PopupTransformation = PopupTransformation()
     ) {
-        popUps[TextPopUp(textKey, location, viewers, duration, popupTime, scale)] = System.currentTimeMillis()
+        popUps[TextPopUp(viewers, textKey, location, times, transformations)] = System.currentTimeMillis()
     }
 
     fun createPopUp(
-        viewers: Player,
+        viewer: Player,
         textKey: String,
         location: Location,
-        startingScale: Float = 0.2f,
-        scale: Float = 1.0f,
-        duration: Duration = 1.5.seconds,
-        popupTime: Duration = 0.5.seconds
+        times: PopupTimes = PopupTimes(1.5.seconds, 0.5.seconds),
+        transformations: PopupTransformation = PopupTransformation()
     ) {
-        popUps[TextPopUp(textKey, location, listOf(viewers), duration, popupTime, scale, startingScale)] = System.currentTimeMillis()
+        popUps[TextPopUp(listOf(viewer), textKey, location, times, transformations)] = System.currentTimeMillis()
     }
 
     private fun removePopUp(popup: TextPopUp) {
