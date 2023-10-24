@@ -17,14 +17,16 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
 import org.bukkit.*
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.*
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityPickupItemEvent
+import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerDropItemEvent
@@ -33,8 +35,6 @@ import org.bukkit.event.weather.WeatherChangeEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -83,10 +83,6 @@ class ArenaListener : KoinComponent, Listener {
         val arena: Arena? = player.arena()
 
         if (arena?.isInGame() == true && player.gameMode != GameMode.SPECTATOR) {
-            val finalHealth = max(0.0, player.health - event.finalDamage)
-
-            player.updateHealth(finalHealth.toInt())
-
             if (event is EntityDamageByEntityEvent) {
                 val attacker = event.damager
 
@@ -105,7 +101,7 @@ class ArenaListener : KoinComponent, Listener {
                 playerSource?.let { playerData.lastAttack = PlayerData.PlayerAttack(it.uniqueId) }
             }
 
-            if (finalHealth <= 0) {
+            if (player.health - event.finalDamage <= 0) {
                 event.isCancelled = true
 
                 val deathLocation = player.location
@@ -170,21 +166,6 @@ class ArenaListener : KoinComponent, Listener {
     }
 
     @EventHandler
-    fun onHealthRegain(event: EntityRegainHealthEvent) {
-        val player = event.entity
-
-        if (player !is Player) return
-        val arena: Arena? = player.arena()
-
-        if (arena?.isInGame() == true && player.gameMode != GameMode.SPECTATOR) {
-            val finalHealth =
-                min(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue ?: 20.0, player.health + event.amount)
-
-            player.updateHealth(finalHealth.toInt())
-        }
-    }
-
-    @EventHandler
     fun onNPCClick(event: NPCRightClickEvent) {
         val npc = event.npc
 
@@ -210,9 +191,10 @@ class ArenaListener : KoinComponent, Listener {
                     player,
                     "arena.popup.saved",
                     location.clone().add(0.0, 1.5, 0.0),
+                    0.0f,
                     1.55f,
                     2.5.seconds,
-                    0.25.seconds
+                    0.2.seconds
                 )
             }
 

@@ -1,6 +1,5 @@
 package me.hugo.savethekweebecs.extension
 
-import io.papermc.paper.adventure.PaperAdventure
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.arena.ArenaState
 import me.hugo.savethekweebecs.arena.GameManager
@@ -11,15 +10,12 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.title.Title
-import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket
-import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket
-import net.minecraft.world.scores.DisplaySlot
-import net.minecraft.world.scores.Objective
-import net.minecraft.world.scores.criteria.ObjectiveCriteria
 import org.bukkit.GameMode
 import org.bukkit.Sound
-import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer
 import org.bukkit.entity.Player
+import org.bukkit.scoreboard.Criteria
+import org.bukkit.scoreboard.DisplaySlot
+import org.bukkit.scoreboard.RenderType
 import org.bukkit.scoreboard.Team
 import org.koin.java.KoinJavaComponent
 import kotlin.time.Duration.Companion.seconds
@@ -149,15 +145,14 @@ fun Arena.loadTeamColors(player: Player) {
         suffix(Component.text(" ${otherTeam.teamIcon}").color(NamedTextColor.WHITE))
     }
 
-    val serverPlayer = (player as CraftPlayer).handle
+    val healthObjective = scoreboard.getObjective("showHealth") ?: scoreboard.registerNewObjective(
+        "showHealth",
+        Criteria.HEALTH,
+        Component.text("❤", NamedTextColor.RED),
+        RenderType.INTEGER
+    )
 
-    val objective = player.playerData()?.healthObjective ?: Objective(
-        serverPlayer.scoreboard, "showHealth", ObjectiveCriteria.DUMMY,
-        PaperAdventure.asVanilla(Component.text("❤", NamedTextColor.RED)), ObjectiveCriteria.RenderType.INTEGER
-    ).also { player.playerData()?.healthObjective = it }
-
-    serverPlayer.connection.send(ClientboundSetObjectivePacket(objective, ClientboundSetObjectivePacket.METHOD_ADD))
-    serverPlayer.connection.send(ClientboundSetDisplayObjectivePacket(DisplaySlot.BELOW_NAME, objective))
+    healthObjective.displaySlot = DisplaySlot.BELOW_NAME
 
     playersPerTeam.forEach { (team, players) ->
         val isOwnTeam = team == player.playerData()?.currentTeam
@@ -166,9 +161,9 @@ fun Arena.loadTeamColors(player: Player) {
             it.player()?.name?.let { playerName ->
                 if (isOwnTeam) ownTeam.addEntry(playerName)
                 else enemyTeam.addEntry(playerName)
-            }
 
-            it.player()?.updateHealth(20)
+                healthObjective.getScore(playerName).score = 20
+            }
         }
     }
 }

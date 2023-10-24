@@ -37,11 +37,12 @@ class TextPopUpManager : BukkitRunnable() {
         viewers: Player,
         textKey: String,
         location: Location,
+        startingScale: Float = 0.2f,
         scale: Float = 1.0f,
         duration: Duration = 1.5.seconds,
         popupTime: Duration = 0.5.seconds
     ) {
-        popUps[TextPopUp(textKey, location, listOf(viewers), duration, popupTime, scale)] = System.currentTimeMillis()
+        popUps[TextPopUp(textKey, location, listOf(viewers), duration, popupTime, scale, startingScale)] = System.currentTimeMillis()
     }
 
     private fun removePopUp(popup: TextPopUp) {

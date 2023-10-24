@@ -220,6 +220,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         npc.data().setPersistent(NPC.Metadata.SHOULD_SAVE, false)
         npc.data().setPersistent(NPC.Metadata.SCOREBOARD_FAKE_TEAM_NAME, "npcTeam")
         npc.data().setPersistent(NPC.Metadata.NAMEPLATE_VISIBLE, false)
+        npc.data().setPersistent(NPC.Metadata.ALWAYS_USE_NAME_HOLOGRAM, true)
         npc.data().setPersistent(NPC.Metadata.SCOREBOARD_FAKE_TEAM_NAME, "npcTeam")
 
         npc.data().setPersistent("arena", arenaUUID.toString())

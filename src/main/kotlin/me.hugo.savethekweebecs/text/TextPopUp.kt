@@ -25,9 +25,10 @@ class TextPopUp(
     duration: Duration = 1.5.seconds,
     popupTime: Duration = 0.5.seconds,
     scale: Float = 1.0f,
+    startingScale: Float = 0.2f,
 ) {
 
-    val popupMilliseconds = popupTime.inWholeMilliseconds
+    private val popupMilliseconds = popupTime.inWholeMilliseconds
     val millisecondDuration = duration.inWholeMilliseconds
 
     val entities: Map<UUID, TextDisplay>
@@ -36,7 +37,7 @@ class TextPopUp(
         entities = viewers.map { it.uniqueId }.associateWith {
             val player = it.player()
             val textDisplay =
-                location.world.spawnEntity(location, EntityType.TEXT_DISPLAY, CreatureSpawnEvent.SpawnReason.CUSTOM)
+                location.world.spawnEntity(location.clone().subtract(0.0, 0.25, 0.0), EntityType.TEXT_DISPLAY, CreatureSpawnEvent.SpawnReason.CUSTOM)
                 { entity ->
                     entity as TextDisplay
 
@@ -49,8 +50,9 @@ class TextPopUp(
                     entity.text(it.translate(textKey))
                     entity.brightness = Display.Brightness(15, 15)
 
-                    entity.transformation = Transformation(Vector3f(), AxisAngle4f(), Vector3f(), AxisAngle4f())
+                    entity.transformation = Transformation(Vector3f(), AxisAngle4f(), Vector3f(startingScale), AxisAngle4f())
                     entity.interpolationDuration = (popupMilliseconds * 0.02).toInt()
+                    entity.teleportDuration = (popupMilliseconds * 0.02).toInt()
                     entity.interpolationDelay = -1
                 } as TextDisplay
 
@@ -63,6 +65,7 @@ class TextPopUp(
             override fun run() {
                 entities.values.forEach {
                     it.transformation = Transformation(Vector3f(), AxisAngle4f(), Vector3f(scale), AxisAngle4f())
+                    it.teleport(location)
                 }
             }
         }.runTaskLater(SaveTheKweebecs.getInstance(), 2L)
