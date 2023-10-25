@@ -84,12 +84,16 @@ class ArenaListener : KoinComponent, Listener {
         val playerData = player.playerDataOrCreate()
         val arena: Arena? = player.arena()
 
+        val isDying = player.health - event.finalDamage <= 0
+
         if (arena?.isInGame() == true && player.gameMode != GameMode.SPECTATOR) {
             if (event is EntityDamageByEntityEvent) {
                 val attacker = event.damager
 
                 val playerSource: Player? = if (attacker is Player) attacker
                 else if (attacker is Projectile) {
+                    if (isDying) attacker.remove()
+
                     val shooter = attacker.shooter
                     if (shooter is Player) shooter
                     else null
@@ -103,7 +107,7 @@ class ArenaListener : KoinComponent, Listener {
                 playerSource?.let { playerData.lastAttack = PlayerData.PlayerAttack(it.uniqueId) }
             }
 
-            if (player.health - event.finalDamage <= 0) {
+            if (isDying) {
                 event.isCancelled = true
 
                 val deathLocation = player.location

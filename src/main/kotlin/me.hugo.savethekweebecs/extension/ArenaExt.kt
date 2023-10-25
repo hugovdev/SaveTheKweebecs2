@@ -157,13 +157,13 @@ fun Arena.loadTeamColors(player: Player) {
     playersPerTeam.forEach { (team, players) ->
         val isOwnTeam = team == player.playerData()?.currentTeam
 
-        players.forEach {
-            it.player()?.name?.let { playerName ->
-                if (isOwnTeam) ownTeam.addEntry(playerName)
-                else enemyTeam.addEntry(playerName)
+        players.mapNotNull { it.player() }.forEach { player ->
+            val playerName = player.name
 
-                healthObjective.getScore(playerName).score = 20
-            }
+            if (isOwnTeam) ownTeam.addEntry(playerName)
+            else enemyTeam.addEntry(playerName)
+
+            healthObjective.getScore(player).score = 20
         }
     }
 }

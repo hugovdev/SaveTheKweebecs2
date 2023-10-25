@@ -1,7 +1,6 @@
 package me.hugo.savethekweebecs.text
 
 import me.hugo.savethekweebecs.SaveTheKweebecs
-import me.hugo.savethekweebecs.extension.player
 import me.hugo.savethekweebecs.extension.translate
 import org.bukkit.Color
 import org.bukkit.Location
@@ -37,8 +36,7 @@ class TextPopUp(
     init {
         location = location.clone().add(0.0, transformations.scale.toDouble() / 2, 0.0)
 
-        entities = viewers.map { it.uniqueId }.associateWith {
-            val player = it.player()
+        entities = viewers.associate { player ->
             val textDisplay =
                 location.world.spawnEntity(
                     location,
@@ -54,7 +52,7 @@ class TextPopUp(
                     entity.backgroundColor = Color.fromARGB(0, 255, 255, 255)
 
                     entity.billboard = Display.Billboard.CENTER
-                    entity.text(it.translate(textKey))
+                    entity.text(player.translate(textKey))
                     entity.brightness = Display.Brightness(15, 15)
 
                     entity.transformation = Transformation(
@@ -70,7 +68,7 @@ class TextPopUp(
 
             player?.showEntity(SaveTheKweebecs.getInstance(), textDisplay)
 
-            textDisplay
+            player.uniqueId to textDisplay
         }
 
         // Wait 2 ticks to ensure the entity tracker has registered this entity and transformations

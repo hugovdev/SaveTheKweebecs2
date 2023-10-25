@@ -250,6 +250,7 @@ arena.npc.action.trork: "<yellow><b>CLICK PARA SALVAR"
 arena.trork.saved: "<gray>(<white><player_team_icon></white>)</gray> <yellow>¡<gray><player></gray> ha salvado un <dark_aqua>trork</dark_aqua>! (<aqua><npcs_saved></aqua>/<aqua><total_npcs></aqua>)"
 
 arena.popup.saved: "<#dbc9c8>¡Kweebec\nSalvado!</#dbc9c8>"
+arena.popup.doubleKill: "<#dbc9c8>¡Doble Baja!</#dbc9c8>"
 
 arena.start.title: "<#cc2500>¡BUENA SUERTE!</#cc2500>"
 arena.respawning.title:
