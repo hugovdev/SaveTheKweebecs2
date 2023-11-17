@@ -65,7 +65,7 @@ scoreboard.lobby.lines:
   - ""
   - "Jugadores: <green><all_players>"
   - ""
-  - "<yellow>thankmas.skynode.pro"
+  - "<yellow>thankmas.skynode.gg"
 
 scoreboard.waiting.lines:
   - "<gray>Equipos <date>"
@@ -77,7 +77,7 @@ scoreboard.waiting.lines:
   - "Mapa: <green><map_name>"
   - "<gray>(<display_name>)"
   - ""
-  - "<yellow>thankmas.skynode.pro"
+  - "<yellow>thankmas.skynode.gg"
 
 scoreboard.starting.lines:
   - "<gray>Equipos <date>"
@@ -89,7 +89,7 @@ scoreboard.starting.lines:
   - "Mapa: <green><map_name>"
   - "<gray>(<display_name>)"
   - ""
-  - "<yellow>thankmas.skynode.pro"
+  - "<yellow>thankmas.skynode.gg"
 
 scoreboard.in_game.lines:
   - "<gray>Equipos <date>"
@@ -103,7 +103,7 @@ scoreboard.in_game.lines:
   - "Mapa: <green><map_name>"
   - "<gray>(<display_name>)"
   - ""
-  - "<yellow>thankmas.skynode.pro"
+  - "<yellow>thankmas.skynode.gg"
 
 scoreboard.finishing.lines:
   - "<gray>Equipos <date>"
@@ -115,7 +115,7 @@ scoreboard.finishing.lines:
   - "Mapa: <green><map_name>"
   - "<gray>(<display_name>)"
   - ""
-  - "<yellow>thankmas.skynode.pro"
+  - "<yellow>thankmas.skynode.gg"
 
 ##################################
 # MENUS | ARENAS AND TRANSFORMATIONS

@@ -16,9 +16,12 @@ import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.api.trait.trait.Equipment
 import net.citizensnpcs.trait.CurrentLocation
+import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.GameRule
@@ -233,12 +236,11 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         npc.getOrAddTrait(Equipment::class.java).set(Equipment.EquipmentSlot.HELMET, visualToUse.craftHead(null))
         npc.getOrAddTrait(CurrentLocation::class.java)
 
-        npc.getOrAddTrait(LookClose::class.java)?.apply {
-            lookClose(true)
-            setPerPlayer(true)
-        }
+        npc.getOrAddTrait(LookClose::class.java).apply { lookClose(true) }
 
-        /*npc.getOrAddTrait(HologramTrait::class.java)?.apply {
+        npc.getOrAddTrait(HologramTrait::class.java).apply {
+            setUseDisplayEntities(true)
+
             lineHeight = -0.28
 
             addLine(
@@ -256,7 +258,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             )
 
             setMargin(0, "bottom", 0.3)
-        }*/
+        }
 
         npc.spawn(mapPoint.toLocation(world!!))
 
