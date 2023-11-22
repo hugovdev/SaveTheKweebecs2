@@ -18,11 +18,13 @@ class PaginatedMenu(
     val format: String,
     var menuIcon: ItemStack,
     val previousMenu: InventoryMenu?,
-    val locale: String = LanguageManager.DEFAULT_LANGUAGE
+    val locale: String = LanguageManager.DEFAULT_LANGUAGE,
+    val disposable: Boolean = false,
 ) : KoinComponent {
 
     private val miniMessage = MiniMessage.miniMessage()
     private val languageManager: LanguageManager by inject()
+    private val menuRegistry: MenuRegistry by inject()
 
     val pages: MutableList<InventoryMenu> = mutableListOf()
     var index: Int = 0
@@ -94,7 +96,7 @@ class PaginatedMenu(
         player.openInventory(pages[index].inventory)
     }
 
-    fun createNewPage(): InventoryMenu {
+    private fun createNewPage(): InventoryMenu {
         val page: Int = index + 1
         val thisIndex: Int = index
 
@@ -104,8 +106,11 @@ class PaginatedMenu(
             size,
             miniMessage.deserialize(languageManager.getLangString(titleTranslation, locale)),
             format,
-            menuIcon
+            menuIcon,
+            disposable
         )
+
+        menuRegistry.attachMenu(newPage, this)
 
         val backButton = if (page == 1) (if (previousMenu == null) "close" else "back") else "previousPage"
 

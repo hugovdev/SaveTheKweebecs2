@@ -11,10 +11,12 @@ import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
+import me.hugo.savethekweebecs.util.menus.PaginatedMenu
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
@@ -120,6 +122,34 @@ class SaveTheKweebecsCommand : KoinComponent {
         currentArena.leave(sender)
     }
 
+    @Subcommand("shop")
+    @Description("Opens the shop for the player!")
+    private fun openShop(sender: Player) {
+        val currentArena = sender.playerDataOrCreate().currentArena
+
+        if (currentArena == null) {
+            sender.sendTranslated("arena.leave.notInArena")
+            return
+        }
+
+        val playerData = sender.playerData() ?: return
+        val team = playerData.currentTeam ?: return
+
+        if (team.shopItems.isEmpty()) return
+
+        PaginatedMenu(
+            9 * 4, "menu.shop.title", PaginatedMenu.PageFormat.TWO_ROWS_TRIMMED.format,
+            ItemStack(Material.NETHER_STAR)
+                .name("menu.shop.icon.name", playerData.locale)
+                .putLore("menu.shop.icon.lore", playerData.locale),
+            null,
+            playerData.locale,
+            true
+        ).also { menu ->
+            team.shopItems.forEach { menu.addItem(it.getIcon(sender)) }
+        }.open(sender)
+    }
+
     @DefaultFor("savethekweebecs admin", "stk admin")
     @Description("Help for the admin system.")
     @CommandPermission("savethekweebecs.admin")
@@ -176,7 +206,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @Description("Gives the kit for the team!")
     @CommandPermission("savethekweebecs.admin")
     private fun getKit(sender: Player, team: TeamManager.Team) {
-        val items = team.items
+        val items = team.kitItems
 
         if (items.isEmpty()) {
             sender.sendTranslated("system.kit.noKit", Placeholder.unparsed("team", team.id))
@@ -197,8 +227,11 @@ class SaveTheKweebecsCommand : KoinComponent {
             if (!item.type.isAir) playerItems[slot] = item
         }
 
-        team.items = playerItems
+        team.kitItems = playerItems
+
+        main.config.set("teams.${team.id}.items", null)
         playerItems.forEach { main.config.set("teams.${team.id}.items.${it.key}", it.value) }
+
         main.saveConfig()
 
         sender.sendMessage(
@@ -206,6 +239,92 @@ class SaveTheKweebecsCommand : KoinComponent {
                 "Successfully saved kit for ${team.id}.",
                 NamedTextColor.GREEN
             )
+        )
+    }
+
+    @DefaultFor("savethekweebecs admin shop", "stk admin shop")
+    @Description("Help for the shop system.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun helpShop(sender: Player) {
+        sender.sendTranslated("system.shop.help")
+    }
+
+    @Subcommand("admin shop list")
+    @Description("Lists the shop items for a team!")
+    @CommandPermission("savethekweebecs.admin")
+    private fun listShopItems(sender: Player, team: TeamManager.Team) {
+        val items = team.shopItems
+
+        if (items.isEmpty()) {
+            sender.sendTranslated("system.shop.noShop", Placeholder.unparsed("team", team.id))
+            return
+        }
+
+        team.shopItems.forEach {
+            sender.sendTranslated(
+                "system.shop.listedItem",
+                Placeholder.unparsed("key", it.key),
+                Placeholder.unparsed("cost", it.cost.toString())
+            )
+        }
+    }
+
+    @Subcommand("admin shop add")
+    @Description("Add the item in your main hand to a team's shop.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun addShopItem(sender: Player, key: String, cost: Int, team: TeamManager.Team) {
+        val items = team.shopItems
+
+        if (items.any { it.key == key }) {
+            sender.sendTranslated("system.shop.duplicateKey", Placeholder.unparsed("key", team.id))
+            return
+        }
+
+        val item = sender.inventory.itemInMainHand
+
+        if (item.type.isAir) {
+            sender.sendTranslated("system.shop.noItem")
+            return
+        }
+
+        team.shopItems.add(TeamManager.TeamShopItem(key, item, cost))
+
+        val configPath = "teams.${team.id}.shop-items.$key"
+
+        main.config.set("$configPath.cost", cost)
+        main.config.set("$configPath.item", item)
+
+        main.saveConfig()
+
+        sender.sendTranslated(
+            "system.shop.added",
+            Placeholder.unparsed("key", key),
+            Placeholder.unparsed("team", team.id)
+        )
+    }
+
+    @Subcommand("admin shop remove")
+    @Description("Remove the item from a team's shop.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun removeShopItem(sender: Player, key: String, team: TeamManager.Team) {
+        val items = team.shopItems
+        val item = items.firstOrNull { it.key == key }
+
+        if (item == null) {
+            sender.sendTranslated("system.shop.itemNotFound")
+            return
+        }
+
+        team.shopItems.remove(item)
+
+        val configPath = "teams.${team.id}.shop-items.$key"
+        main.config.set(configPath, null)
+        main.saveConfig()
+
+        sender.sendTranslated(
+            "system.shop.removed",
+            Placeholder.unparsed("key", key),
+            Placeholder.unparsed("team", team.id)
         )
     }
 
@@ -436,7 +555,8 @@ class SaveTheKweebecsCommand : KoinComponent {
         @Default("1.5") stay: Double,
         @Default("0.5") fadeOut: Double
     ) {
-        sender.showTitle(messageKey,
+        sender.showTitle(
+            messageKey,
             Title.Times.times(
                 fadeIn.seconds.toJavaDuration(),
                 stay.seconds.toJavaDuration(),

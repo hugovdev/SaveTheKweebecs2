@@ -45,6 +45,13 @@ arena.item.leave.lore:
   - ""
   - "<italic:false><yellow>Click to teleport!"
 
+arena.item.shop.name: "<italic:false><green>Shop</green> <gray>(Right Click)"
+arena.item.shop.lore:
+  - "<italic:false><gray>Browse the item shop and"
+  - "<italic:false><gray>buy items with your gold!"
+  - ""
+  - "<italic:false><yellow>Click to open!"
+
 arena.item.teamSelector.name: "<italic:false><green>Team Selector</green> <gray>(Right Click)"
 arena.item.teamSelector.lore:
   - "<italic:false><gray>Choose a prefer to"
@@ -135,6 +142,27 @@ menu.arenas.arenaIcon.lore:
   - "<italic:false><gray>UUID: <white><arena_short_uuid>"
   - ""
   - "<italic:false><yellow>Click to join!"
+
+menu.shop.title: "Item Shop"
+menu.shop.icon.availableLore:
+  - " "
+  - "<italic:false><gray>Cost: <white><cost> ⛃"
+  - "<italic:false><yellow>Click to buy!"
+menu.shop.icon.notAvailableLore:
+  - " "
+  - "<italic:false><gray>Cost: <white><cost> ⛃"
+  - "<italic:false><red>You don't have enough"
+  - "<italic:false><red>gold to buy this item!"
+
+menu.shop.icon.name: "<italic:false><green>Item Shop"
+menu.shop.icon.lore:
+  - "<italic:false><gray>Browse the item shop and"
+  - "<italic:false><gray>buy items with your gold!"
+
+menu.shop.item_bought: "<yellow>You bought <item> <gray>(x<amount>)<yellow>!"
+
+menu.shop.poor: "<red>You don't have enough gold to buy this item!"
+menu.shop.rich: "<green>You bought <item_name><green> for <white><cost> ⛃</white>!"
 
 menu.teamVisuals.title: "Transformation Selector"
 menu.teamVisuals.icon.name: "<italic:false><green>Transformation Selector"
@@ -227,6 +255,7 @@ arena.event.trorks_win.second: "<gray>(<white>\uD002</white>)</gray> <yellow><da
 
 arena.gold.reason.kill: "Elimination"
 arena.gold.reason.saved_kweebec: "Saved Kweebec"
+arena.gold.reason.bought_item: "Item Bought"
 
 arena.gold.plus: "      ➥ <yellow>+<amount></yellow> ⛃ <gray>(<reason>)</gray>"
 arena.gold.minus: "      ➥ <yellow>-<amount></yellow> ⛃ <gray>(<reason>)</gray>"
@@ -315,12 +344,14 @@ system.help:
   - "<aqua>/stk transformations</aqua> <gray>- Open the transformations selector menu."
   - "<aqua>/stk join <gold>[uuid]</gold></aqua> <gray>- Joins arena with that UUID."
   - "<aqua>/stk leave</aqua> <gray>- Leave the arena you're in."
+  - "<aqua>/stk shop</aqua> <gray>- Opens the ingame shop when playing."
   - ""
 system.admin.help:
   - ""
   - "<gold>Save The Kweebecs Admin System"
   - "<aqua>/stk admin map</aqua> <gray>- Shows help for the map setup system."
   - "<aqua>/stk admin kit</aqua> <gray>- Shows help for the kit setup system."
+  - "<aqua>/stk admin shop</aqua> <gray>- Shows help for the shop setup system."
   - "<aqua>/stk admin lang</aqua> <gray>- Shows help for the language system."
   - ""
   - "<aqua>/stk admin sethub</aqua> <gray>- Sets the main hub location."
@@ -335,6 +366,22 @@ system.kit.help:
   - "<aqua>/stk admin kit save <gold>[team]</gold></aqua> <gray>- Save the kit for the team."
   - ""
 system.kit.noKit: "<red><aqua><team></aqua> has no kit setup!</red>"
+
+system.shop.help:
+  - ""
+  - "<gold>Save The Kweebecs Shop System"
+  - "<aqua>/stk admin shop list <gold>[team]</gold></aqua> <gray>- List the shop items a team has."
+  - "<aqua>/stk admin shop add <gold>[key] [cost] [team]</gold></aqua> <gray>- Add the item in your hand to a team's shop."
+  - "<aqua>/stk admin shop remove <gold>[key] [team]</gold></aqua> <gray>- Removes an item from a team's shop."
+  - ""
+
+system.shop.listedItem: " * <green><key> for <aqua><cost></aqua>.</green>"
+system.shop.added: "<green>Added the item in your main hand to <aqua><team></aqua>'s shop as <key>.</green>"
+system.shop.removed: "<green>Removed <key> from <aqua><team></aqua>'s shop.</green>"
+system.shop.noShop: "<red><aqua><team></aqua> has no shop items!</red>"
+system.shop.duplicateKey: "<red>The item <aqua><key></aqua> already exists in this team's shop."
+system.shop.itemNotFound: "<red>That item doesn't exist in this team's shop."
+system.shop.noItem: "<red>Please hold the item you want to add to the shop."
 
 system.lang.help:
   - ""

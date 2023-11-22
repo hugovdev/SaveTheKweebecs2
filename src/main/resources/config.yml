@@ -40,6 +40,13 @@ item-sets:
       name-translation: "lobby.item.transformationSelector.name"
       lore-translation: "lobby.item.transformationSelector.lore"
       command: "stk transformations"
+  arena:
+    shop:
+      slot: 8
+      material: "NETHER_STAR"
+      name-translation: "arena.item.shop.name"
+      lore-translation: "arena.item.shop.lore"
+      command: "stk shop"
 teams:
   trork:
     team-icon: "\uD001"

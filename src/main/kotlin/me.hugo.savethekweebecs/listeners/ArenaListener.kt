@@ -10,8 +10,6 @@ import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.player.PlayerData
-import me.hugo.savethekweebecs.text.PopupTimes
-import me.hugo.savethekweebecs.text.PopupTransformation
 import me.hugo.savethekweebecs.text.TextPopUpManager
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.kyori.adventure.text.Component
@@ -191,19 +189,7 @@ class ArenaListener : KoinComponent, Listener {
 
             val location = npc.storedLocation
 
-            if (arena.remainingNPCs.any { !it.value }) {
-                soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
-
-                val popupLocation = location.clone().add(0.0, 1.2, 0.0)
-
-                textPopUpManager.createPopUp(
-                    player,
-                    "arena.popup.saved",
-                    popupLocation,
-                    PopupTimes(2.8.seconds, 0.25.seconds),
-                    PopupTransformation(scale = 1.55f)
-                )
-            }
+            if (arena.remainingNPCs.any { !it.value }) soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
 
             if (location.block.type == Material.FIRE) location.block.type = Material.AIR
 
@@ -294,7 +280,7 @@ class ArenaListener : KoinComponent, Listener {
                     viewer.translate(
                         "global.chat.lobby", Placeholder.component(
                             "player_name", Component.text(
-                                if (isAdmin) "[ADMIN] ${source.name}" else source.name,
+                                if (isAdmin) "[Admin] ${source.name}" else source.name,
                                 if (isAdmin) NamedTextColor.RED else NamedTextColor.GRAY
                             )
                         ),

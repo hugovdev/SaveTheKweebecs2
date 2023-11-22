@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class InventoryMenu(val size: Int, val title: Component, val format: String, var menuIcon: ItemStack) : KoinComponent {
+class InventoryMenu(val size: Int, val title: Component, val format: String, var menuIcon: ItemStack, val disposable: Boolean = false) : KoinComponent {
 
     private val menuRegistry: MenuRegistry by inject()
 

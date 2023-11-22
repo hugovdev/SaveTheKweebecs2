@@ -257,7 +257,7 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
                 )
             )
 
-            setMargin(0, "bottom", 0.3)
+            setMargin(0, "bottom", 0.65)
         }
 
         npc.spawn(mapPoint.toLocation(world!!))

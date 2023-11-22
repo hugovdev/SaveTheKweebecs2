@@ -1,6 +1,7 @@
 package me.hugo.savethekweebecs.team
 
 import me.hugo.savethekweebecs.SaveTheKweebecs
+import me.hugo.savethekweebecs.clickableitems.ItemSetManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.util.menus.Icon
@@ -12,6 +13,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.koin.core.annotation.Single
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
 @Single
@@ -65,7 +68,15 @@ class TeamManager {
                     npcSkin,
                     config.getConfigurationSection("$configPath.items")?.getKeys(false)
                         ?.associate { slot -> slot.toInt() to config.getItemStack("$configPath.items.$slot")!! }
-                        ?: mapOf()
+                        ?: mapOf(),
+                    config.getConfigurationSection("$configPath.shop-items")?.getKeys(false)
+                        ?.map { key ->
+                            TeamShopItem(
+                                key,
+                                config.getItemStack("$configPath.shop-items.$key.item") ?: ItemStack(Material.BEDROCK),
+                                config.getInt("$configPath.shop-items.$key.cost")
+                            )
+                        }?.toMutableList() ?: mutableListOf()
                 )
             } ?: mapOf()
     }
@@ -78,8 +89,12 @@ class TeamManager {
         val teamIcon: String,
         val transformationsMenuSlot: Int = 0,
         val npcTemplate: SkinProperty,
-        var items: Map<Int, ItemStack> = mapOf()
-    ) {
+        var kitItems: Map<Int, ItemStack> = mapOf(),
+        var shopItems: MutableList<TeamShopItem> = mutableListOf()
+    ) : KoinComponent {
+
+        private val itemSetManager: ItemSetManager by inject()
+
         fun giveItems(player: Player, clearInventory: Boolean = false) {
             val inventory = player.inventory
 
@@ -88,11 +103,49 @@ class TeamManager {
                 inventory.setArmorContents(null)
             }
 
-            items.forEach { inventory.setItem(it.key, it.value) }
+            kitItems.forEach { inventory.setItem(it.key, it.value) }
+            itemSetManager.getSet("arena")?.forEach { it.give(player) }
         }
     }
 
     data class SkinProperty(val value: String, val signature: String)
+    data class TeamShopItem(val key: String, val item: ItemStack, val cost: Int) {
+        fun getIcon(player: Player): Icon {
+            val isAvailable = (player.playerData()?.getCoins() ?: 0) >= cost
+            val translatedLore = player.translateList(
+                if (isAvailable)
+                    "menu.shop.icon.availableLore"
+                else "menu.shop.icon.notAvailableLore", Placeholder.unparsed("cost", cost.toString())
+            )
+
+            return Icon(
+                ItemStack(item)
+                    .putLore(item.itemMeta?.lore()?.plus(translatedLore) ?: translatedLore)
+            ).addClickAction { player, _ ->
+                val playerData = player.playerData() ?: return@addClickAction
+                val canBuy = (player.playerData()?.getCoins() ?: 0) >= cost
+
+                if (!canBuy) {
+                    player.sendTranslated("menu.shop.poor")
+                    player.playSound(Sound.ENTITY_ENDERMAN_TELEPORT)
+
+                    return@addClickAction
+                }
+
+                player.sendTranslated(
+                    "menu.shop.item_bought",
+                    Placeholder.component("item", item.itemMeta?.displayName() ?: item.displayName()),
+                    Placeholder.unparsed("amount", item.amount.toString())
+                )
+                playerData.addCoins(cost * -1, "bought_item")
+                player.inventory.addItem(item)
+                player.playSound(Sound.BLOCK_NOTE_BLOCK_PLING)
+
+                player.closeInventory()
+            }
+        }
+    }
+
     data class TeamVisual(val key: String, val skin: SkinProperty, val headCustomId: Int) {
 
         fun craftHead(teamPlayer: Player?): ItemStack {

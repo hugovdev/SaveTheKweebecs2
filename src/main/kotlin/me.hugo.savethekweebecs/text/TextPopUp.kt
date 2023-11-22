@@ -64,9 +64,9 @@ class TextPopUp(
                     entity.interpolationDuration = (popupMilliseconds * 0.02).toInt()
                     entity.teleportDuration = (popupMilliseconds * 0.02).toInt()
                     entity.interpolationDelay = -1
-                } as TextDisplay
 
-            player?.showEntity(SaveTheKweebecs.getInstance(), textDisplay)
+                    player.showEntity(SaveTheKweebecs.getInstance(), entity)
+                } as TextDisplay
 
             player.uniqueId to textDisplay
         }

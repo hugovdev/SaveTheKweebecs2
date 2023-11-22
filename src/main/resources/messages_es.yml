@@ -45,6 +45,15 @@ arena.item.leave.lore:
   - ""
   - "<italic:false><yellow>¡Click para teletransportarte!"
 
+arena.item.shop.name: "<italic:false><green>Tienda</green> <gray>(Right Click)"
+arena.item.shop.lore:
+  - "<italic:false><gray>¡Navega por los objetos y"
+  - "<italic:false><gray>cómpralos con tu oro!"
+  - ""
+  - "<italic:false><yellow>¡Click para abrir!"
+
+menu.shop.item_bought: "<yellow>¡Has comprado <item> <gray>(x<amount>)<yellow>!"
+
 arena.item.teamSelector.name: "<italic:false><green>Selector de Equipo</green> <gray>(Click Derecho)"
 arena.item.teamSelector.lore:
   - "<italic:false><gray>¡Elige un equipo preferido"
@@ -135,6 +144,25 @@ menu.arenas.arenaIcon.lore:
   - "<italic:false><gray>UUID: <white><arena_short_uuid>"
   - ""
   - "<italic:false><yellow>¡Click para entrar!"
+
+menu.shop.title: "Tienda de Objetos"
+menu.shop.icon.availableLore:
+  - " "
+  - "<italic:false><gray>Precio: <white><cost> ⛃"
+  - "<italic:false><yellow>¡Click para comprar!"
+menu.shop.icon.notAvailableLore:
+  - " "
+  - "<italic:false><gray>Precio: <white><cost> ⛃"
+  - "<italic:false><red>¡No tienes suficiente oro"
+  - "<italic:false><red>para comprar este objeto!"
+
+menu.shop.icon.name: "<italic:false><green>Tienda de Objetos"
+menu.shop.icon.lore:
+  - "<italic:false><gray>¡Navega por los objetos y"
+  - "<italic:false><gray>cómpralos con tu oro!"
+
+menu.shop.poor: "<red>¡No tienes suficiente oro para comprar este objeto!"
+menu.shop.rich: "<green>¡Has comprado <item_name><green> por <white><cost> ⛃</white>!"
 
 menu.teamVisuals.title: "Selector de Transformación"
 menu.teamVisuals.icon.name: "<italic:false><green>Selector de Transformación"
@@ -227,6 +255,7 @@ arena.event.trorks_win.second: "<gray>(<white>\uD002</white>)</gray> <yellow>¡L
 
 arena.gold.reason.kill: "Eliminación"
 arena.gold.reason.saved_kweebec: "Kweebec Salvado"
+arena.gold.reason.bought_item: "Objeto Comprado"
 
 arena.gold.plus: "      ➥ <yellow>+<amount></yellow> ⛃ <gray>(<reason>)</gray>"
 arena.gold.minus: "      ➥ <yellow>-<amount></yellow> ⛃ <gray>(<reason>)</gray>"
@@ -304,14 +333,12 @@ global.cosmetic.head.kweebec-adult.selector_name: "<italic:false><green>Kweebec 
 global.cosmetic.head.kweebec-elder.hat_name: "<italic:false><green>Cabeza de Kweebec Anciano"
 global.cosmetic.head.kweebec-elder.selector_name: "<italic:false><green>Kweebec Anciano</green>"
 
-#############################################
-#
+##################################
 # HELP COMMANDS AND ADMIN SYSTEMS
-#
-#############################################
-system.teamVisuals.equipped: "<yellow>¡Has seleccionado la transformación </yellow><visual_name><yellow>!"
-system.teamVisuals.alreadySelected: "<red>¡Ya tienes la transformación </red><visual_name><red> seleccionada!"
-system.lang.reloaded: "<green>¡El archivo del lenguaje ha sido recargado!"
+##################################
+system.teamVisuals.equipped: "<yellow>You selected the </yellow><visual_name><yellow> transformation!"
+system.teamVisuals.alreadySelected: "<red>You already have </red><visual_name><red> selected!"
+system.lang.reloaded: "<green>Language files have been reloaded!"
 system.help:
   - ""
   - "<gold>Save The Kweebecs Help System"
@@ -323,12 +350,14 @@ system.help:
   - "<aqua>/stk transformations</aqua> <gray>- Open the transformations selector menu."
   - "<aqua>/stk join <gold>[uuid]</gold></aqua> <gray>- Joins arena with that UUID."
   - "<aqua>/stk leave</aqua> <gray>- Leave the arena you're in."
+  - "<aqua>/stk shop</aqua> <gray>- Opens the ingame shop when playing."
   - ""
 system.admin.help:
   - ""
   - "<gold>Save The Kweebecs Admin System"
   - "<aqua>/stk admin map</aqua> <gray>- Shows help for the map setup system."
   - "<aqua>/stk admin kit</aqua> <gray>- Shows help for the kit setup system."
+  - "<aqua>/stk admin shop</aqua> <gray>- Shows help for the shop setup system."
   - "<aqua>/stk admin lang</aqua> <gray>- Shows help for the language system."
   - ""
   - "<aqua>/stk admin sethub</aqua> <gray>- Sets the main hub location."
@@ -344,14 +373,31 @@ system.kit.help:
   - ""
 system.kit.noKit: "<red><aqua><team></aqua> has no kit setup!</red>"
 
+system.shop.help:
+  - ""
+  - "<gold>Save The Kweebecs Shop System"
+  - "<aqua>/stk admin shop list <gold>[team]</gold></aqua> <gray>- List the shop items a team has."
+  - "<aqua>/stk admin shop add <gold>[key] [cost] [team]</gold></aqua> <gray>- Add the item in your hand to a team's shop."
+  - "<aqua>/stk admin shop remove <gold>[key] [team]</gold></aqua> <gray>- Removes an item from a team's shop."
+  - ""
+
+system.shop.listedItem: " * <green><key> for <aqua><cost></aqua>.</green>"
+system.shop.added: "<green>Added the item in your main hand to <aqua><team></aqua>'s shop as <key>.</green>"
+system.shop.removed: "<green>Removed <key> from <aqua><team></aqua>'s shop.</green>"
+system.shop.noShop: "<red><aqua><team></aqua> has no shop items!</red>"
+system.shop.duplicateKey: "<red>The item <aqua><key></aqua> already exists in this team's shop."
+system.shop.itemNotFound: "<red>That item doesn't exist in this team's shop."
+system.shop.noItem: "<red>Please hold the item you want to add to the shop."
+
 system.lang.help:
   - ""
   - "<gold>Save The Kweebecs Language System"
   - "<aqua>/stk admin lang reload</aqua> <gray>- Reloads the language file."
-  - "<aqua>/stk admin lang testmessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang testMessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang testTitle <gold>[locale] [key] [durations]</gold></aqua> <gray>- Sends you a translated title."
   - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sends you a translated message."
   - ""
-system.lang.changed: "<green>¡Hemos detectado un cambio de lenguaje a: <aqua><language></aqua>!"
+system.lang.changed: "<green>We detected a language change to: <aqua><language></aqua>!"
 
 system.map.help:
   - ""
@@ -365,6 +411,7 @@ system.map.help:
   - "<aqua>/stk admin map setminplayers <gold>[number]</gold></aqua> <gray>- Sets the minimum players."
   - "<aqua>/stk admin map setmaxplayers <gold>[number]</gold></aqua> <gray>- Sets the maximum players."
   - "<aqua>/stk admin map setcountdown <gold>[number]</gold></aqua> <gray>- Sets the default countdown."
+  - ""
   - ""
   - "<aqua>/stk admin map save</aqua> <gray>- Saves the configured map into the config file."
   - ""
