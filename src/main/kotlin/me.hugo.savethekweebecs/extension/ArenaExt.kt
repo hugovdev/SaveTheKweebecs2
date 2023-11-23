@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.title.Title
 import org.bukkit.GameMode
 import org.bukkit.Sound
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
@@ -82,6 +83,9 @@ fun Arena.end(winnerTeam: TeamManager.Team) {
     this.winnerTeam = winnerTeam
     this.arenaTime = 10
     this.arenaState = ArenaState.FINISHING
+
+    // Remove any ender pearls to avoid any delayed teleports.
+    this.world?.entities?.filter { it.type == EntityType.ENDER_PEARL }?.forEach { it.remove() }
 
     playersPerTeam.forEach { (_, players) ->
         players.mapNotNull { it.player() }.forEach { teamPlayer ->

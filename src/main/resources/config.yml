@@ -28,12 +28,6 @@ item-sets:
       name-translation: "arena.item.leave.name"
       lore-translation: "arena.item.leave.lore"
       command: "stk leave"
-    team-selector:
-      slot: 0
-      material: "NETHER_STAR"
-      name-translation: "arena.item.teamSelector.name"
-      lore-translation: "arena.item.teamSelector.lore"
-      command: "stk teams"
     transformation-selector:
       slot: 1
       material: "NETHERITE_UPGRADE_SMITHING_TEMPLATE"

@@ -213,7 +213,7 @@ class SaveTheKweebecsCommand : KoinComponent {
             return
         }
 
-        team.giveItems(sender, true)
+        team.giveItems(sender, clearInventory = true, giveArenaItemSet = false)
     }
 
     @Subcommand("admin kit save")

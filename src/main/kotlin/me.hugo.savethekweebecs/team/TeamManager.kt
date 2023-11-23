@@ -5,7 +5,10 @@ import me.hugo.savethekweebecs.clickableitems.ItemSetManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.util.menus.Icon
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.enchantments.Enchantment
@@ -95,7 +98,7 @@ class TeamManager {
 
         private val itemSetManager: ItemSetManager by inject()
 
-        fun giveItems(player: Player, clearInventory: Boolean = false) {
+        fun giveItems(player: Player, clearInventory: Boolean = false, giveArenaItemSet: Boolean = true) {
             val inventory = player.inventory
 
             if (clearInventory) {
@@ -104,7 +107,7 @@ class TeamManager {
             }
 
             kitItems.forEach { inventory.setItem(it.key, it.value) }
-            itemSetManager.getSet("arena")?.forEach { it.give(player) }
+            if (giveArenaItemSet) itemSetManager.getSet("arena")?.forEach { it.give(player) }
         }
     }
 
@@ -134,12 +137,19 @@ class TeamManager {
 
                 player.sendTranslated(
                     "menu.shop.item_bought",
-                    Placeholder.component("item", item.itemMeta?.displayName() ?: item.displayName()),
+                    Placeholder.component(
+                        "item",
+                        Component.text(
+                            PlainTextComponentSerializer.plainText()
+                                .serialize(item.itemMeta?.displayName() ?: item.displayName()), NamedTextColor.GREEN
+                        )
+                    ),
                     Placeholder.unparsed("amount", item.amount.toString())
                 )
                 playerData.addCoins(cost * -1, "bought_item")
-                player.inventory.addItem(item)
-                player.playSound(Sound.BLOCK_NOTE_BLOCK_PLING)
+
+                player.intelligentGive(item)
+                player.playSound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP)
 
                 player.closeInventory()
             }

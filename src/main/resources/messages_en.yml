@@ -268,8 +268,8 @@ arena.win.title:
   - "<#ffa514><b>VICTORY!<b></#ffa514>"
 
 arena.lost.title:
-  - "You lost!"
-  - "L"
+  - "<red><b>You lost!"
+  - "Better luck next time!"
 
 arena.npc.name.kweebec: "<red>Kidnaped Kweebec"
 arena.npc.action.kweebec: "<yellow><b>CLICK TO SAVE"

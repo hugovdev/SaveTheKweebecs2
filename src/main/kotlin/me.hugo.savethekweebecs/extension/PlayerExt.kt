@@ -1,5 +1,6 @@
 package me.hugo.savethekweebecs.extension
 
+import com.destroystokyo.paper.MaterialTags
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.player.PlayerData
@@ -9,11 +10,19 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.title.Title
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.item.ArmorItem
+import net.minecraft.world.item.Item
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
 import org.koin.java.KoinJavaComponent.inject
 import java.util.*
 
@@ -65,6 +74,74 @@ fun Player.updateBoardTags(vararg tags: String) {
 
 fun Player.playerDataOrCreate(): PlayerData = playerManager.getOrCreatePlayerData(this)
 fun Player.playerData(): PlayerData? = playerManager.getPlayerData(this)
+
+fun Inventory.firstIf(predicate: (ItemStack) -> Boolean): Pair<Int, ItemStack>? {
+    for (slot in 0 until size) {
+        val item = getItem(slot) ?: continue
+        if (predicate(item)) return Pair(slot, item)
+    }
+
+    return null
+}
+
+fun Player.intelligentGive(item: ItemStack) {
+    val nmsItem: Item = CraftItemStack.asNMSCopy(item).item
+
+    val slot: Int = if (MaterialTags.HELMETS.isTagged(item)) {
+        39
+    } else if (MaterialTags.CHESTPLATES.isTagged(item)) {
+        38
+    } else if (MaterialTags.LEGGINGS.isTagged(item)) {
+        37
+    } else if (MaterialTags.BOOTS.isTagged(item)) {
+        36
+    } else if (MaterialTags.SWORDS.isTagged(item)) {
+        inventory.firstIf { MaterialTags.SWORDS.isTagged(it) }?.first ?: inventory.firstEmpty()
+    } else inventory.firstEmpty()
+
+    val finalSlot = if (nmsItem is ArmorItem) {
+        val originalItem = inventory.getItem(slot)
+
+        if (originalItem == null) slot
+        else {
+            val originalNmsItem = CraftItemStack.asNMSCopy(originalItem).item as ArmorItem?
+
+            if (originalNmsItem == null || originalNmsItem.defense >= nmsItem.defense) {
+                inventory.firstEmpty()
+            } else slot
+        }
+    } else if (MaterialTags.SWORDS.isTagged(item)) {
+        val originalItem = inventory.getItem(slot)
+
+        if (originalItem == null) slot
+        else {
+            val originalNmsItem = CraftItemStack.asNMSCopy(originalItem).item
+
+            val originalDamage =
+                originalNmsItem.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND)[Attributes.ATTACK_DAMAGE].sumOf(
+                    AttributeModifier::getAmount
+                )
+
+            val newDamage =
+                nmsItem.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND)[Attributes.ATTACK_DAMAGE].sumOf(
+                    AttributeModifier::getAmount
+                )
+
+            if (originalDamage >= newDamage) {
+                val originalEnchants = originalItem.itemMeta?.hasEnchants()
+
+                if (item.itemMeta?.hasEnchants() == true && (originalEnchants == null || originalEnchants == false)) slot
+                else null
+            } else slot
+        }
+    } else null
+
+    if (finalSlot == null) inventory.addItem(item)
+    else {
+        playSound(Sound.ITEM_ARMOR_EQUIP_CHAIN)
+        inventory.setItem(finalSlot, item)
+    }
+}
 
 fun Player.showTitle(key: String, times: Title.Times, vararg tagResolver: TagResolver) {
     if (languageManager.isList(key)) {
