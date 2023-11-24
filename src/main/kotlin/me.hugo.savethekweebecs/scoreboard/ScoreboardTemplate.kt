@@ -9,18 +9,25 @@ import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+/**
+ * Representation of a scoreboard configured
+ * in the language files.
+ */
 class ScoreboardTemplate(private val key: String) : KoinComponent {
 
     private val scoreboardManager: ScoreboardTemplateManager by inject()
     private val languageManager: LanguageManager by inject()
 
+    /** Every line in the scoreboard for every language. */
     // lang -> [lines]
     private val boardLines: MutableMap<String, List<String>> = mutableMapOf()
 
+    /** Which lines contain certain tag in each language. */
     // langKey -> [tag -> lines that contain the tag]
     private val tagLocations: MutableMap<String, MutableMap<String, List<Int>>> = mutableMapOf()
     private val usedResolvers: MutableMap<String, (player: Player) -> String> = mutableMapOf()
 
+    /** Which tags are used in each line in each language. */
     // langKey [line -> tags]
     private val inversedTagLocations: MutableMap<String, MutableMap<Int, MutableList<String>>> = mutableMapOf()
 
@@ -46,6 +53,7 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
         }
     }
 
+    /** Prints this scoreboard to [player]. */
     fun printBoard(player: Player) {
         val playerData = player.playerData() ?: return
 
@@ -61,6 +69,7 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
         playerData.fastBoard?.updateLines(lines)
     }
 
+    /** Updates every line that contains any of the [tags] for [player]. */
     fun updateLinesForTag(player: Player, vararg tags: String) {
         val playerData = player.playerData() ?: return
 

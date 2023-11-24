@@ -20,6 +20,10 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
 
+/**
+ * Registry of every team that can be
+ * played as in Save The Kweebecs.
+ */
 @Single
 class TeamManager {
 
@@ -27,7 +31,6 @@ class TeamManager {
     val teams: Map<String, Team>
 
     init {
-
         val config = main.config
 
         teams = config.getConfigurationSection("teams")?.getKeys(false)
@@ -56,11 +59,6 @@ class TeamManager {
                     }
                 }
 
-                val npcSkin = SkinProperty(
-                    config.getString("$configPath.npc-skin-texture")!!,
-                    config.getString("$configPath.npc-skin-signature")!!
-                )
-
                 Team(
                     it,
                     playerVisuals,
@@ -68,7 +66,6 @@ class TeamManager {
                     config.getString("$configPath.chat-icon", "no-icon")!!,
                     config.getString("$configPath.team-icon", "no-icon")!!,
                     config.getInt("$configPath.transformations-menu-slot", 0),
-                    npcSkin,
                     config.getConfigurationSection("$configPath.items")?.getKeys(false)
                         ?.associate { slot -> slot.toInt() to config.getItemStack("$configPath.items.$slot")!! }
                         ?: mapOf(),
@@ -84,6 +81,16 @@ class TeamManager {
             } ?: mapOf()
     }
 
+    /**
+     * A team that can be played as in Save The Kweebecs and all its data:
+     *
+     * - id
+     * - List of visuals
+     * - Slot in the transformations selector.
+     * - Chat and team icons
+     * - Items their kit has
+     * - Items they can buy.
+     */
     data class Team(
         val id: String,
         val visuals: List<TeamVisual>,
@@ -91,13 +98,18 @@ class TeamManager {
         val chatIcon: String,
         val teamIcon: String,
         val transformationsMenuSlot: Int = 0,
-        val npcTemplate: SkinProperty,
         var kitItems: Map<Int, ItemStack> = mapOf(),
         var shopItems: MutableList<TeamShopItem> = mutableListOf()
     ) : KoinComponent {
 
         private val itemSetManager: ItemSetManager by inject()
 
+        /**
+         * Gives [player] the items in this team's kit.
+         *
+         * If [giveArenaItemSet] is true it will also give
+         * the clickable item set "arena". Used mainly for the shop.
+         */
         fun giveItems(player: Player, clearInventory: Boolean = false, giveArenaItemSet: Boolean = true) {
             val inventory = player.inventory
 
@@ -111,8 +123,17 @@ class TeamManager {
         }
     }
 
+    /** Skin data that can be used by players and NPCs. */
     data class SkinProperty(val value: String, val signature: String)
+
+    /**
+     * Item that can be bought in the shop for
+     * certain [Team].
+     */
     data class TeamShopItem(val key: String, val item: ItemStack, val cost: Int) {
+        /**
+         * Returns a clickable icon used to buy this shop item.
+         */
         fun getIcon(player: Player): Icon {
             val isAvailable = (player.playerData()?.getCoins() ?: 0) >= cost
             val translatedLore = player.translateList(
@@ -124,18 +145,18 @@ class TeamManager {
             return Icon(
                 ItemStack(item)
                     .putLore(item.itemMeta?.lore()?.plus(translatedLore) ?: translatedLore)
-            ).addClickAction { player, _ ->
-                val playerData = player.playerData() ?: return@addClickAction
-                val canBuy = (player.playerData()?.getCoins() ?: 0) >= cost
+            ).addClickAction { clicker, _ ->
+                val playerData = clicker.playerData() ?: return@addClickAction
+                val canBuy = (clicker.playerData()?.getCoins() ?: 0) >= cost
 
                 if (!canBuy) {
-                    player.sendTranslated("menu.shop.poor")
-                    player.playSound(Sound.ENTITY_ENDERMAN_TELEPORT)
+                    clicker.sendTranslated("menu.shop.poor")
+                    clicker.playSound(Sound.ENTITY_ENDERMAN_TELEPORT)
 
                     return@addClickAction
                 }
 
-                player.sendTranslated(
+                clicker.sendTranslated(
                     "menu.shop.item_bought",
                     Placeholder.component(
                         "item",
@@ -148,16 +169,23 @@ class TeamManager {
                 )
                 playerData.addCoins(cost * -1, "bought_item")
 
-                player.intelligentGive(item)
-                player.playSound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP)
+                clicker.intelligentGive(item)
+                clicker.playSound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP)
 
-                player.closeInventory()
+                clicker.closeInventory()
             }
         }
     }
 
+    /**
+     * Skin and custom head that can be selected
+     * as a transformation for certain [Team].
+     */
     data class TeamVisual(val key: String, val skin: SkinProperty, val headCustomId: Int) {
 
+        /**
+         * Crafts a simple head used by this TeamVisual.
+         */
         fun craftHead(teamPlayer: Player?): ItemStack {
             val locale = teamPlayer?.playerDataOrCreate()?.locale ?: LanguageManager.DEFAULT_LANGUAGE
 
@@ -166,6 +194,10 @@ class TeamManager {
                 .customModelData(headCustomId)
         }
 
+        /**
+         * Returns a clickable item for [playerUuid] used to select
+         * this TeamVisual.
+         */
         fun getIcon(playerUuid: UUID, team: Team, selected: Boolean = true): Icon {
             return Icon(getDisplayItem(playerUuid, selected)).addClickAction { player, _ ->
                 val playerData = player.playerData() ?: return@addClickAction
@@ -208,6 +240,9 @@ class TeamManager {
             }
         }
 
+        /**
+         * Returns the visual item translated to [playerUuid]'s language,
+         */
         private fun getDisplayItem(playerUuid: UUID, selected: Boolean = true): ItemStack {
             val language = playerUuid.playerData()?.locale ?: LanguageManager.DEFAULT_LANGUAGE
 

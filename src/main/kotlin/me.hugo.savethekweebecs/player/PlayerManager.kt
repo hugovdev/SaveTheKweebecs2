@@ -6,6 +6,10 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
+/**
+ * Takes care of all the player data
+ * registry.
+ */
 @Single
 class PlayerManager {
 

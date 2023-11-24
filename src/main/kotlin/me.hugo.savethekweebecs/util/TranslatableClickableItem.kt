@@ -14,12 +14,15 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+/**
+ * Item that can be clicked to run a command.
+ */
 class TranslatableClickableItem(configPath: String) : KoinComponent {
 
     private val languageManager: LanguageManager by inject()
     private val itemManager: ItemSetManager by inject()
 
-    // lang -> items
+    // lang -> item
     private val items: MutableMap<String, ItemStack> = mutableMapOf()
     val slot: Int
     val command: String

@@ -39,7 +39,7 @@ fun Arena.start() {
 
     playersPerTeam.forEach { (team, players) ->
         var spawnPointIndex = 0
-        val spawnPoints = arenaMap.spawnPoints[team.id]
+        val spawnPoints = arenaMap.teamSpawnPoints[team.id]
 
         players.mapNotNull { it.player() }.forEach { teamPlayer ->
             teamPlayer.reset(GameMode.SURVIVAL)
@@ -73,7 +73,7 @@ fun Arena.start() {
 
             playerData.setSkin(selectedVisual.skin)
 
-            soundManager.playTrack(soundManager.inGameMusic, teamPlayer)
+            soundManager.playTrack(SoundManager.IN_GAME_MUSIC, teamPlayer)
             spawnPointIndex = if (spawnPointIndex == spawnPoints.size - 1) 0 else spawnPointIndex + 1
         }
     }
@@ -126,7 +126,7 @@ fun Arena.reset() {
         gameManager.sendToHub(player)
     }
 
-    loadMap(false)
+    createWorld(false)
 }
 
 fun Arena.loadTeamColors(player: Player) {

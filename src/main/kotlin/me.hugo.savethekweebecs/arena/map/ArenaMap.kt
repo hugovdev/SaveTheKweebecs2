@@ -18,12 +18,24 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+/**
+ * Represents a Save The Kweebecs map.
+ * All the data related to a map is saved here:
+ * - Locations
+ * - Attacker and defender teams.
+ * - Minimum and Maximum players.
+ * - Event timings and default countdowns.
+ *
+ * If [load] is true the map data will be fetched
+ * from the config file.
+ */
 class ArenaMap(val configName: String, load: Boolean = true) : KoinComponent {
 
     private val gameManager: GameManager by inject()
     private val teamManager: TeamManager by inject()
 
     companion object {
+        /** Default Save The Kweebec map properties. */
         val DEFAULT_PROPERTIES = SlimePropertyMap().apply {
             setValue(SlimeProperties.DIFFICULTY, "normal")
             setValue(SlimeProperties.ALLOW_ANIMALS, false)
@@ -31,23 +43,40 @@ class ArenaMap(val configName: String, load: Boolean = true) : KoinComponent {
         }
     }
 
+    /** Stays false if the map failed to load. */
     var isValid = false
 
+    /** SlimeWorld to be cloned by every Arena. */
     var slimeWorld: SlimeWorld? = null
+
+    /** Name used to identify the map internally. */
     var mapName: String = configName.lowercase()
 
+    /** Static map locations like Lobbies, Spectators, etc. */
     val mapLocations: MutableMap<MapLocation, MapPoint> = mutableMapOf()
-    val spawnPoints: MutableMap<String, MutableList<MapPoint>> = mutableMapOf()
 
+    /** List of Spawn-points per team. */
+    val teamSpawnPoints: MutableMap<String, MutableList<MapPoint>> = mutableMapOf()
+
+    /** Team that defends NPCs. */
     var defenderTeam: TeamManager.Team = teamManager.teams["trork"]!!
+
+    /** Team that has to save every NPC. */
     var attackerTeam: TeamManager.Team = teamManager.teams["kweebec"]!!
 
+    /** List of events and the time before they occur. */
     var events: MutableList<Pair<ArenaEvent, Int>> = mutableListOf()
 
+    /** Spawn-points for every NPC to save. */
     var kidnapedPoints: MutableList<MapPoint>? = null
 
+    /** The minimum players required by this map to play. */
     var minPlayers: Int = 6
+
+    /** The maximum amount of players this map can hold. */
     var maxPlayers: Int = 12
+
+    /** Where the countdown starts at when the game is starting. */
     var defaultCountdown: Int = 60
 
     init {
@@ -88,7 +117,7 @@ class ArenaMap(val configName: String, load: Boolean = true) : KoinComponent {
 
                 // Read the spawn points for each team in the config file!
                 teamManager.teams.values.forEach { team ->
-                    spawnPoints[team.id] = config.getStringList("$configPath.${team.id.lowercase()}")
+                    teamSpawnPoints[team.id] = config.getStringList("$configPath.${team.id.lowercase()}")
                         .mapNotNull { MapPoint.deserialize(it) }.toMutableList()
                 }
 
@@ -101,11 +130,18 @@ class ArenaMap(val configName: String, load: Boolean = true) : KoinComponent {
         }
     }
 
-    fun getLocation(location: MapLocation, world: World?): Location? {
+    /** Gets the bukkit location for [mapLocation] in [world]. */
+    fun getLocation(mapLocation: MapLocation, world: World?): Location? {
         if (world == null) return null
-        return mapLocations[location]?.toLocation(world)
+        return mapLocations[mapLocation]?.toLocation(world)
     }
 
+    /**
+     * Uses the SlimePlugin API to load the slime world that will
+     * be used by every Arena running this map. (Asynchronously)
+     *
+     * Runs [onSuccessful] if the map was loaded correctly.
+     */
     private fun loadMap(main: JavaPlugin, onSuccessful: () -> Unit) {
         val slimePlugin: SlimePlugin = Bukkit.getPluginManager().getPlugin("SlimeWorldManager") as SlimePlugin
         val slimeWorldName = SaveTheKweebecs.getInstance().config.getString("maps.$configName.slimeWorld")

@@ -10,6 +10,10 @@ import org.koin.core.annotation.Single
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
+/**
+ * Contains every menu and what inventory it
+ * belongs to.
+ */
 @Single
 class MenuRegistry : Listener {
 

@@ -4,6 +4,9 @@ import org.bukkit.FireworkEffect
 import org.bukkit.Location
 import org.bukkit.entity.Firework
 
+/**
+ * Firework that instantly spawns.
+ */
 class InstantFirework(effect: FireworkEffect, location: Location) {
     init {
         val f = location.getWorld().spawn(location, Firework::class.java)

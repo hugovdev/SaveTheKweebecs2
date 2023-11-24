@@ -375,7 +375,7 @@ class SaveTheKweebecsCommand : KoinComponent {
     @CommandPermission("savethekweebecs.admin")
     private fun addSpawnpoint(sender: Player, team: TeamManager.Team) {
         sender.getConfiguringMap()?.apply {
-            spawnPoints.computeIfAbsent(team.id) { mutableListOf() }.add(MapPoint(sender.location))
+            teamSpawnPoints.computeIfAbsent(team.id) { mutableListOf() }.add(MapPoint(sender.location))
 
             sender.sendMessage(
                 Component.text(
@@ -498,7 +498,7 @@ class SaveTheKweebecsCommand : KoinComponent {
 
 
             teamManager.teams.values.forEach { team ->
-                config.set("$configPath.${team.id.lowercase()}", spawnPoints[team.id]?.map { it.serialize() })
+                config.set("$configPath.${team.id.lowercase()}", teamSpawnPoints[team.id]?.map { it.serialize() })
             }
 
             main.saveConfig()

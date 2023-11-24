@@ -13,6 +13,9 @@ import org.koin.core.component.inject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * Registry of every [ScoreboardTemplate] used in the plugin.
+ */
 @Single
 class ScoreboardTemplateManager : KoinComponent {
 
@@ -40,6 +43,10 @@ class ScoreboardTemplateManager : KoinComponent {
         loadedTemplates["lobby"] = ScoreboardTemplate("scoreboard.lobby.lines")
     }
 
+    /**
+     * Registers every tag usable in scoreboards and
+     * what they should return.
+     */
     private fun registerTags() {
         registerTag("date") { DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDateTime.now()) }
 
@@ -76,6 +83,7 @@ class ScoreboardTemplateManager : KoinComponent {
         registerTag("display_name") { (it.arena()?.displayName ?: 0).toString() }
     }
 
+    /** Registers [tag] which returns the result of running [resolver]. */
     private fun registerTag(tag: String, resolver: (player: Player) -> String) {
         tagResolvers[tag] = resolver
     }

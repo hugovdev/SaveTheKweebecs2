@@ -10,7 +10,6 @@ import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.player.PlayerData
-import me.hugo.savethekweebecs.text.TextPopUpManager
 import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -43,7 +42,6 @@ class ArenaListener : KoinComponent, Listener {
 
     private val gameManager: GameManager by inject()
     private val soundManager: SoundManager by inject()
-    private val textPopUpManager: TextPopUpManager by inject()
 
     private companion object {
         private val BREAKABLE_ATTACKER_BLOCKS = MaterialSetTag(NamespacedKey("stk", "attacker_breakable"))

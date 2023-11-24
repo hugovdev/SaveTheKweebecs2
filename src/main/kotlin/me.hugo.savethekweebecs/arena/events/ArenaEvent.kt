@@ -6,6 +6,12 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
+/**
+ * Special event that can occur in-game when playing
+ * in Save The Kweebecs.
+ *
+ * [eventRun] runs when the event occurs.
+ */
 enum class ArenaEvent(val eventRun: (arena: Arena) -> Unit) {
 
     PATCH_UP({ arena ->
@@ -28,6 +34,13 @@ enum class ArenaEvent(val eventRun: (arena: Arena) -> Unit) {
     });
 
     companion object {
+        /**
+         * Returns an [ArenaEvent] when given a
+         * [serializedEvent] string.
+         *
+         * Returns null if the string doesn't follow the
+         * format used by [serialize]
+         */
         fun deserialize(serializedEvent: String): Pair<ArenaEvent, Int>? {
             val split = serializedEvent.split(" , ")
 
@@ -36,6 +49,11 @@ enum class ArenaEvent(val eventRun: (arena: Arena) -> Unit) {
         }
     }
 
+    /**
+     * Serializes this [ArenaEvent] into a string
+     * with [seconds] as the time it takes for
+     * the event to occur.
+     */
     fun serialize(seconds: Int): String {
         return "$name , $seconds"
     }

@@ -5,6 +5,7 @@ import me.hugo.savethekweebecs.arena.GameManager
 import me.hugo.savethekweebecs.extension.arena
 import me.hugo.savethekweebecs.extension.playerData
 import me.hugo.savethekweebecs.extension.updateBoardTags
+import me.hugo.savethekweebecs.music.SoundManager
 import me.hugo.savethekweebecs.player.PlayerManager
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -23,6 +24,7 @@ class JoinLeaveListener : KoinComponent, Listener {
 
     private val playerManager: PlayerManager by inject()
     private val gameManager: GameManager by inject()
+    private val soundManager: SoundManager by inject()
 
     var onlinePlayers: Int = Bukkit.getOnlinePlayers().size
 
@@ -77,6 +79,6 @@ class JoinLeaveListener : KoinComponent, Listener {
         Bukkit.getOnlinePlayers().filter { it != player }.filter { it.arena() == null }
             .forEach { it.updateBoardTags("all_players") }
 
-        player.scoreboard
+        soundManager.stopTrack(player)
     }
 }

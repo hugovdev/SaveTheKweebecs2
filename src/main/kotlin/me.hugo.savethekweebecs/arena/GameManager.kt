@@ -28,18 +28,23 @@ import java.util.concurrent.ConcurrentMap
 class GameManager : KoinComponent {
 
     private val main: SaveTheKweebecs = SaveTheKweebecs.getInstance()
+
     private val itemManager: ItemSetManager by inject()
     private val languageManager: LanguageManager by inject()
     private val soundManager: SoundManager by inject()
 
+    /** The main hub location. */
     private val hubLocation: Location? = Bukkit.getWorld("world")
         ?.let { MapPoint.deserializeFromConfig("hubLocation")?.toLocation(it) }
 
+    /** Every available map related to their internal name. */
     val maps: Map<String, ArenaMap>
+
+    /** List of all arenas related to their UUID. */
     val arenas: ConcurrentMap<UUID, Arena> = ConcurrentHashMap()
 
-    // lang -> menu
-    val arenaMenus: MutableMap<String, PaginatedMenu> = mutableMapOf()
+    /** Arena menus for each available language. */
+    private val arenaMenus: MutableMap<String, PaginatedMenu> = mutableMapOf()
 
     init {
         val config = main.config
@@ -59,10 +64,15 @@ class GameManager : KoinComponent {
         GameControllerTask().runTaskTimer(main, 0L, 20L)
     }
 
+    /**
+     * Opens the arena menu to [player] using their
+     * current language or the default if unavailable.
+     */
     fun openArenasMenu(player: Player) {
         (arenaMenus[player.playerDataOrCreate().locale] ?: arenaMenus[LanguageManager.DEFAULT_LANGUAGE]!!).open(player)
     }
 
+    /** Refreshes the icon for [arena] in every arena menu. */
     fun refreshArenaIcon(arena: Arena) {
         arenaMenus.forEach {
             arena.lastIcon[it.key]?.let { lastIcon ->
@@ -73,6 +83,7 @@ class GameManager : KoinComponent {
         }
     }
 
+    /** Registers [arena] in every arena menu. */
     fun registerArena(arena: Arena) {
         arenas[arena.arenaUUID] = arena
 
@@ -83,6 +94,11 @@ class GameManager : KoinComponent {
         }
     }
 
+    /**
+     * Sends [player] to hub removing their scoreboard entries,
+     * teleporting them, resetting their inventory, stats and
+     * sounds and giving them the configurable "lobby" ItemSet.
+     */
     fun sendToHub(player: Player) {
         if (!player.isOnline) return
 
@@ -104,6 +120,10 @@ class GameManager : KoinComponent {
         itemManager.getSet("lobby")?.forEach { it.give(player) }
     }
 
+    /**
+     * Removes the scoreboard teams used when playing
+     * a game of Save The Kweebecs.
+     */
     private fun removeScoreboardEntries(player: Player) {
         val scoreboard = player.scoreboard
 

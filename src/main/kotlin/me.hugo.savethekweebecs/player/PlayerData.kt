@@ -22,7 +22,10 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
 
-
+/**
+ * A class containing all the current stats, private
+ * menus and data for [uuid].
+ */
 data class PlayerData(private val uuid: UUID) : KoinComponent {
 
     private val menuRegistry: MenuRegistry by inject()
@@ -34,10 +37,11 @@ data class PlayerData(private val uuid: UUID) : KoinComponent {
     var currentTeam: TeamManager.Team? = null
     var lastAttack: PlayerAttack? = null
 
-    var playerSkin: TeamManager.SkinProperty? = null
+    private var playerSkin: TeamManager.SkinProperty? = null
 
     var fastBoard: FastBoard? = null
 
+    /** The language that this players uses. */
     var locale: String = LanguageManager.DEFAULT_LANGUAGE
         set(newLanguage) {
             if (newLanguage == locale) return

@@ -31,6 +31,13 @@ class MapPoint(val x: Double, val y: Double, val z: Double, val yaw: Float, val 
     )
 
     companion object {
+        /**
+         * Returns a deserialized [MapPoint] from
+         * a [serializedPoint].
+         *
+         * Returns null if the provided String doesn't
+         * follow a [MapPoint] format.
+         */
         fun deserialize(serializedPoint: String): MapPoint? {
             val split = serializedPoint.split(" , ")
 
@@ -45,6 +52,10 @@ class MapPoint(val x: Double, val y: Double, val z: Double, val yaw: Float, val 
             }
         }
 
+        /**
+         * Fetches a string from config in the path
+         * [configPath] and attempts to deserialize it.
+         */
         fun deserializeFromConfig(configPath: String): MapPoint? {
             SaveTheKweebecs.getInstance().config.getString(configPath)?.let {
                 return deserialize(it)
@@ -55,10 +66,18 @@ class MapPoint(val x: Double, val y: Double, val z: Double, val yaw: Float, val 
 
     }
 
+    /**
+     * Returns a bukkit location with this
+     * MapPoint's coordinates in [world].
+     */
     fun toLocation(world: World): Location {
         return Location(world, x, y, z, yaw, pitch)
     }
 
+    /**
+     * Serializes this MapPoint into a String with
+     * format: "x , y , z , yaw , pitch".
+     */
     fun serialize(): String {
         return "$x , $y , $z , $yaw , $pitch"
     }

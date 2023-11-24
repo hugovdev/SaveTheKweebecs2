@@ -12,6 +12,10 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+/**
+ * List of [InventoryMenu] that can formatted in
+ * many different ways.
+ */
 class PaginatedMenu(
     val size: Int,
     val titleTranslation: String,

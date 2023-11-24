@@ -17,6 +17,10 @@ import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
+/**
+ * Main Save The Kweebecs game loop.
+ * Takes care of every event or game countdown.
+ */
 class GameControllerTask : KoinComponent, BukkitRunnable() {
 
     private val gameManager: GameManager by inject()
@@ -76,6 +80,10 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
         }
     }
 
+    /**
+     * Goes through every dead player and updates their
+     * respawning screen or respawns them if ready.
+     */
     private fun respawnPlayers(arena: Arena) {
         if (arena.arenaState == ArenaState.IN_GAME) {
             arena.deadPlayers.forEach deadPlayers@{ (player, secondsLeft) ->
@@ -87,7 +95,7 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
 
                 if (newTime == 0) {
                     arena.deadPlayers.remove(player)
-                    arena.arenaMap.spawnPoints[team.id]?.random()?.toLocation(arena.world!!)?.let {
+                    arena.arenaMap.teamSpawnPoints[team.id]?.random()?.toLocation(arena.world!!)?.let {
                         player.teleport(it)
                         player.reset(GameMode.SURVIVAL)
                         team.giveItems(player)

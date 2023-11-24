@@ -35,7 +35,10 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
-
+/**
+ * A representation of a playable game of Save The
+ * Kweebecs in [arenaMap] with [displayName] as a name.
+ */
 class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     private val main = SaveTheKweebecs.getInstance()
@@ -84,10 +87,18 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
     init {
         main.logger.info("Creating game with map ${arenaMap.mapName} with display name $displayName...")
-        loadMap(true)
+        createWorld(true)
         main.logger.info("$displayName is now available!")
     }
 
+    /**
+     * Attempts to add [player] to this game.
+     *
+     * It will fail if:
+     * - The game has already started.
+     * - The game is full.
+     * - The player is already in a game.
+     */
     fun joinArena(player: Player) {
         if (hasStarted()) {
             player.sendTranslated("arena.join.started", Placeholder.unparsed("arena_name", displayName))
@@ -133,14 +144,12 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         gameManager.refreshArenaIcon(this)
     }
 
-    private fun setCurrentBoard(player: Player) {
-        scoreboardManager.loadedTemplates[arenaState.name.lowercase()]?.printBoard(player)
-    }
-
-    fun updateBoard(vararg tags: String) {
-        arenaPlayers().mapNotNull { it.player() }.forEach { it.updateBoardTags(*tags) }
-    }
-
+    /**
+     * Removes [player] from the current game.
+     *
+     * If [disconnect] is false it will reset their
+     * skin if needed, and it will send them to hub.
+     */
     fun leave(player: Player, disconnect: Boolean = false) {
         val playerData = player.playerData() ?: return
 
@@ -172,14 +181,28 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
             if (teamsWithPlayers.size == 1) this.end(teamsWithPlayers.first())
         }
 
-        playerData.currentArena = null
-        gameManager.sendToHub(player)
+        if (!disconnect) {
+            playerData.currentArena = null
+            gameManager.sendToHub(player)
+        }
 
         gameManager.refreshArenaIcon(this)
     }
 
-    fun loadMap(firstTime: Boolean = true) {
-        emptyPlayerPools()
+    /**
+     * Empties the player pools.
+     * Unloads previous game worlds.
+     *
+     * Creates a new world with the proper gamerule setup
+     * and spawns/restores NPCs.
+     *
+     * Also resets [arenaState], [arenaTime], [winnerTeam]
+     * and [eventIndex].
+     */
+    fun createWorld(firstTime: Boolean = true) {
+        playersPerTeam.values.forEach { it.clear() }
+        spectators.clear()
+        deadPlayers.clear()
 
         if (!arenaMap.isValid) {
             main.logger.info("Map ${arenaMap.mapName} is not valid!")
@@ -213,6 +236,9 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         eventIndex = 0
     }
 
+    /**
+     * Creates an NPC in [mapPoint] for this arena.
+     */
     private fun createKweebecNPC(mapPoint: MapPoint): NPC {
         val attackerTeam = arenaMap.attackerTeam
         val npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, "")
@@ -265,38 +291,70 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
         return npc
     }
 
-    private fun emptyPlayerPools() {
-        playersPerTeam.values.forEach { it.clear() }
-        spectators.clear()
-        deadPlayers.clear()
+    /**
+     * Updates [player]'s scoreboard to the one that
+     * is being used in the current [arenaState].
+     */
+    private fun setCurrentBoard(player: Player) {
+        scoreboardManager.loadedTemplates[arenaState.name.lowercase()]?.printBoard(player)
     }
 
+    /**
+     * Updates the tags [tags] in every player's board.
+     */
+    fun updateBoard(vararg tags: String) {
+        arenaPlayers().mapNotNull { it.player() }.forEach { it.updateBoardTags(*tags) }
+    }
+
+    /**
+     * Returns a list of the participants in this arena.
+     */
     fun teamPlayers(): List<UUID> {
         return playersPerTeam.values.flatten()
     }
 
+    /**
+     * Returns a list of every player in this arena, playing
+     * or not playing.
+     */
     fun arenaPlayers(): List<UUID> {
         return teamPlayers().plus(spectators)
     }
 
+    /**
+     * Adds [player] to [team].
+     */
     private fun addPlayerTo(player: Player, team: TeamManager.Team) {
         addPlayerTo(player.uniqueId, team)
     }
 
+    /**
+     * Adds [uuid] to [team].
+     */
     private fun addPlayerTo(uuid: UUID, team: TeamManager.Team) {
         playersPerTeam.computeIfAbsent(team) { mutableListOf() }.add(uuid)
         uuid.playerData()?.currentTeam = team
     }
 
+    /**
+     * Removes [player] from [team].
+     */
     private fun removePlayerFrom(player: Player, team: TeamManager.Team) {
         removePlayerFrom(player.uniqueId, team)
     }
 
+    /**
+     * Removes [uuid] from [team].
+     */
     private fun removePlayerFrom(uuid: UUID, team: TeamManager.Team) {
         playersPerTeam[team]?.remove(uuid)
         uuid.playerData()?.currentTeam = null
     }
 
+    /**
+     * Creates an ItemStack that represents
+     * the arena in [locale] language.
+     */
     fun getCurrentIcon(locale: String): ItemStack {
         val resolvers = arrayOf(
             Placeholder.unparsed("display_name", displayName),

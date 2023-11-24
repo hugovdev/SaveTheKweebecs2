@@ -9,17 +9,30 @@ import org.bukkit.Material
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+/**
+ * The different states an arena can be in.
+ */
 enum class ArenaState(val color: TextColor, val material: Material, val itemSetKey: String? = null) : KoinComponent {
 
+    /** Arena is waiting for players to join the lobby. */
     WAITING(NamedTextColor.GREEN, Material.LIME_CONCRETE, "arena-lobby"),
+
+    /** Enough players have joined the lobby and the game is starting soon. */
     STARTING(NamedTextColor.GOLD, Material.YELLOW_CONCRETE, "arena-lobby"),
+
+    /** Game in the arena has started. */
     IN_GAME(NamedTextColor.RED, Material.ORANGE_CONCRETE),
+
+    /** Game has finished and the victory is being celebrated. */
     FINISHING(NamedTextColor.RED, Material.RED_CONCRETE, "arena-lobby"),
+
+    /** Game has finished and the map is being reset. */
     RESETTING(NamedTextColor.AQUA, Material.BLACK_CONCRETE);
 
     private val languageManager: LanguageManager by inject()
     private val miniMessage = MiniMessage.miniMessage()
 
+    /** Returns a friendly name for this arena state fetched from the language file. */
     fun getFriendlyName(locale: String): Component {
         return miniMessage.deserialize(languageManager.getLangString("arena.state.${this.name.lowercase()}", locale))
     }
