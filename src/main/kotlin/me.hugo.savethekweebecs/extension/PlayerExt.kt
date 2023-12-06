@@ -178,4 +178,6 @@ fun Player.reset(gameMode: GameMode) {
     inventory.setArmorContents(null)
 
     inventory.heldItemSlot = 0
+
+    activePotionEffects.forEach { removePotionEffect(it.type) }
 }
