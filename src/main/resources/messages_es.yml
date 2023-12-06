@@ -11,7 +11,7 @@ global.chat.lobby: "<player_name> <dark_gray>»</dark_gray> <message>"
 global.chat.in_game: "<team_icon> <player_name> <dark_gray>»</dark_gray> <message>"
 global.chat.cant_speak: "<red>¡No puedes hablar en el chat ahora mismo!</red>"
 
-global.sound.music.save_the_kweebecs.name: "Save The Kweebecs"
+global.sound.music.save_the_kweebecs.name: "Sungwood Symphony"
 global.sound.music.save_the_kweebecs.author: "Slamma"
 global.sound.music.now_playing: "<yellow>Sonando <#4cf005><track_name></#4cf005> por <aqua><track_author></aqua>"
 
