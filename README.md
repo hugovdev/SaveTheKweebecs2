@@ -20,7 +20,6 @@ Save The Kweebecs comes back in 2023 with a new version!
 
 ## :+1: Dependencies
 
-* <a href="https://github.com/SkinsRestorer/SkinsRestorerX">SkinsRestorer</a>
 * <a href="https://www.spigotmc.org/resources/citizens.13811/">Citizens</a>
 * <a href="https://github.com/InfernalSuite/AdvancedSlimePaper">AdvancedSlimePaper</a>
 
