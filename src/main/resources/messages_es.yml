@@ -45,7 +45,7 @@ arena.item.leave.lore:
   - ""
   - "<italic:false><yellow>¡Click para teletransportarte!"
 
-arena.item.shop.name: "<italic:false><green>Tienda</green> <gray>(Right Click)"
+arena.item.shop.name: "<italic:false><green>Tienda</green> <gray>(Click Derecho)"
 arena.item.shop.lore:
   - "<italic:false><gray>¡Navega por los objetos y"
   - "<italic:false><gray>cómpralos con tu oro!"
