@@ -121,8 +121,6 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         Bukkit.getScoreboardManager().mainScoreboard.objectives.forEach { it.unregister() }
 
         println("Starting Game Manager... Maps: ${gameManager.maps.size}")
-
-
     }
 
     override fun onDisable() {
