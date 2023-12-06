@@ -1,5 +1,6 @@
 package me.hugo.savethekweebecs.arena
 
+import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.lang.LanguageManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -30,7 +31,8 @@ enum class ArenaState(val color: TextColor, val material: Material, val itemSetK
     RESETTING(NamedTextColor.AQUA, Material.BLACK_CONCRETE);
 
     private val languageManager: LanguageManager by inject()
-    private val miniMessage = MiniMessage.miniMessage()
+    private val miniMessage: MiniMessage
+        get() = SaveTheKweebecs.getInstance().miniMessage
 
     /** Returns a friendly name for this arena state fetched from the language file. */
     fun getFriendlyName(locale: String): Component {

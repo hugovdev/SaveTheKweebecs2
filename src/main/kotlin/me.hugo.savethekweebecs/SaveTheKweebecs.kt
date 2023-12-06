@@ -15,6 +15,9 @@ import me.hugo.savethekweebecs.scoreboard.ScoreboardTemplateManager
 import me.hugo.savethekweebecs.team.TeamManager
 import me.hugo.savethekweebecs.text.TextPopUpManager
 import me.hugo.savethekweebecs.util.menus.MenuRegistry
+import me.hugo.savethekweebecs.util.smallcaps.Alphabet
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinComponent
@@ -42,6 +45,10 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
     private val itemManager: ItemSetManager by inject()
 
     private val joinLeaveListener: JoinLeaveListener by inject()
+
+    val miniMessage: MiniMessage = MiniMessage.builder()
+        .editTags { resolver -> resolver.resolver(TagResolver.resolver("small_caps", Alphabet::convert)) }
+        .build()
 
     private lateinit var commandHandler: BukkitCommandHandler
     lateinit var slimePlugin: SlimePlugin
@@ -114,6 +121,8 @@ class SaveTheKweebecs : KoinComponent, JavaPlugin() {
         Bukkit.getScoreboardManager().mainScoreboard.objectives.forEach { it.unregister() }
 
         println("Starting Game Manager... Maps: ${gameManager.maps.size}")
+
+
     }
 
     override fun onDisable() {

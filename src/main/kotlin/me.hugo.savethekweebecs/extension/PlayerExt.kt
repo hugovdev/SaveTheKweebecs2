@@ -1,6 +1,7 @@
 package me.hugo.savethekweebecs.extension
 
 import com.destroystokyo.paper.MaterialTags
+import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.arena.Arena
 import me.hugo.savethekweebecs.lang.LanguageManager
 import me.hugo.savethekweebecs.player.PlayerData
@@ -30,7 +31,8 @@ private val playerManager: PlayerManager by inject(PlayerManager::class.java)
 private val languageManager: LanguageManager by inject(LanguageManager::class.java)
 private val scoreboardManager: ScoreboardTemplateManager by inject(ScoreboardTemplateManager::class.java)
 
-private val miniMessage: MiniMessage = MiniMessage.miniMessage()
+private val miniMessage: MiniMessage
+    get() = SaveTheKweebecs.getInstance().miniMessage
 
 fun UUID.player(): Player? = Bukkit.getPlayer(this)
 
@@ -167,6 +169,8 @@ fun Player.reset(gameMode: GameMode) {
     exp = 0.0f
     level = 0
     arrowsInBody = 0
+
+    fireTicks = 0
 
     closeInventory()
 

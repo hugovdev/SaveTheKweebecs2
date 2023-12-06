@@ -1,5 +1,6 @@
 package me.hugo.savethekweebecs.util.menus
 
+import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.extension.name
 import me.hugo.savethekweebecs.extension.putLore
 import me.hugo.savethekweebecs.lang.LanguageManager
@@ -26,7 +27,9 @@ class PaginatedMenu(
     val disposable: Boolean = false,
 ) : KoinComponent {
 
-    private val miniMessage = MiniMessage.miniMessage()
+    private val miniMessage: MiniMessage
+        get() = SaveTheKweebecs.getInstance().miniMessage
+
     private val languageManager: LanguageManager by inject()
     private val menuRegistry: MenuRegistry by inject()
 

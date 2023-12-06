@@ -61,7 +61,7 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
         else LanguageManager.DEFAULT_LANGUAGE
 
         val translatedResolvers = usedResolvers
-            .map { tagData -> Placeholder.unparsed(tagData.key, tagData.value.invoke(player)) }.toTypedArray()
+            .map { tagData -> Placeholder.parsed(tagData.key, tagData.value.invoke(player)) }.toTypedArray()
 
         val lines = boardLines[language]!!
             .map { if (it.isEmpty()) Component.empty() else player.toComponent(it, *translatedResolvers) }
@@ -89,7 +89,7 @@ class ScoreboardTemplate(private val key: String) : KoinComponent {
                 it, player.toComponent(
                     boardLines[it],
                     *inversedTagLocations[language]!![it]?.map { tag ->
-                        Placeholder.unparsed(tag, usedResolvers[tag]?.invoke(player) ?: tag)
+                        Placeholder.parsed(tag, usedResolvers[tag]?.invoke(player) ?: tag)
                     }?.toTypedArray() ?: arrayOf()
                 )
             )

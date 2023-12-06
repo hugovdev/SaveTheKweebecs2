@@ -1,5 +1,6 @@
 package me.hugo.savethekweebecs.extension
 
+import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.lang.LanguageManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -16,7 +17,8 @@ import org.koin.java.KoinJavaComponent.inject
 import java.util.function.Consumer
 
 private val languageManager: LanguageManager by inject(LanguageManager::class.java)
-private val miniMessage = MiniMessage.miniMessage()
+private val miniMessage: MiniMessage
+    get() = SaveTheKweebecs.getInstance().miniMessage
 
 fun ItemStack.amount(amount: Int): ItemStack {
     setAmount(amount)

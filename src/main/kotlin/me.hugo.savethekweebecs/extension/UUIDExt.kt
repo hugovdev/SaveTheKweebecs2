@@ -1,5 +1,6 @@
 package me.hugo.savethekweebecs.extension
 
+import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.lang.LanguageManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -8,7 +9,8 @@ import org.koin.java.KoinJavaComponent
 import java.util.*
 
 private val languageManager: LanguageManager by KoinJavaComponent.inject(LanguageManager::class.java)
-private val miniMessage: MiniMessage = MiniMessage.miniMessage()
+private val miniMessage: MiniMessage
+    get() = SaveTheKweebecs.getInstance().miniMessage
 
 fun UUID.translate(key: String, vararg tagResolver: TagResolver): Component {
     return miniMessage.deserialize(

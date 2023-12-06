@@ -19,7 +19,6 @@ import net.citizensnpcs.trait.CurrentLocation
 import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
@@ -271,15 +270,13 @@ class Arena(val arenaMap: ArenaMap, val displayName: String) : KoinComponent {
 
             addLine(
                 LegacyComponentSerializer.legacySection().serialize(
-                    MiniMessage.miniMessage()
-                        .deserialize(languageManager.getLangString("arena.npc.name.${attackerTeam.id}"))
+                    SaveTheKweebecs.getInstance().miniMessage.deserialize(languageManager.getLangString("arena.npc.name.${attackerTeam.id}"))
                 )
             )
 
             addLine(
                 LegacyComponentSerializer.legacySection().serialize(
-                    MiniMessage.miniMessage()
-                        .deserialize(languageManager.getLangString("arena.npc.action.${attackerTeam.id}"))
+                    SaveTheKweebecs.getInstance().miniMessage.deserialize(languageManager.getLangString("arena.npc.action.${attackerTeam.id}"))
                 )
             )
 
