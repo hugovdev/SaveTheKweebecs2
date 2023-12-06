@@ -399,7 +399,7 @@ system.lang.help:
   - "<aqua>/stk admin lang reload</aqua> <gray>- Reloads the language file."
   - "<aqua>/stk admin lang testMessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
   - "<aqua>/stk admin lang testTitle <gold>[locale] [key] [durations]</gold></aqua> <gray>- Sends you a translated title."
-  - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sets your language to the one you specify."
   - ""
 system.lang.changed: "<green>We detected a language change to: <aqua><language></aqua>!"
 

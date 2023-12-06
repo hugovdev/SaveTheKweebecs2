@@ -321,25 +321,19 @@ arena.list.member: " <gray>- <aqua><display_name></aqua> |</gray> <arena_state><
 ##################################
 global.cosmetic.head.trork-shaman.hat_name: "<italic:false><green>Cabeza de Trork Chamán"
 global.cosmetic.head.trork-shaman.selector_name: "<italic:false><green>Trork Chamán</green>"
-
 global.cosmetic.head.trork-chieftain.hat_name: "<italic:false><green>Cabeza de Trork Jefe"
 global.cosmetic.head.trork-chieftain.selector_name: "<italic:false><green>Trork Jefe</green>"
-
 global.cosmetic.head.trork-warrior.hat_name: "<italic:false><green>Cabeza de Trork Guerrero"
 global.cosmetic.head.trork-warrior.selector_name: "<italic:false><green>Trork Guerrero</green>"
-
 global.cosmetic.head.trork-hunter.hat_name: "<italic:false><green>Cabeza de Trork Cazador"
 global.cosmetic.head.trork-hunter.selector_name: "<italic:false><green>Trork Cazador</green>"
 
 global.cosmetic.head.kweebec-seedling.hat_name: "<italic:false><green>Cabeza de Kweebec Semilla"
 global.cosmetic.head.kweebec-seedling.selector_name: "<italic:false><green>Kweebec Semilla</green>"
-
 global.cosmetic.head.kweebec-child.hat_name: "<italic:false><green>Cabeza de Kweebec Joven"
 global.cosmetic.head.kweebec-child.selector_name: "<italic:false><green>Kweebec Joven</green>"
-
 global.cosmetic.head.kweebec-adult.hat_name: "<italic:false><green>Cabeza de Kweebec Adulto"
 global.cosmetic.head.kweebec-adult.selector_name: "<italic:false><green>Kweebec Adulto</green>"
-
 global.cosmetic.head.kweebec-elder.hat_name: "<italic:false><green>Cabeza de Kweebec Anciano"
 global.cosmetic.head.kweebec-elder.selector_name: "<italic:false><green>Kweebec Anciano</green>"
 
@@ -405,9 +399,9 @@ system.lang.help:
   - "<aqua>/stk admin lang reload</aqua> <gray>- Reloads the language file."
   - "<aqua>/stk admin lang testMessage <gold>[locale]</gold> <gold>[key]</gold></aqua> <gray>- Sends you a translated message."
   - "<aqua>/stk admin lang testTitle <gold>[locale] [key] [durations]</gold></aqua> <gray>- Sends you a translated title."
-  - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sends you a translated message."
+  - "<aqua>/stk admin lang setlocale <gold>[locale]</gold></aqua> <gray>- Sets your language to the one you specify."
   - ""
-system.lang.changed: "<green>We detected a language change to: <aqua><language></aqua>!"
+system.lang.changed: "<green>¡Se ha detectado un cambio de lenguaje a: <aqua><language></aqua>!"
 
 system.map.help:
   - ""
