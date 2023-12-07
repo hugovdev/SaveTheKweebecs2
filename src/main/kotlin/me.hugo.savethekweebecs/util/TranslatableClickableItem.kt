@@ -1,30 +1,27 @@
 package me.hugo.savethekweebecs.util
 
 import me.hugo.savethekweebecs.SaveTheKweebecs
-import me.hugo.savethekweebecs.clickableitems.ItemSetManager
-import me.hugo.savethekweebecs.extension.flag
-import me.hugo.savethekweebecs.extension.loreTranslatable
-import me.hugo.savethekweebecs.extension.nameTranslatable
-import me.hugo.savethekweebecs.extension.playerData
+import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 /**
  * Item that can be clicked to run a command.
  */
-class TranslatableClickableItem(configPath: String) : KoinComponent {
+class TranslatableClickableItem(val id: String, configPath: String) : KoinComponent {
 
     private val languageManager: LanguageManager by inject()
-    private val itemManager: ItemSetManager by inject()
 
     // lang -> item
     private val items: MutableMap<String, ItemStack> = mutableMapOf()
-    val slot: Int
+    private val slot: Int
+
     val command: String
 
     init {
@@ -48,9 +45,9 @@ class TranslatableClickableItem(configPath: String) : KoinComponent {
                     ItemFlag.HIDE_DYE,
                     ItemFlag.HIDE_ARMOR_TRIM
                 )
+                .setKeyedData("clickable_item_id", PersistentDataType.STRING, id)
 
             items[langKey] = item
-            itemManager.registerItem(item, command)
         }
     }
 

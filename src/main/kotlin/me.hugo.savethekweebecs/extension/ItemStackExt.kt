@@ -7,12 +7,14 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Color
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.block.banner.Pattern
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BannerMeta
 import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.persistence.PersistentDataType
 import org.koin.java.KoinJavaComponent.inject
 import java.util.function.Consumer
 
@@ -43,6 +45,20 @@ fun ItemStack.loreTranslatable(key: String, locale: String, vararg tagResolvers:
     lore(languageManager.getLangStringList(key, locale).map { miniMessage.deserialize(it, *tagResolvers) })
     return this
 }
+
+fun <T, V : Any> ItemStack.setKeyedData(key: String, dataType: PersistentDataType<T, V>, value: V): ItemStack {
+    val meta = itemMeta
+    meta.persistentDataContainer.set(NamespacedKey("stk", key), dataType, value)
+    itemMeta = meta
+    return this
+}
+
+fun <T, V : Any> ItemStack.getKeyedData(key: String, type: PersistentDataType<T, V>): V? =
+    if (hasItemMeta()) {
+        itemMeta?.persistentDataContainer?.get(NamespacedKey("stk", key), type)
+    } else {
+        null
+    }
 
 fun ItemStack.name(name: Component): ItemStack {
     val meta = itemMeta
