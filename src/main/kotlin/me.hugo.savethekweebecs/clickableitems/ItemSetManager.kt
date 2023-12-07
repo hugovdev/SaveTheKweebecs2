@@ -2,10 +2,12 @@ package me.hugo.savethekweebecs.clickableitems
 
 import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.extension.getKeyedData
+import me.hugo.savethekweebecs.extension.hasKeyedData
 import me.hugo.savethekweebecs.util.TranslatableClickableItem
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.persistence.PersistentDataType
 import org.koin.core.annotation.Single
 
@@ -47,6 +49,16 @@ class ItemSetManager : Listener {
         event.player.chat("/${clickableItem.command}")
 
         event.isCancelled = true
+    }
+
+    @EventHandler
+    private fun onItemSwap(event: PlayerSwapHandItemsEvent) {
+        if (event.mainHandItem.hasKeyedData(TranslatableClickableItem.CLICKABLE_ITEM_ID, PersistentDataType.STRING) ||
+            event.offHandItem.hasKeyedData(TranslatableClickableItem.CLICKABLE_ITEM_ID, PersistentDataType.STRING)
+        ) {
+            event.isCancelled = true
+            return
+        }
     }
 
 }

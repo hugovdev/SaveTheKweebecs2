@@ -57,6 +57,16 @@ fun <T, V : Any> ItemStack.setKeyedData(key: NamespacedKey, dataType: Persistent
     return this
 }
 
+fun <T, V : Any> ItemStack.hasKeyedData(key: String, type: PersistentDataType<T, V>): Boolean =
+    hasKeyedData(NamespacedKey("stk", key), type)
+
+fun <T, V : Any> ItemStack.hasKeyedData(key: NamespacedKey, type: PersistentDataType<T, V>): Boolean =
+    if (hasItemMeta()) {
+        itemMeta?.persistentDataContainer?.has(key, type) ?: false
+    } else {
+        false
+    }
+
 fun <T, V : Any> ItemStack.getKeyedData(key: String, type: PersistentDataType<T, V>): V? =
     getKeyedData(NamespacedKey("stk", key), type)
 
