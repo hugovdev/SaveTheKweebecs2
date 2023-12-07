@@ -99,6 +99,8 @@ fun Player.intelligentGive(item: ItemStack) {
         36
     } else if (MaterialTags.SWORDS.isTagged(item)) {
         inventory.firstIf { MaterialTags.SWORDS.isTagged(it) }?.first ?: inventory.firstEmpty()
+    } else if (MaterialTags.BOWS.isTagged(item)) {
+        inventory.firstIf { MaterialTags.BOWS.isTagged(it) }?.first ?: inventory.firstEmpty()
     } else inventory.firstEmpty()
 
     val finalSlot = if (nmsItem is ArmorItem) {
@@ -136,6 +138,17 @@ fun Player.intelligentGive(item: ItemStack) {
                 else if (originalItem.enchantments.entries.sumOf { it.value } < item.enchantments.entries.sumOf { it.value }) slot
                 else null
             } else slot
+        }
+    } else if (MaterialTags.BOWS.isTagged(item)) {
+        val originalItem = inventory.getItem(slot)
+
+        if (originalItem == null) slot
+        else {
+            val originalEnchants = originalItem.itemMeta?.hasEnchants()
+
+            if (item.itemMeta?.hasEnchants() == true && (originalEnchants == null || originalEnchants == false)) slot
+            else if (originalItem.enchantments.entries.sumOf { it.value } < item.enchantments.entries.sumOf { it.value }) slot
+            else null
         }
     } else null
 
