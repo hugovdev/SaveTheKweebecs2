@@ -383,6 +383,7 @@ system.shop.help:
   - "<aqua>/stk admin shop list <gold>[team]</gold></aqua> <gray>- List the shop items a team has."
   - "<aqua>/stk admin shop add <gold>[key] [cost] [team]</gold></aqua> <gray>- Add the item in your hand to a team's shop."
   - "<aqua>/stk admin shop remove <gold>[key] [team]</gold></aqua> <gray>- Removes an item from a team's shop."
+  - "<aqua>/stk admin shop get <gold>[key] [team]</gold></aqua> <gray>- Gives you an item from a team's shop."
   - ""
 
 system.shop.listedItem: " * <green><key> for <aqua><cost></aqua>.</green>"

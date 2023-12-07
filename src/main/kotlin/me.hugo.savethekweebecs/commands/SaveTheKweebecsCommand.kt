@@ -146,7 +146,7 @@ class SaveTheKweebecsCommand : KoinComponent {
             playerData.locale,
             true
         ).also { menu ->
-            team.shopItems.forEach { menu.addItem(it.getIcon(sender)) }
+            team.shopItems.sortedBy { it.cost }.forEach { menu.addItem(it.getIcon(sender)) }
         }.open(sender)
     }
 
@@ -326,6 +326,21 @@ class SaveTheKweebecsCommand : KoinComponent {
             Placeholder.unparsed("key", key),
             Placeholder.unparsed("team", team.id)
         )
+    }
+
+    @Subcommand("admin shop get")
+    @Description("Get the item from a team's shop.")
+    @CommandPermission("savethekweebecs.admin")
+    private fun getShopItem(sender: Player, key: String, team: TeamManager.Team) {
+        val items = team.shopItems
+        val item = items.firstOrNull { it.key == key }
+
+        if (item == null) {
+            sender.sendTranslated("system.shop.itemNotFound")
+            return
+        }
+
+        sender.inventory.addItem(item.item)
     }
 
     @DefaultFor("savethekweebecs admin map", "stk admin map")
