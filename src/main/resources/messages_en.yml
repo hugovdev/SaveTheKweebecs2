@@ -291,7 +291,7 @@ arena.trork.saved: "<gray>(<white><player_team_icon></white>)</gray> <gray><play
 arena.popup.saved: "<#dbc9c8>Kweebec\nSaved!</#dbc9c8>"
 arena.popup.doubleKill: "<#dbc9c8>Double Kill!</#dbc9c8>"
 
-arena.start.title: "<#cc2500>GOOD LUCK!</#cc2500>"
+arena.start.title: "<green><b>Good Luck!</green>"
 arena.respawning.title:
   - "<#ab1b11>Respawning...</#ab1b11>"
   - "<#44c261><respawn_time></#44c261>"
