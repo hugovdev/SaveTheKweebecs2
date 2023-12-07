@@ -133,6 +133,7 @@ fun Player.intelligentGive(item: ItemStack) {
                 val originalEnchants = originalItem.itemMeta?.hasEnchants()
 
                 if (item.itemMeta?.hasEnchants() == true && (originalEnchants == null || originalEnchants == false)) slot
+                else if (originalItem.enchantments.entries.sumOf { it.value } < item.enchantments.entries.sumOf { it.value }) slot
                 else null
             } else slot
         }

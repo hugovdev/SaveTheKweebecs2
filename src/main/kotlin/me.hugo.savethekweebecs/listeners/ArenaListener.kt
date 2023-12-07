@@ -16,6 +16,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
 import org.bukkit.*
+import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
@@ -88,7 +89,7 @@ class ArenaListener : KoinComponent, Listener {
 
                 val playerSource: Player? = if (attacker is Player) attacker
                 else if (attacker is Projectile) {
-                    if (isDying) attacker.remove()
+                    if (isDying && attacker is Arrow) attacker.remove()
 
                     val shooter = attacker.shooter
                     if (shooter is Player) shooter
@@ -187,7 +188,10 @@ class ArenaListener : KoinComponent, Listener {
 
             val location = npc.storedLocation
 
-            if (arena.remainingNPCs.any { !it.value }) soundManager.playSoundEffect("save_the_kweebecs.kweebec_saved", player)
+            if (arena.remainingNPCs.any { !it.value }) soundManager.playSoundEffect(
+                "save_the_kweebecs.kweebec_saved",
+                player
+            )
 
             if (location.block.type == Material.FIRE) location.block.type = Material.AIR
 
