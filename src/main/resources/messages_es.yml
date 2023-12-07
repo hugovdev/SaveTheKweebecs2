@@ -182,7 +182,7 @@ menu.teamVisuals.icon.lore:
 
 menu.teamVisuals.icon.team.trork.name: "<italic:false><green>Arquetipo de Trork"
 menu.teamVisuals.icon.team.trork.lore:
-  - "<italic:false><dark_gray>Cosmético de Batalla"
+  - "<italic:false><dark_gray><small_caps:'Cosmetico de Batalla'>"
   - ""
   - "<italic:false><gray>¡Selecciona el tipo de trork"
   - "<italic:false><gray>con el que vas a jugar!"
@@ -197,7 +197,7 @@ menu.teamVisuals.icon.team.trork.lore:
 
 menu.teamVisuals.icon.team.kweebec.name: "<italic:false><green>Edad del Kweebec"
 menu.teamVisuals.icon.team.kweebec.lore:
-  - "<italic:false><dark_gray>Cosmético de Batalla"
+  - "<italic:false><dark_gray><small_caps:'Cosmetico de Batalla'>"
   - ""
   - "<italic:false><gray>¡Selecciona la etapa de vida"
   - "<italic:false><gray>con la que vas a jugar!"

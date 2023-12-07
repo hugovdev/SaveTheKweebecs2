@@ -182,7 +182,7 @@ menu.teamVisuals.icon.lore:
 
 menu.teamVisuals.icon.team.trork.name: "<italic:false><green>Trork Archetype"
 menu.teamVisuals.icon.team.trork.lore:
-  - "<italic:false><dark_gray>Battle Cosmetic"
+  - "<italic:false><dark_gray><small_caps:'Battle Cosmetic'>"
   - ""
   - "<italic:false><gray>Select the trork type"
   - "<italic:false><gray>you want to play as!"
@@ -197,7 +197,7 @@ menu.teamVisuals.icon.team.trork.lore:
 
 menu.teamVisuals.icon.team.kweebec.name: "<italic:false><green>Kweebec Age"
 menu.teamVisuals.icon.team.kweebec.lore:
-  - "<italic:false><dark_gray>Battle Cosmetic"
+  - "<italic:false><dark_gray><small_caps:'Battle Cosmetic'>"
   - ""
   - "<italic:false><gray>Select the kweebec age"
   - "<italic:false><gray>you want to play as!"
