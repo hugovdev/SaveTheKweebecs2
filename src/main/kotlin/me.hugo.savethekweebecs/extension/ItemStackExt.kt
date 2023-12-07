@@ -47,15 +47,22 @@ fun ItemStack.loreTranslatable(key: String, locale: String, vararg tagResolvers:
 }
 
 fun <T, V : Any> ItemStack.setKeyedData(key: String, dataType: PersistentDataType<T, V>, value: V): ItemStack {
+    return setKeyedData(NamespacedKey("stk", key), dataType, value)
+}
+
+fun <T, V : Any> ItemStack.setKeyedData(key: NamespacedKey, dataType: PersistentDataType<T, V>, value: V): ItemStack {
     val meta = itemMeta
-    meta.persistentDataContainer.set(NamespacedKey("stk", key), dataType, value)
+    meta.persistentDataContainer.set(key, dataType, value)
     itemMeta = meta
     return this
 }
 
 fun <T, V : Any> ItemStack.getKeyedData(key: String, type: PersistentDataType<T, V>): V? =
+    getKeyedData(NamespacedKey("stk", key), type)
+
+fun <T, V : Any> ItemStack.getKeyedData(key: NamespacedKey, type: PersistentDataType<T, V>): V? =
     if (hasItemMeta()) {
-        itemMeta?.persistentDataContainer?.get(NamespacedKey("stk", key), type)
+        itemMeta?.persistentDataContainer?.get(key, type)
     } else {
         null
     }

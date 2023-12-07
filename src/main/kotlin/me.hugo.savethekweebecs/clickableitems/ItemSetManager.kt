@@ -40,7 +40,8 @@ class ItemSetManager : Listener {
         if (!event.action.isRightClick) return
         val item = event.item ?: return
 
-        val clickableItemId = item.getKeyedData("clickable_item_id", PersistentDataType.STRING) ?: return
+        val clickableItemId =
+            item.getKeyedData(TranslatableClickableItem.CLICKABLE_ITEM_ID, PersistentDataType.STRING) ?: return
         val clickableItem = clickableItems[clickableItemId] ?: return
 
         event.player.chat("/${clickableItem.command}")

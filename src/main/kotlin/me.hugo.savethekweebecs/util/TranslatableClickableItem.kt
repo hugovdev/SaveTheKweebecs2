@@ -4,6 +4,7 @@ import me.hugo.savethekweebecs.SaveTheKweebecs
 import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.lang.LanguageManager
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
@@ -15,6 +16,10 @@ import org.koin.core.component.inject
  * Item that can be clicked to run a command.
  */
 class TranslatableClickableItem(val id: String, configPath: String) : KoinComponent {
+
+    companion object {
+        val CLICKABLE_ITEM_ID = NamespacedKey("stk", "clickable_item_id")
+    }
 
     private val languageManager: LanguageManager by inject()
 
@@ -45,7 +50,7 @@ class TranslatableClickableItem(val id: String, configPath: String) : KoinCompon
                     ItemFlag.HIDE_DYE,
                     ItemFlag.HIDE_ARMOR_TRIM
                 )
-                .setKeyedData("clickable_item_id", PersistentDataType.STRING, id)
+                .setKeyedData(CLICKABLE_ITEM_ID, PersistentDataType.STRING, id)
 
             items[langKey] = item
         }
