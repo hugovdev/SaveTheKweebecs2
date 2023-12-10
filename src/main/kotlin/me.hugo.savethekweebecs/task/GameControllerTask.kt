@@ -7,10 +7,7 @@ import me.hugo.savethekweebecs.extension.*
 import me.hugo.savethekweebecs.util.InstantFirework
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.title.Title
-import org.bukkit.Color
-import org.bukkit.FireworkEffect
-import org.bukkit.GameMode
-import org.bukkit.Sound
+import org.bukkit.*
 import org.bukkit.scheduler.BukkitRunnable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -26,6 +23,11 @@ class GameControllerTask : KoinComponent, BukkitRunnable() {
     private val gameManager: GameManager by inject()
 
     override fun run() {
+        Bukkit.getOnlinePlayers().filter { it.playerData()?.currentArena == null && it.location.y <= 10 }
+            .forEach { player ->
+                gameManager.hubLocation?.let { player.teleport(it) }
+            }
+
         gameManager.arenas.values.forEach { arena ->
             val arenaState = arena.arenaState
             if (arenaState == ArenaState.WAITING || arenaState == ArenaState.RESETTING) return@forEach

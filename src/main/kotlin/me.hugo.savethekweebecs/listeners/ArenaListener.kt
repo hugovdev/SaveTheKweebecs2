@@ -21,6 +21,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -50,17 +51,13 @@ class ArenaListener : KoinComponent, Listener {
     }
 
     @EventHandler
-    fun onBedRightClick(event: PlayerInteractEvent) {
-        if (!event.action.isRightClick) return
-        val item = event.item ?: return
+    fun onPhysicalInteraction(event: PlayerInteractEvent) {
+        if (event.action != Action.PHYSICAL) return
 
-        val player = event.player
-        val arena = player.arena() ?: return
-
-        if (arena.hasStarted()) return
-        if (item.type != Material.RED_BED) return
-
-        arena.leave(player, false)
+        if (event.player.playerData()?.currentArena == null) {
+            event.isCancelled = true
+            return
+        }
     }
 
     @EventHandler

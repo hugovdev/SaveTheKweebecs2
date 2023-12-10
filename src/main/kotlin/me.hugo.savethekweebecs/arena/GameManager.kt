@@ -34,7 +34,7 @@ class GameManager : KoinComponent {
     private val soundManager: SoundManager by inject()
 
     /** The main hub location. */
-    private val hubLocation: Location? = Bukkit.getWorld("world")
+    val hubLocation: Location? = Bukkit.getWorld("world")
         ?.let { MapPoint.deserializeFromConfig("hubLocation")?.toLocation(it) }
 
     /** Every available map related to their internal name. */
